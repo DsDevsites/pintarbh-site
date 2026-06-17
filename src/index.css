@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Eastman Alternate';
+  src: url('/fonts/EastmanAlternateTrial-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0020-002F,
+    U+003A-0040,
+    U+0041-005A,
+    U+005B-0060,
+    U+0061-007A,
+    U+007B-00FF,
+    U+0100-024F,
+    U+1E00-1EFF;
+}
+
+:root {
+  color: #09090b;
+  background: #ffffff;
+  font-synthesis: none;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #ffffff;
+  font-family: 'Eastman Alternate', Outfit, Inter, Aptos, 'Segoe UI', Arial, sans-serif;
+}
+
+h1,
+h2,
+h3,
+body,
+button,
+input,
+textarea,
+select,
+.font-display,
+.button-primary,
+.button-secondary {
+  font-family: 'Eastman Alternate', Outfit, Inter, Aptos, 'Segoe UI', Arial, sans-serif;
+  letter-spacing: 0;
+}
+
+::selection {
+  color: white;
+  background: #111111;
+}
+
+.rainbow-strip {
+  background: linear-gradient(90deg, #ef4444, #f59e0b, #facc15, #22c55e, #06b6d4, #3b82f6, #8b5cf6, #ec4899);
+}
+
+.rainbow-arc {
+  position: relative;
+}
+
+.rainbow-arc::before {
+  content: '';
+  position: absolute;
+  inset: -28px auto auto 50%;
+  width: min(680px, 88vw);
+  height: 130px;
+  transform: translateX(-50%);
+  border-top: 12px solid transparent;
+  border-radius: 999px 999px 0 0;
+  background: linear-gradient(90deg, #ef4444, #f59e0b, #facc15, #22c55e, #06b6d4, #3b82f6, #8b5cf6, #ec4899) border-box;
+  -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.field {
+  @apply w-full rounded-lg border border-zinc-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-zinc-900 focus:ring-4 focus:ring-zinc-100;
+}
+
+.button-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-full bg-zinc-950 px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-zinc-800;
+}
+
+.button-secondary {
+  @apply inline-flex items-center justify-center gap-2 rounded-full border border-zinc-200 bg-white px-6 py-3 text-sm font-semibold text-zinc-950 transition hover:-translate-y-0.5 hover:border-zinc-950;
+}

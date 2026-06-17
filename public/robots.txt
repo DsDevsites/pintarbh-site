@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://pintarbh.com.br/sitemap.xml
