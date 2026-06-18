@@ -32,8 +32,13 @@
 body {
   margin: 0;
   min-width: 320px;
+  overflow-x: hidden;
   background: #ffffff;
   font-family: 'Eastman Alternate', Outfit, Inter, Aptos, 'Segoe UI', Arial, sans-serif;
+}
+
+#root {
+  overflow-x: hidden;
 }
 
 h1,
@@ -67,11 +72,11 @@ select,
 .rainbow-arc::before {
   content: '';
   position: absolute;
-  inset: -28px auto auto 50%;
-  width: min(680px, 88vw);
-  height: 130px;
+  inset: 10px auto auto 50%;
+  width: min(420px, calc(100vw - 40px));
+  height: 82px;
   transform: translateX(-50%);
-  border-top: 12px solid transparent;
+  border-top: 8px solid transparent;
   border-radius: 999px 999px 0 0;
   background: linear-gradient(90deg, #ef4444, #f59e0b, #facc15, #22c55e, #06b6d4, #3b82f6, #8b5cf6, #ec4899) border-box;
   -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
@@ -80,14 +85,47 @@ select,
   pointer-events: none;
 }
 
+.hero-title {
+  display: -webkit-box;
+  max-height: calc(4em * 0.92);
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
 .field {
   @apply w-full rounded-lg border border-zinc-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-zinc-900 focus:ring-4 focus:ring-zinc-100;
 }
 
 .button-primary {
   @apply inline-flex items-center justify-center gap-2 rounded-full bg-zinc-950 px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-zinc-800;
+  min-height: 44px;
 }
 
 .button-secondary {
   @apply inline-flex items-center justify-center gap-2 rounded-full border border-zinc-200 bg-white px-6 py-3 text-sm font-semibold text-zinc-950 transition hover:-translate-y-0.5 hover:border-zinc-950;
+  min-height: 44px;
+}
+
+@media (min-width: 768px) {
+  .rainbow-arc::before {
+    inset: -18px auto auto 50%;
+    width: min(620px, 84vw);
+    height: 118px;
+    border-top-width: 10px;
+  }
+
+  .hero-title {
+    max-height: calc(4em * 0.94);
+  }
+}
+
+@media (min-width: 1024px) {
+  .rainbow-arc::before {
+    inset: -28px auto auto 50%;
+    width: min(680px, 88vw);
+    height: 130px;
+    border-top-width: 12px;
+  }
 }

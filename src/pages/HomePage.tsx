@@ -49,31 +49,31 @@ export function HomePage() {
 
       <main>
         <section className="relative overflow-hidden">
-          <div className="rainbow-arc mx-auto grid max-w-7xl items-center gap-12 px-5 py-16 md:py-24 lg:grid-cols-[0.95fr_1.05fr] lg:px-8">
-            <motion.div initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-              <span className="inline-flex rounded-full border border-zinc-200 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-600">
+          <div className="rainbow-arc mx-auto grid max-w-7xl items-center gap-4 px-5 pb-12 pt-8 md:gap-6 md:px-8 md:py-20 lg:grid-cols-[0.95fr_1.05fr] lg:gap-8 lg:px-12 lg:py-24">
+            <motion.div initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-center lg:text-left">
+              <span className="mx-auto inline-flex max-w-full rounded-full border border-zinc-200 px-4 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-600 lg:mx-0">
                 Pintura e acabamentos em BH
               </span>
-              <h1 className="mt-6 max-w-3xl text-4xl font-light leading-tight tracking-normal text-zinc-950 md:text-6xl">
+              <h1 className="hero-title mx-auto mt-5 max-w-3xl text-5xl font-light leading-[0.92] tracking-normal text-zinc-950 md:text-6xl md:leading-[0.94] lg:mx-0 lg:text-7xl">
                 {settings.heroTitle}
               </h1>
-              <p className="mt-6 max-w-2xl text-lg font-light leading-8 text-zinc-600">{settings.heroSubtitle}</p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <a className="button-primary" href={whatsappUrl(settings.whatsapp)}>
+              <p className="mx-auto mt-5 max-w-2xl text-lg font-light leading-7 text-zinc-600 md:leading-8 lg:mx-0">{settings.heroSubtitle}</p>
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row lg:mt-8">
+                <a className="button-primary h-11 w-full sm:w-auto" href={whatsappUrl(settings.whatsapp)}>
                   <MessageCircle className="h-5 w-5" /> WhatsApp
                 </a>
-                <a className="button-secondary" href="#contato">
+                <a className="button-secondary h-11 w-full sm:w-auto" href="#contato">
                   Solicitar Orçamento <ArrowRight className="h-5 w-5" />
                 </a>
               </div>
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.1 }} className="relative">
-              <img src={settings.heroImage} alt="Ambiente pintado pela PintarBH" className="aspect-[4/5] w-full rounded-[28px] object-cover shadow-soft md:aspect-[5/4]" />
-              <div className="absolute -bottom-6 left-6 right-6 rounded-2xl bg-white/92 p-5 shadow-soft backdrop-blur">
-                <div className="grid grid-cols-3 gap-4 text-center">
+              <img src={settings.heroImage} alt="Ambiente pintado pela PintarBH" className="aspect-[4/3] w-full max-w-full rounded-[28px] object-cover shadow-soft md:aspect-[5/4]" />
+              <div className="absolute -bottom-4 left-4 right-4 rounded-2xl bg-white/92 p-4 shadow-soft backdrop-blur md:-bottom-6 md:left-6 md:right-6 md:p-5">
+                <div className="grid grid-cols-3 gap-2 text-center md:gap-4">
                   {['Orçamento claro', 'Obra limpa', 'Entrega técnica'].map((item) => (
-                    <div key={item} className="text-xs font-semibold text-zinc-700">
-                      <CheckCircle2 className="mx-auto mb-2 h-5 w-5 text-emerald-500" /> {item}
+                    <div key={item} className="text-[10px] font-semibold leading-tight text-zinc-700 md:text-xs">
+                      <CheckCircle2 className="mx-auto mb-1.5 h-4 w-4 text-emerald-500 md:mb-2 md:h-5 md:w-5" /> {item}
                     </div>
                   ))}
                 </div>
@@ -82,9 +82,9 @@ export function HomePage() {
           </div>
         </section>
 
-        <section id="sobre" className="border-y border-zinc-100 py-20">
-          <div className="mx-auto grid max-w-7xl gap-12 px-5 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
-            <motion.img {...fadeUp} src={settings.aboutImage} alt={settings.aboutTitle} className="h-full min-h-[420px] rounded-3xl object-cover" />
+        <section id="sobre" className="border-y border-zinc-100 py-14 md:py-20">
+          <div className="mx-auto grid max-w-7xl gap-6 px-5 md:gap-8 md:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-12">
+            <motion.img {...fadeUp} src={settings.aboutImage} alt={settings.aboutTitle} className="h-full min-h-[320px] w-full max-w-full rounded-3xl object-cover md:min-h-[420px]" />
             <motion.div {...fadeUp}>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">{settings.aboutEyebrow}</p>
               <h2 className="mt-4 text-3xl font-light leading-tight md:text-5xl">{settings.aboutTitle}</h2>
@@ -105,13 +105,13 @@ export function HomePage() {
           </div>
         </section>
 
-        <section id="servicos" className="py-20">
-          <div className="mx-auto max-w-7xl px-5 lg:px-8">
+        <section id="servicos" className="py-14 md:py-20">
+          <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
             <motion.div {...fadeUp} className="max-w-2xl">
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Serviços</p>
               <h2 className="mt-4 text-3xl font-light md:text-5xl">Soluções completas para transformar ambientes.</h2>
             </motion.div>
-            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8">
               {services.map((service) => (
                 <motion.article {...fadeUp} key={service.id} className="overflow-hidden rounded-2xl border border-zinc-200 bg-white transition hover:-translate-y-1 hover:shadow-soft">
                   <img src={service.image} alt={service.title} className="h-56 w-full object-cover" />
@@ -126,15 +126,15 @@ export function HomePage() {
           </div>
         </section>
 
-        <section id="portfolio" className="rainbow-arc bg-zinc-50 py-20">
-          <div className="mx-auto max-w-7xl px-5 lg:px-8">
+        <section id="portfolio" className="rainbow-arc bg-zinc-50 py-14 md:py-20">
+          <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
             <motion.div {...fadeUp} className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Portfólio</p>
                 <h2 className="mt-4 text-3xl font-light md:text-5xl">Trabalhos realizados com padrão profissional.</h2>
               </div>
             </motion.div>
-            <div className="mt-10 grid gap-6 lg:grid-cols-3">
+            <div className="mt-8 grid gap-4 md:gap-6 lg:grid-cols-3 lg:gap-8">
               {projects.map((project) => (
                 <motion.article {...fadeUp} key={project.id} className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-zinc-200">
                   <img src={project.coverImage} alt={project.title} className="h-72 w-full object-cover" />
@@ -154,13 +154,13 @@ export function HomePage() {
           </div>
         </section>
 
-        <section id="depoimentos" className="py-20">
-          <div className="mx-auto max-w-7xl px-5 lg:px-8">
+        <section id="depoimentos" className="py-14 md:py-20">
+          <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
             <motion.div {...fadeUp} className="max-w-2xl">
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Depoimentos</p>
               <h2 className="mt-4 text-3xl font-light md:text-5xl">Clientes que confiaram no processo.</h2>
             </motion.div>
-            <div className="mt-10 grid gap-5 md:grid-cols-3">
+            <div className="mt-8 grid gap-4 md:grid-cols-3 md:gap-6 lg:gap-8">
               {testimonials.map((testimonial) => (
                 <motion.article {...fadeUp} key={testimonial.id} className="rounded-2xl border border-zinc-200 p-6">
                   <div className="flex gap-1 text-amber-400">
@@ -175,8 +175,8 @@ export function HomePage() {
           </div>
         </section>
 
-        <section id="contato" className="bg-zinc-950 py-20 text-white">
-          <div className="mx-auto grid max-w-7xl gap-10 px-5 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+        <section id="contato" className="bg-zinc-950 py-14 text-white md:py-20">
+          <div className="mx-auto grid max-w-7xl gap-6 px-5 md:gap-8 md:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-12">
             <motion.div {...fadeUp}>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-400">Contato</p>
               <h2 className="mt-4 text-3xl font-light md:text-5xl">Vamos planejar sua próxima pintura.</h2>

@@ -17,8 +17,8 @@ export function PublicHeader({ settings }: { settings: SiteSettings }) {
   return (
     <header className="sticky top-0 z-40 border-b border-zinc-100 bg-white/90 backdrop-blur-xl">
       <div className="rainbow-strip h-1.5 w-full" />
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
-        <Link to="/" aria-label="Página inicial">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 md:px-8 lg:px-12 lg:py-4">
+        <Link to="/" aria-label="Página inicial" className="min-w-0">
           <Logo logoUrl={settings.logoUrl} />
         </Link>
         <div className="hidden items-center gap-8 text-sm font-medium text-zinc-700 lg:flex">
@@ -31,15 +31,20 @@ export function PublicHeader({ settings }: { settings: SiteSettings }) {
         <a className="button-primary hidden lg:inline-flex" href="/#contato">
           Solicitar orçamento
         </a>
-        <button className="grid h-10 w-10 place-items-center rounded-full border border-zinc-200 lg:hidden" onClick={() => setOpen(!open)} aria-label="Abrir menu">
+        <button className="ml-auto grid h-11 w-11 shrink-0 place-items-center rounded-full border border-zinc-200 lg:hidden" onClick={() => setOpen(!open)} aria-label="Abrir menu">
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </nav>
+      <div className="px-4 pb-3 lg:hidden">
+        <a className="button-primary h-11 max-h-11 w-full px-4 text-xs" href="/#contato">
+          Solicitar orçamento
+        </a>
+      </div>
       {open && (
-        <div className="border-t border-zinc-100 bg-white px-5 py-4 lg:hidden">
-          <div className="flex flex-col gap-3">
+        <div className="border-t border-zinc-100 bg-white px-4 py-3 lg:hidden">
+          <div className="flex flex-col gap-2">
             {links.map(([label, href]) => (
-              <a key={href} href={href} className="rounded-lg py-2 text-sm font-medium" onClick={() => setOpen(false)}>
+              <a key={href} href={href} className="rounded-lg px-1 py-2.5 text-sm font-medium" onClick={() => setOpen(false)}>
                 {label}
               </a>
             ))}
