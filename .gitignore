@@ -2,3 +2,6 @@ node_modules
 dist
 .vercel
 .env
+vite.out.log
+vite.err.log
+*.log
