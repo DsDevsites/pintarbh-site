@@ -169,10 +169,25 @@ function SettingsEditor({ settings, onSaved }: { settings: SiteSettings; onSaved
       <ImageUpload label="Banner principal" value={draft.heroImage} onChange={(heroImage) => setDraft({ ...draft, heroImage })} />
       <Text label="Título do banner" value={draft.heroTitle} onChange={(heroTitle) => setDraft({ ...draft, heroTitle })} />
       <Area label="Subtítulo do banner" value={draft.heroSubtitle} onChange={(heroSubtitle) => setDraft({ ...draft, heroSubtitle })} />
-      <Area label="História" value={draft.story} onChange={(story) => setDraft({ ...draft, story })} />
-      <Area label="Missão" value={draft.mission} onChange={(mission) => setDraft({ ...draft, mission })} />
-      <Area label="Visão" value={draft.vision} onChange={(vision) => setDraft({ ...draft, vision })} />
-      <Area label="Valores" value={draft.values} onChange={(values) => setDraft({ ...draft, values })} />
+      <section className="grid gap-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200">
+        <div>
+          <h2 className="text-xl font-semibold">Sobre a empresa</h2>
+          <p className="mt-2 text-sm leading-6 text-zinc-500">
+            Configure a foto, chamada, título e textos institucionais exibidos na seção Sobre do site.
+          </p>
+        </div>
+        <ImageUpload label="Foto da seção Sobre" value={draft.aboutImage} onChange={(aboutImage) => setDraft({ ...draft, aboutImage })} />
+        <div className="grid gap-5 md:grid-cols-2">
+          <Text label="Chamada pequena" value={draft.aboutEyebrow} onChange={(aboutEyebrow) => setDraft({ ...draft, aboutEyebrow })} />
+          <Text label="Título da seção" value={draft.aboutTitle} onChange={(aboutTitle) => setDraft({ ...draft, aboutTitle })} />
+        </div>
+        <Area label="História" value={draft.story} onChange={(story) => setDraft({ ...draft, story })} />
+        <div className="grid gap-5 md:grid-cols-3">
+          <Area label="Missão" value={draft.mission} onChange={(mission) => setDraft({ ...draft, mission })} />
+          <Area label="Visão" value={draft.vision} onChange={(vision) => setDraft({ ...draft, vision })} />
+          <Area label="Valores" value={draft.values} onChange={(values) => setDraft({ ...draft, values })} />
+        </div>
+      </section>
     </PanelForm>
   );
 }

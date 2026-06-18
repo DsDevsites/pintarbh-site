@@ -48,9 +48,9 @@ function writeLocal<T>(key: string, value: T): T {
 export async function getSettings(): Promise<SiteSettings> {
   if (supabase) {
     const { data } = await supabase.from('site_settings').select('*').limit(1).maybeSingle();
-    if (data?.content) return data.content as SiteSettings;
+    if (data?.content) return { ...defaultSettings, ...(data.content as Partial<SiteSettings>) };
   }
-  return readLocal(keys.settings, defaultSettings);
+  return { ...defaultSettings, ...readLocal(keys.settings, defaultSettings) };
 }
 
 export async function saveSettings(settings: SiteSettings) {

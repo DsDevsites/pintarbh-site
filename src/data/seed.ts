@@ -15,6 +15,10 @@ export const defaultSettings: SiteSettings = {
     'Projetos residenciais, comerciais e corporativos executados com planejamento, limpeza, pontualidade e sofisticação.',
   heroImage:
     'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=85',
+  aboutEyebrow: 'Sobre a empresa',
+  aboutTitle: 'História construída no detalhe.',
+  aboutImage:
+    'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=1200&q=85',
   story:
     'A PintarBH nasceu para elevar o padrão dos serviços de pintura em Belo Horizonte, unindo técnica, curadoria de materiais e um atendimento próximo em cada etapa da obra.',
   mission:

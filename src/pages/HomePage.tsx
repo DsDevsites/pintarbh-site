@@ -84,10 +84,10 @@ export function HomePage() {
 
         <section id="sobre" className="border-y border-zinc-100 py-20">
           <div className="mx-auto grid max-w-7xl gap-12 px-5 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
-            <motion.img {...fadeUp} src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=1200&q=85" alt="Profissional preparando pintura" className="h-full min-h-[420px] rounded-3xl object-cover" />
+            <motion.img {...fadeUp} src={settings.aboutImage} alt={settings.aboutTitle} className="h-full min-h-[420px] rounded-3xl object-cover" />
             <motion.div {...fadeUp}>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Sobre a empresa</p>
-              <h2 className="mt-4 text-3xl font-light leading-tight md:text-5xl">História construída no detalhe.</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">{settings.aboutEyebrow}</p>
+              <h2 className="mt-4 text-3xl font-light leading-tight md:text-5xl">{settings.aboutTitle}</h2>
               <p className="mt-6 text-base leading-8 text-zinc-600">{settings.story}</p>
               <div className="mt-8 grid gap-4 sm:grid-cols-3">
                 {[

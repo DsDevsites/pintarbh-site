@@ -11,6 +11,9 @@ export type SiteSettings = {
   heroTitle: string;
   heroSubtitle: string;
   heroImage: string;
+  aboutEyebrow: string;
+  aboutTitle: string;
+  aboutImage: string;
   story: string;
   mission: string;
   vision: string;
