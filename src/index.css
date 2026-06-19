@@ -86,12 +86,7 @@ select,
 }
 
 .hero-title {
-  display: -webkit-box;
-  max-height: calc(4em * 0.92);
-  overflow: hidden;
   overflow-wrap: anywhere;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
 }
 
 .field {
@@ -116,9 +111,6 @@ select,
     border-top-width: 10px;
   }
 
-  .hero-title {
-    max-height: calc(4em * 0.94);
-  }
 }
 
 @media (min-width: 1024px) {

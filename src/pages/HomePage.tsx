@@ -54,7 +54,7 @@ export function HomePage() {
               <span className="mx-auto inline-flex max-w-full rounded-full border border-zinc-200 px-4 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-600 lg:mx-0">
                 Pintura e acabamentos em BH
               </span>
-              <h1 className="hero-title mx-auto mt-5 max-w-3xl text-5xl font-light leading-[0.92] tracking-normal text-zinc-950 md:text-6xl md:leading-[0.94] lg:mx-0 lg:text-7xl">
+              <h1 className="hero-title mx-auto mt-5 max-w-3xl text-4xl font-light leading-tight tracking-normal text-zinc-950 md:text-6xl md:leading-tight lg:mx-0 lg:text-7xl">
                 {settings.heroTitle}
               </h1>
               <p className="mx-auto mt-5 max-w-2xl text-lg font-light leading-7 text-zinc-600 md:leading-8 lg:mx-0">{settings.heroSubtitle}</p>
@@ -62,7 +62,7 @@ export function HomePage() {
                 <a className="button-primary h-11 w-full sm:w-auto" href={whatsappUrl(settings.whatsapp)}>
                   <MessageCircle className="h-5 w-5" /> WhatsApp
                 </a>
-                <a className="button-secondary h-11 w-full sm:w-auto" href="#contato">
+                <a className="button-secondary hidden h-11 w-full sm:inline-flex sm:w-auto" href="#contato">
                   Solicitar Orçamento <ArrowRight className="h-5 w-5" />
                 </a>
               </div>
