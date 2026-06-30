@@ -20,6 +20,13 @@ export type SiteSettings = {
   values: string;
   seoTitle: string;
   seoDescription: string;
+  playlistEnabled: boolean;
+  playlistTitle: string;
+  playlistSubtitle: string;
+  playlistDescription: string;
+  playlistImage: string;
+  playlistButtonText: string;
+  playlistButtonLink: string;
 };
 
 export type Service = {
