@@ -30,6 +30,20 @@ export const defaultSettings: SiteSettings = {
   seoTitle: 'PintarBH | Pintura profissional em Belo Horizonte',
   seoDescription:
     'Serviços de pintura residencial, comercial, industrial, texturas, acabamentos, fachadas e reformas em Belo Horizonte.',
+  playlistEnabled: true,
+
+playlistTitle: "Playlist Oficial",
+
+playlistSubtitle: "O ritmo da PintarBH",
+
+playlistDescription:
+"Ouça nossa playlist enquanto conhece nossos projetos.",
+
+playlistImage: "",
+
+playlistButtonText: "Ouvir no Spotify",
+
+playlistButtonLink: "",
 };
 
 export const defaultServices: Service[] = [
