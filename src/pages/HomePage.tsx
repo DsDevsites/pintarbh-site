@@ -131,7 +131,6 @@ export function HomePage() {
             <motion.div {...fadeUp} className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Portfólio</p>
-                <h2 className="mt-4 text-3xl font-light md:text-5xl">Trabalhos realizados com padrão profissional.</h2>
               </div>
             </motion.div>
             <div className="mt-8 grid gap-4 md:gap-6 lg:grid-cols-3 lg:gap-8">
