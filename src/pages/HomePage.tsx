@@ -125,7 +125,101 @@ export function HomePage() {
             </div>
           </div>
         </section>
+           <section className="relative overflow-hidden bg-gradient-to-b from-white to-zinc-50 py-20">
 
+  <div className="mx-auto max-w-7xl px-6 lg:px-8">
+
+    <div className="mb-12 text-center">
+
+      <span className="inline-flex rounded-full border border-zinc-200 bg-white px-5 py-2 text-sm font-semibold uppercase tracking-[0.25em] text-zinc-600 shadow-sm">
+        Playlist Oficial
+      </span>
+
+      <h2 className="mt-6 text-4xl font-bold tracking-tight text-zinc-900 md:text-5xl">
+        Conheça nossos projetos
+        <br />
+        ao som da PintarBH.
+      </h2>
+
+      <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-zinc-600">
+        Enquanto você navega pelos nossos trabalhos, aproveite uma seleção de
+        músicas preparada para acompanhar cada pintura, reforma e acabamento.
+      </p>
+
+    </div>
+
+    <div className="grid items-center gap-10 lg:grid-cols-2">
+
+      {/* Lado esquerdo */}
+
+      <div className="space-y-8">
+
+        <div className="rounded-3xl border border-zinc-200 bg-white p-8 shadow-xl">
+
+          <div className="mb-6 flex items-center gap-4">
+
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#1DB954]">
+
+              <svg
+                viewBox="0 0 168 168"
+                className="h-8 w-8 fill-white"
+              >
+                <path d="M84 0a84 84 0 100 168 84 84 0 000-168zm38.5 121.4a5.2 5.2 0 01-7.2 1.7c-19.7-12-44.6-14.7-74-8a5.2 5.2 0 11-2.3-10.2c32.2-7.2 59.8-4.1 81.7 9.2a5.2 5.2 0 011.8 7.3zm10.3-22.8a6.5 6.5 0 01-8.9 2.1c-22.5-13.8-56.8-17.8-83.4-9.7a6.5 6.5 0 11-3.8-12.4c30.7-9.4 68.8-4.8 94 10.7a6.5 6.5 0 012.1 9.3zm.9-23.7C107.6 59.7 64.8 58 39.4 65.8a7.8 7.8 0 11-4.5-15c29.3-8.8 77.8-7.1 107 10.6a7.8 7.8 0 11-8.2 13.5z"/>
+              </svg>
+
+            </div>
+
+            <div>
+
+              <h3 className="text-2xl font-bold">
+                Playlist Oficial
+              </h3>
+
+              <p className="text-zinc-500">
+                O ritmo da PintarBH
+              </p>
+
+            </div>
+
+          </div>
+
+          <ul className="space-y-4 text-zinc-600">
+
+            <li>Ambiente agradável durante o trabalho.</li>
+
+            <li>Clássicos, pop, rock e MPB.</li>
+
+            <li>Atualizada constantemente.</li>
+
+            <li>Ouça enquanto conhece nossos projetos.</li>
+
+          </ul>
+
+        </div>
+
+      </div>
+
+      {/* Player */}
+
+      <div className="overflow-hidden rounded-3xl border border-zinc-200 bg-white p-3 shadow-2xl">
+
+        <iframe
+          style={{ borderRadius: "20px" }}
+          src="https://open.spotify.com/playlist/1rAlWRRPcJfU2bUuESTlUQ?si=EH-SlHfCSQ2ZMkVEHO7EiQ&pi=fgLBHP-0T4yWu"
+          width="100%"
+          height="480"
+          frameBorder="0"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        />
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
         <section id="portfolio" className="rainbow-arc bg-zinc-50 py-14 md:py-20">
           <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
             <motion.div {...fadeUp} className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
