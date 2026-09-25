@@ -78,7 +78,11 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
   const servicesQuery = useQuery({ queryKey: ['services'], queryFn: getServices, staleTime: 5 * 60 * 1000 });
   const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects, staleTime: 5 * 60 * 1000 });
   const testimonialsQuery = useQuery({ queryKey: ['testimonials'], queryFn: getTestimonials, staleTime: 5 * 60 * 1000 });
-  const contactsQuery = useQuery({ queryKey: ['contacts'], queryFn: getContacts, staleTime: 5 * 60 * 1000 });
+  const contactsQuery = useQuery({ queryKey: ['contacts'], queryFn: getContacts, staleTime: 0, refetchOnWindowFocus: true });
+
+  useEffect(() => {
+    if (tab === 'contacts') void queryClient.invalidateQueries({ queryKey: ['contacts'] });
+  }, [queryClient, tab]);
 
   const settings = settingsQuery.data;
   const services = servicesQuery.data ?? [];
