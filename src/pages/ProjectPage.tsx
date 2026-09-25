@@ -61,10 +61,10 @@ export function ProjectPage() {
               </a>
             </div>
             <div>
-              <img src={project.coverImage} alt={project.title} className="aspect-[4/3] w-full rounded-3xl object-cover shadow-soft" />
+              <img src={project.coverImage} alt={project.title} width="1400" height="1050" fetchPriority="high" decoding="async" className="aspect-[4/3] w-full rounded-3xl object-cover shadow-soft" />
               <div className="mt-4 grid grid-cols-2 gap-4">
                 {project.gallery.map((image) => (
-                  <img key={image} src={image} alt="" className="aspect-square rounded-2xl object-cover" />
+                  <img key={image} src={image} alt="" loading="lazy" decoding="async" className="aspect-square rounded-2xl object-cover" />
                 ))}
               </div>
             </div>
