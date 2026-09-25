@@ -11,10 +11,42 @@ type ImageUploadProps = {
   onChangeMany?: (values: string[]) => void;
 };
 
-function readFile(file: File) {
-  return new Promise<string>((resolve) => {
+async function readFile(file: File) {
+  if (file.size > 10 * 1024 * 1024) {
+    throw new Error('A imagem deve ter no máximo 10 MB.');
+  }
+
+  if (file.type === 'image/svg+xml' || file.type === 'image/gif') {
+    return fileToDataUrl(file);
+  }
+
+  const bitmap = await createImageBitmap(file);
+  const maxSize = 1600;
+  const scale = Math.min(1, maxSize / Math.max(bitmap.width, bitmap.height));
+  const width = Math.max(1, Math.round(bitmap.width * scale));
+  const height = Math.max(1, Math.round(bitmap.height * scale));
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+
+  const context = canvas.getContext('2d');
+  if (!context) {
+    bitmap.close();
+    return fileToDataUrl(file);
+  }
+
+  context.drawImage(bitmap, 0, 0, width, height);
+  bitmap.close();
+
+  const webp = canvas.toDataURL('image/webp', 0.82);
+  return webp.startsWith('data:image/webp') ? webp : canvas.toDataURL('image/jpeg', 0.82);
+}
+
+function fileToDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error('Não foi possível ler a imagem.'));
     reader.readAsDataURL(file);
   });
 }
@@ -25,9 +57,18 @@ export function ImageUpload({ label, value, onChange, multiple, values = [], onC
 
   async function handleFiles(files: FileList | null) {
     if (!files?.length) return;
-    const images = await Promise.all(Array.from(files).filter((file) => file.type.startsWith('image/')).map(readFile));
-    if (multiple) onChangeMany?.([...values, ...images]);
-    else onChange(images[0]);
+    try {
+      const images = await Promise.all(
+        Array.from(files)
+          .filter((file) => file.type.startsWith('image/'))
+          .map(readFile),
+      );
+      if (!images.length) return;
+      if (multiple) onChangeMany?.([...values, ...images]);
+      else onChange(images[0]);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Não foi possível processar a imagem.');
+    }
   }
 
   const previewItems = multiple ? values : value ? [value] : [];
