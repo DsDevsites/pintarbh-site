@@ -6,10 +6,11 @@ import { ImageUpload } from '../components/ImageUpload';
 import { Logo } from '../components/Logo';
 import { isAuthenticated, login, logout } from '../services/authService';
 import { getContacts, getProjects, getServices, getSettings, getTestimonials, saveProjects, saveServices, saveSettings, saveTestimonials } from '../services/contentService';
+import { generateFinalQuote, getQuoteFileUrl, getQuoteImageUrl, getQuotes, updateQuote } from '../services/quoteService';
 import { slugify } from '../lib/utils';
-import type { Project, Service, SiteSettings, Testimonial } from '../types';
+import type { Project, Quote, Service, SiteSettings, Testimonial } from '../types';
 
-type Tab = 'dashboard' | 'settings' | 'services' | 'projects' | 'testimonials' | 'contacts' | 'seo';
+type Tab = 'dashboard' | 'settings' | 'services' | 'projects' | 'testimonials' | 'contacts' | 'quotes' | 'seo';
 
 const nav: { id: Tab; label: string; icon: typeof LayoutDashboard }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -18,6 +19,7 @@ const nav: { id: Tab; label: string; icon: typeof LayoutDashboard }[] = [
   { id: 'projects', label: 'Projetos', icon: FileText },
   { id: 'testimonials', label: 'Depoimentos', icon: Star },
   { id: 'contacts', label: 'Contatos', icon: MessageSquare },
+  { id: 'quotes', label: 'Orçamentos', icon: FileText },
   { id: 'seo', label: 'SEO', icon: Search },
 ];
 
@@ -79,9 +81,11 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
   const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects, staleTime: 5 * 60 * 1000 });
   const testimonialsQuery = useQuery({ queryKey: ['testimonials'], queryFn: getTestimonials, staleTime: 5 * 60 * 1000 });
   const contactsQuery = useQuery({ queryKey: ['contacts'], queryFn: getContacts, staleTime: 0, refetchOnWindowFocus: true });
+  const quotesQuery = useQuery({ queryKey: ['quotes'], queryFn: getQuotes, staleTime: 0, refetchOnWindowFocus: true });
 
   useEffect(() => {
     if (tab === 'contacts') void queryClient.invalidateQueries({ queryKey: ['contacts'] });
+    if (tab === 'quotes') void queryClient.invalidateQueries({ queryKey: ['quotes'] });
   }, [queryClient, tab]);
 
   const settings = settingsQuery.data;
@@ -89,6 +93,7 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
   const projects = projectsQuery.data ?? [];
   const testimonials = testimonialsQuery.data ?? [];
   const contacts = contactsQuery.data ?? [];
+  const quotes = quotesQuery.data ?? [];
 
   function invalidate() {
     void queryClient.invalidateQueries();
@@ -131,24 +136,26 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
           </a>
         </div>
 
-        {tab === 'dashboard' && <Dashboard services={services.length} projects={projects.length} testimonials={testimonials.length} contacts={contacts.length} />}
+        {tab === 'dashboard' && <Dashboard services={services.length} projects={projects.length} testimonials={testimonials.length} contacts={contacts.length} quotes={quotes.length} />}
         {tab === 'settings' && <SettingsEditor settings={settings} onSaved={invalidate} />}
         {tab === 'services' && <ServicesEditor services={services} onSaved={invalidate} />}
         {tab === 'projects' && <ProjectsEditor projects={projects} onSaved={invalidate} />}
         {tab === 'testimonials' && <TestimonialsEditor testimonials={testimonials} onSaved={invalidate} />}
         {tab === 'contacts' && <ContactsView contacts={contacts} />}
+        {tab === 'quotes' && <QuotesView quotes={quotes} onRefresh={() => void queryClient.invalidateQueries({ queryKey: ['quotes'] })} />}
         {tab === 'seo' && <SeoEditor settings={settings} onSaved={invalidate} />}
       </main>
     </div>
   );
 }
 
-function Dashboard({ services, projects, testimonials, contacts }: { services: number; projects: number; testimonials: number; contacts: number }) {
+function Dashboard({ services, projects, testimonials, contacts, quotes }: { services: number; projects: number; testimonials: number; contacts: number; quotes: number }) {
   const items = [
     ['Serviços', services, BriefcaseBusiness],
     ['Projetos', projects, FileText],
     ['Depoimentos', testimonials, Star],
     ['Contatos', contacts, MessageSquare],
+    ['Orçamentos', quotes, FileText],
   ] as const;
   return (
     <div className="grid gap-5 md:grid-cols-4">
@@ -296,6 +303,164 @@ function ContactsView({ contacts }: { contacts: Awaited<ReturnType<typeof getCon
       ))}
     </div>
   );
+}
+
+function QuotesView({ quotes, onRefresh }: { quotes: Quote[]; onRefresh: () => void }) {
+  const [selectedId, setSelectedId] = useState<string | null>(quotes[0]?.id ?? null);
+
+  useEffect(() => {
+    if (selectedId && !quotes.some((quote) => quote.id === selectedId)) setSelectedId(quotes[0]?.id ?? null);
+    if (!selectedId && quotes[0]) setSelectedId(quotes[0].id);
+  }, [quotes, selectedId]);
+
+  if (!quotes.length) {
+    return <div className="rounded-2xl bg-white p-8 text-sm text-zinc-500 ring-1 ring-zinc-200">Nenhuma solicitação de orçamento recebida ainda.</div>;
+  }
+
+  const selected = quotes.find((quote) => quote.id === selectedId) ?? quotes[0];
+
+  return (
+    <div className="grid gap-5 xl:grid-cols-[360px_1fr]">
+      <div className="grid content-start gap-3">
+        {quotes.map((quote) => (
+          <button
+            key={quote.id}
+            type="button"
+            onClick={() => setSelectedId(quote.id)}
+            className={`rounded-2xl p-5 text-left ring-1 transition ${selected.id === quote.id ? 'bg-zinc-950 text-white ring-zinc-950' : 'bg-white text-zinc-950 ring-zinc-200 hover:bg-zinc-50'}`}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs font-semibold uppercase tracking-[0.12em] opacity-70">{quote.quoteNumber}</span>
+              <span className="rounded-full bg-white/10 px-2 py-1 text-[11px] font-medium">{quote.status}</span>
+            </div>
+            <p className="mt-4 font-semibold">{quote.name}</p>
+            <p className="mt-1 text-sm opacity-70">{quote.city} · {quote.propertyType}</p>
+            <p className="mt-3 text-xs opacity-60">{new Date(quote.createdAt).toLocaleString('pt-BR')}</p>
+          </button>
+        ))}
+      </div>
+      <QuoteEditor quote={selected} onSaved={onRefresh} />
+    </div>
+  );
+}
+
+function QuoteEditor({ quote, onSaved }: { quote: Quote; onSaved: () => void }) {
+  const [draft, setDraft] = useState(quote);
+  const [feedback, setFeedback] = useState('');
+  const [fileUrls, setFileUrls] = useState<string[]>([]);
+  const saveMutation = useMutation({ mutationFn: updateQuote });
+  const generateMutation = useMutation({ mutationFn: generateFinalQuote });
+
+  useEffect(() => {
+    setDraft(quote);
+    setFeedback('');
+    let active = true;
+    void Promise.all(quote.images.map((image) => getQuoteImageUrl(image.imagePath))).then((urls) => {
+      if (active) setFileUrls(urls.filter((url): url is string => Boolean(url)));
+    });
+    return () => { active = false; };
+  }, [quote]);
+
+  const total = Math.max(0, (draft.laborAmount ?? 0) + (draft.materialsAmount ?? 0) + (draft.otherAmount ?? 0) - (draft.discountAmount ?? 0));
+
+  async function save() {
+    try {
+      await saveMutation.mutateAsync({ ...draft, totalAmount: total });
+      setFeedback('Análise salva.');
+      onSaved();
+    } catch {
+      setFeedback('Não foi possível salvar a análise.');
+    }
+  }
+
+  async function generate() {
+    try {
+      const result = await generateMutation.mutateAsync({ ...draft, totalAmount: total });
+      setFeedback(result.emailSent ? 'PDF final gerado e enviado ao e-mail do cliente.' : 'PDF final gerado. Configure o remetente do Resend para enviar automaticamente por e-mail.');
+      onSaved();
+    } catch {
+      setFeedback('Não foi possível gerar o orçamento final.');
+    }
+  }
+
+  return (
+    <div className="grid gap-5">
+      <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200">
+        <div className="flex flex-col justify-between gap-3 md:flex-row md:items-start">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500">{quote.quoteNumber}</p>
+            <h2 className="mt-2 text-2xl font-semibold">{quote.name}</h2>
+            <p className="mt-1 text-sm text-zinc-500">{quote.email} · {quote.phone}</p>
+          </div>
+          <span className="rounded-full bg-zinc-100 px-3 py-2 text-xs font-semibold uppercase">{quote.status}</span>
+        </div>
+        <div className="mt-6 grid gap-5 md:grid-cols-2">
+          <Info label="Imóvel" value={quote.propertyType} />
+          <Info label="Local" value={[quote.city, quote.neighborhood].filter(Boolean).join(' · ')} />
+          <Info label="Endereço" value={quote.address} />
+          <Info label="Serviços" value={quote.serviceTypes.join(', ')} />
+          <Info label="Ambientes" value={quote.environments ? String(quote.environments) : 'Não informado'} />
+          <Info label="Área" value={quote.area ? `${quote.area} m²` : 'Não informada'} />
+          <Info label="Cor / acabamento" value={[quote.color, quote.finish].filter(Boolean).join(' · ')} />
+          <Info label="Início / urgência" value={[quote.desiredStartDate, quote.urgency].filter(Boolean).join(' · ')} />
+        </div>
+        <div className="mt-5 rounded-xl bg-zinc-50 p-4 text-sm leading-6 text-zinc-700">{quote.description}</div>
+        {fileUrls.length > 0 && (
+          <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-5">
+            {fileUrls.map((url, index) => <a key={url} href={url} target="_blank" rel="noreferrer" className="overflow-hidden rounded-xl ring-1 ring-zinc-200"><img src={url} alt={`Referência ${index + 1}`} className="aspect-square w-full object-cover" /></a>)}
+          </div>
+        )}
+        <div className="mt-5 flex flex-wrap gap-3">
+          {quote.requestPdfPath && <FileLink path={quote.requestPdfPath} label="Abrir solicitação em PDF" />}
+          {quote.finalPdfPath && <FileLink path={quote.finalPdfPath} label="Abrir orçamento final" />}
+        </div>
+      </section>
+
+      <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200">
+        <h3 className="text-xl font-semibold">Montar orçamento</h3>
+        <p className="mt-2 text-sm leading-6 text-zinc-500">Informe os valores e condições. O total é calculado automaticamente.</p>
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <Money label="Mão de obra" value={draft.laborAmount ?? 0} onChange={(value) => setDraft({ ...draft, laborAmount: value })} />
+          <Money label="Materiais" value={draft.materialsAmount ?? 0} onChange={(value) => setDraft({ ...draft, materialsAmount: value })} />
+          <Money label="Outros" value={draft.otherAmount ?? 0} onChange={(value) => setDraft({ ...draft, otherAmount: value })} />
+          <Money label="Desconto" value={draft.discountAmount ?? 0} onChange={(value) => setDraft({ ...draft, discountAmount: value })} />
+        </div>
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <Text label="Prazo estimado" value={draft.duration} onChange={(duration) => setDraft({ ...draft, duration })} />
+          <Text label="Condições de pagamento" value={draft.paymentTerms} onChange={(paymentTerms) => setDraft({ ...draft, paymentTerms })} />
+        </div>
+        <Area label="Observações do orçamento" value={draft.adminNotes} onChange={(adminNotes) => setDraft({ ...draft, adminNotes })} />
+        <div className="mt-5 rounded-2xl bg-zinc-950 p-5 text-white">
+          <p className="text-sm text-zinc-400">Total do orçamento</p>
+          <p className="mt-1 text-3xl font-semibold">{total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+        </div>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <button type="button" className="button-secondary" onClick={() => void save()} disabled={saveMutation.isPending || generateMutation.isPending}>
+            <Save className="h-5 w-5" /> {saveMutation.isPending ? 'Salvando...' : 'Salvar análise'}
+          </button>
+          <button type="button" className="button-primary" onClick={() => void generate()} disabled={saveMutation.isPending || generateMutation.isPending}>
+            <FileText className="h-5 w-5" /> {generateMutation.isPending ? 'Gerando PDF...' : 'Gerar PDF e enviar'}
+          </button>
+        </div>
+        {feedback && <p className="mt-4 text-sm font-medium text-zinc-600" role="status">{feedback}</p>}
+      </section>
+    </div>
+  );
+}
+
+function Info({ label, value }: { label: string; value: string }) {
+  return <div><p className="text-xs font-semibold uppercase tracking-[0.12em] text-zinc-400">{label}</p><p className="mt-1 text-sm text-zinc-700">{value || 'Não informado'}</p></div>;
+}
+
+function Money({ label, value, onChange }: { label: string; value: number; onChange: (value: number) => void }) {
+  return <label className="block"><span className="mb-2 block text-sm font-medium text-zinc-700">{label}</span><input className="field" type="number" min="0" step="0.01" value={value} onChange={(event) => onChange(Number(event.target.value) || 0)} /></label>;
+}
+
+function FileLink({ path, label }: { path: string; label: string }) {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => { void getQuoteFileUrl(path).then(setUrl).catch(() => setUrl(null)); }, [path]);
+  if (!url) return null;
+  return <a className="button-secondary" href={url} target="_blank" rel="noreferrer"><FileText className="h-5 w-5" /> {label}</a>;
 }
 
 function SeoEditor({ settings, onSaved }: { settings: SiteSettings; onSaved: () => void }) {
