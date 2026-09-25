@@ -68,7 +68,7 @@ export function HomePage() {
               </div>
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.1 }} className="relative">
-              <img src={settings.heroImage} alt="Ambiente pintado pela PintarBH" className="aspect-[4/3] w-full max-w-full rounded-[28px] object-cover shadow-soft md:aspect-[5/4]" />
+              <img src={settings.heroImage} alt="Ambiente pintado pela PintarBH" width="1200" height="900" fetchPriority="high" decoding="async" className="aspect-[4/3] w-full max-w-full rounded-[28px] object-cover shadow-soft md:aspect-[5/4]" />
               <div className="absolute -bottom-4 left-4 right-4 rounded-2xl bg-white/92 p-4 shadow-soft backdrop-blur md:-bottom-6 md:left-6 md:right-6 md:p-5">
                 <div className="grid grid-cols-3 gap-2 text-center md:gap-4">
                   {['Orçamento claro', 'Obra limpa', 'Entrega técnica'].map((item) => (
@@ -84,7 +84,7 @@ export function HomePage() {
 
         <section id="sobre" className="border-y border-zinc-100 py-14 md:py-20">
           <div className="mx-auto grid max-w-7xl gap-6 px-5 md:gap-8 md:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-12">
-            <motion.img {...fadeUp} src={settings.aboutImage} alt={settings.aboutTitle} className="h-full min-h-[320px] w-full max-w-full rounded-3xl object-cover md:min-h-[420px]" />
+            <motion.img {...fadeUp} src={settings.aboutImage} alt={settings.aboutTitle} loading="lazy" decoding="async" className="h-full min-h-[320px] w-full max-w-full rounded-3xl object-cover md:min-h-[420px]" />
             <motion.div {...fadeUp}>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">{settings.aboutEyebrow}</p>
               <h2 className="mt-4 text-3xl font-light leading-tight md:text-5xl">{settings.aboutTitle}</h2>
@@ -114,7 +114,7 @@ export function HomePage() {
             <div className="mt-8 grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8">
               {services.map((service) => (
                 <motion.article {...fadeUp} key={service.id} className="overflow-hidden rounded-2xl border border-zinc-200 bg-white transition hover:-translate-y-1 hover:shadow-soft">
-                  <img src={service.image} alt={service.title} className="h-56 w-full object-cover" />
+                  <img src={service.image} alt={service.title} loading="lazy" decoding="async" className="h-56 w-full object-cover" />
                   <div className="p-6">
                     <Paintbrush className="mb-4 h-6 w-6 text-zinc-500" />
                     <h3 className="text-xl font-semibold">{service.title}</h3>
@@ -204,6 +204,7 @@ export function HomePage() {
       <div className="overflow-hidden rounded-3xl border border-zinc-200 bg-white p-3 shadow-2xl">
 
         <iframe
+          title="Playlist oficial da PintarBH no Spotify"
           style={{ borderRadius: "20px" }}
           src="https://open.spotify.com/playlist/1rAlWRRPcJfU2bUuESTlUQ?si=EH-SlHfCSQ2ZMkVEHO7EiQ&pi=fgLBHP-0T4yWu"
           width="100%"
@@ -230,7 +231,7 @@ export function HomePage() {
             <div className="mt-8 grid gap-4 md:gap-6 lg:grid-cols-3 lg:gap-8">
               {projects.map((project) => (
                 <motion.article {...fadeUp} key={project.id} className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-zinc-200">
-                  <img src={project.coverImage} alt={project.title} className="h-72 w-full object-cover" />
+                  <img src={project.coverImage} alt={project.title} loading="lazy" decoding="async" className="h-72 w-full object-cover" />
                   <div className="p-6">
                     <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.12em] text-zinc-500">
                       <MapPin className="h-4 w-4" /> {project.location}
