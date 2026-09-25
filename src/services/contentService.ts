@@ -4,28 +4,12 @@ import { supabase } from '../lib/supabase';
 import type { ContactMessage, Project, Service, SiteSettings, Testimonial } from '../types';
 
 type DbProject = {
-  id: string;
-  slug: string;
-  title: string;
-  category: string;
-  location: string;
-  date: string;
-  cover_image: string;
-  short_description: string;
-  full_description: string;
-  services: string[];
-  featured: boolean;
-  project_images?: { image_url: string }[];
+  id: string; slug: string; title: string; category: string; location: string; date: string;
+  cover_image: string; short_description: string; full_description: string; services: string[];
+  featured: boolean; project_images?: { image_url: string; sort_order?: number }[];
 };
 
-type DbContact = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  message: string;
-  created_at: string;
-};
+type DbContact = { id: string; name: string; email: string; phone: string; message: string; created_at: string };
 
 const keys = {
   settings: 'pintarbh:settings',
@@ -55,6 +39,10 @@ async function assertSupabase<T>(result: { data: T | null; error: { message: str
   return result.data;
 }
 
+function toInFilter(ids: string[]) {
+  return '(' + ids.join(',') + ')';
+}
+
 export async function getSettings(): Promise<SiteSettings> {
   if (supabase) {
     const { data } = await supabase.from('site_settings').select('*').limit(1).maybeSingle();
@@ -65,11 +53,9 @@ export async function getSettings(): Promise<SiteSettings> {
 
 export async function saveSettings(settings: SiteSettings) {
   if (supabase) {
-    await assertSupabase(
-      await supabase
-        .from('site_settings')
-        .upsert({ id: 'default', content: settings, updated_at: new Date().toISOString() })
-    );
+    await assertSupabase(await supabase.from('site_settings').upsert({
+      id: 'default', content: settings, updated_at: new Date().toISOString(),
+    }));
     return settings;
   }
   return writeLocal(keys.settings, settings);
@@ -84,15 +70,14 @@ export async function getServices(): Promise<Service[]> {
 }
 
 export async function saveServices(services: Service[]) {
-  const normalized = services.map((service) => ({
-    ...service,
-    id: ensureUuid(service.id),
-  }));
+  const normalized = services.map((service) => ({ ...service, id: ensureUuid(service.id) }));
 
   if (supabase) {
-    await assertSupabase(await supabase.from('services').delete().not('id', 'is', null));
     if (normalized.length) {
-      await assertSupabase(await supabase.from('services').insert(normalized));
+      await assertSupabase(await supabase.from('services').upsert(normalized, { onConflict: 'id' }));
+      await assertSupabase(await supabase.from('services').delete().not('id', 'in', toInFilter(normalized.map((service) => service.id))));
+    } else {
+      await assertSupabase(await supabase.from('services').delete().not('id', 'is', null));
     }
     return normalized;
   }
@@ -102,14 +87,19 @@ export async function saveServices(services: Service[]) {
 
 export async function getProjects(): Promise<Project[]> {
   if (supabase) {
-    const { data } = await supabase.from('projects').select('*, project_images(image_url)').order('date', { ascending: false });
+    const { data } = await supabase.from('projects')
+      .select('*, project_images(image_url, sort_order)')
+      .order('date', { ascending: false });
+
     if (data?.length) {
       return (data as DbProject[]).map((project) => ({
         ...project,
         coverImage: project.cover_image,
         shortDescription: project.short_description,
         fullDescription: project.full_description,
-        gallery: project.project_images?.map((image: { image_url: string }) => image.image_url) ?? [],
+        gallery: project.project_images
+          ?.sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+          .map((image) => image.image_url) ?? [],
       }));
     }
   }
@@ -118,47 +108,39 @@ export async function getProjects(): Promise<Project[]> {
 
 export async function saveProjects(projects: Project[]) {
   const normalized = projects.map((project) => ({
-    ...project,
-    id: ensureUuid(project.id),
-    slug: project.slug || slugify(project.title),
+    ...project, id: ensureUuid(project.id), slug: project.slug || slugify(project.title),
   }));
 
   if (supabase) {
-    await assertSupabase(await supabase.from('project_images').delete().not('id', 'is', null));
-    await assertSupabase(await supabase.from('projects').delete().not('id', 'is', null));
-
     if (normalized.length) {
-      await assertSupabase(
-        await supabase.from('projects').insert(
-          normalized.map((project) => ({
-            id: project.id,
-            slug: project.slug,
-            title: project.title,
-            category: project.category,
-            location: project.location,
-            date: project.date,
-            cover_image: project.coverImage,
-            short_description: project.shortDescription,
-            full_description: project.fullDescription,
-            services: project.services,
-            featured: project.featured,
-          }))
-        )
-      );
+      await assertSupabase(await supabase.from('projects').upsert(
+        normalized.map((project) => ({
+          id: project.id, slug: project.slug, title: project.title, category: project.category,
+          location: project.location, date: project.date, cover_image: project.coverImage,
+          short_description: project.shortDescription, full_description: project.fullDescription,
+          services: project.services, featured: project.featured,
+        })),
+        { onConflict: 'id' }
+      ));
 
-      const galleryRows = normalized.flatMap((project) =>
-        project.gallery.map((imageUrl, sortOrder) => ({
-          project_id: project.id,
-          image_url: imageUrl,
-          sort_order: sortOrder,
-        }))
-      );
+      const projectIds = normalized.map((project) => project.id);
+      await assertSupabase(await supabase.from('projects').delete().not('id', 'in', toInFilter(projectIds)));
 
-      if (galleryRows.length) {
-        await assertSupabase(await supabase.from('project_images').insert(galleryRows));
+      for (const project of normalized) {
+        await assertSupabase(await supabase.from('project_images').delete().eq('project_id', project.id));
+        const galleryRows = project.gallery.map((imageUrl, sortOrder) => ({
+          project_id: project.id, image_url: imageUrl, sort_order: sortOrder,
+        }));
+        if (galleryRows.length) {
+          await assertSupabase(await supabase.from('project_images').insert(galleryRows));
+        }
       }
-    }
 
+      await assertSupabase(await supabase.from('project_images').delete().not('project_id', 'in', toInFilter(projectIds)));
+    } else {
+      await assertSupabase(await supabase.from('project_images').delete().not('id', 'is', null));
+      await assertSupabase(await supabase.from('projects').delete().not('id', 'is', null));
+    }
     return normalized;
   }
 
@@ -174,15 +156,14 @@ export async function getTestimonials(): Promise<Testimonial[]> {
 }
 
 export async function saveTestimonials(testimonials: Testimonial[]) {
-  const normalized = testimonials.map((testimonial) => ({
-    ...testimonial,
-    id: ensureUuid(testimonial.id),
-  }));
+  const normalized = testimonials.map((testimonial) => ({ ...testimonial, id: ensureUuid(testimonial.id) }));
 
   if (supabase) {
-    await assertSupabase(await supabase.from('testimonials').delete().not('id', 'is', null));
     if (normalized.length) {
-      await assertSupabase(await supabase.from('testimonials').insert(normalized));
+      await assertSupabase(await supabase.from('testimonials').upsert(normalized, { onConflict: 'id' }));
+      await assertSupabase(await supabase.from('testimonials').delete().not('id', 'in', toInFilter(normalized.map((testimonial) => testimonial.id))));
+    } else {
+      await assertSupabase(await supabase.from('testimonials').delete().not('id', 'is', null));
     }
     return normalized;
   }
@@ -192,25 +173,16 @@ export async function saveTestimonials(testimonials: Testimonial[]) {
 
 export async function sendContactMessage(message: Omit<ContactMessage, 'id' | 'createdAt'>) {
   const cleanMessage: ContactMessage = {
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-    name: sanitizeText(message.name),
-    email: sanitizeText(message.email),
-    phone: sanitizeText(message.phone),
-    message: sanitizeText(message.message),
+    id: crypto.randomUUID(), createdAt: new Date().toISOString(),
+    name: sanitizeText(message.name), email: sanitizeText(message.email),
+    phone: sanitizeText(message.phone), message: sanitizeText(message.message),
   };
 
   if (supabase) {
-    await assertSupabase(
-      await supabase.from('contacts').insert({
-        id: cleanMessage.id,
-        name: cleanMessage.name,
-        email: cleanMessage.email,
-        phone: cleanMessage.phone,
-        message: cleanMessage.message,
-        created_at: cleanMessage.createdAt,
-      })
-    );
+    await assertSupabase(await supabase.from('contacts').insert({
+      id: cleanMessage.id, name: cleanMessage.name, email: cleanMessage.email,
+      phone: cleanMessage.phone, message: cleanMessage.message, created_at: cleanMessage.createdAt,
+    }));
     return cleanMessage;
   }
 
