@@ -44,14 +44,17 @@ export function HomePage() {
   function handleContact(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSent(false);
-    const form = new FormData(event.currentTarget);
+
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
+
     contactMutation.mutate({
       name: String(form.get('name') ?? ''),
       email: String(form.get('email') ?? ''),
       phone: String(form.get('phone') ?? ''),
       message: String(form.get('message') ?? ''),
     }, {
-      onSuccess: () => event.currentTarget.reset(),
+      onSuccess: () => formElement.reset(),
     });
   }
 
@@ -239,16 +242,16 @@ export function HomePage() {
             </motion.div>
             <motion.form {...fadeUp} onSubmit={handleContact} className="rounded-2xl bg-white p-6 text-zinc-950 md:p-8">
               <div className="grid gap-4 sm:grid-cols-2">
-                <input className="field" name="name" placeholder="Nome" minLength={2} required />
-                <input className="field" name="phone" placeholder="Telefone" required />
+                <input className="field" name="name" placeholder="Nome" autoComplete="name" minLength={2} required />
+                <input className="field" name="phone" type="tel" inputMode="tel" placeholder="Telefone" autoComplete="tel" required />
               </div>
-              <input className="field mt-4" name="email" type="email" placeholder="E-mail" required />
+              <input className="field mt-4" name="email" type="email" inputMode="email" autoComplete="email" placeholder="E-mail" required />
               <textarea className="field mt-4 min-h-36 resize-y" name="message" placeholder="Conte sobre o seu projeto" minLength={10} required />
-              <button className="button-primary mt-5 w-full" disabled={contactMutation.isPending}>
+              <button type="submit" className="button-primary mt-5 w-full" disabled={contactMutation.isPending}>
                 <Send className="h-5 w-5" /> {contactMutation.isPending ? 'Enviando...' : 'Enviar mensagem'}
               </button>
-              {sent && <p className="mt-4 text-sm font-medium text-emerald-600">Mensagem registrada com sucesso.</p>}
-              {contactMutation.isError && <p className="mt-4 text-sm font-medium text-red-600">Não foi possível enviar sua mensagem. Tente novamente.</p>}
+              {sent && <p className="mt-4 text-sm font-medium text-emerald-600" role="status" aria-live="polite">Mensagem registrada com sucesso.</p>}
+              {contactMutation.isError && <p className="mt-4 text-sm font-medium text-red-600" role="alert">Não foi possível enviar sua mensagem. Tente novamente.</p>}
             </motion.form>
           </div>
         </section>
