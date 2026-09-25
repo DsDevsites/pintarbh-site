@@ -58,11 +58,11 @@ function Login({ onLogged }: { onLogged: () => void }) {
 function AdminShell({ onLogout }: { onLogout: () => void }) {
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<Tab>('dashboard');
-  const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings });
-  const servicesQuery = useQuery({ queryKey: ['services'], queryFn: getServices });
-  const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects });
-  const testimonialsQuery = useQuery({ queryKey: ['testimonials'], queryFn: getTestimonials });
-  const contactsQuery = useQuery({ queryKey: ['contacts'], queryFn: getContacts });
+  const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings, staleTime: 5 * 60 * 1000 });
+  const servicesQuery = useQuery({ queryKey: ['services'], queryFn: getServices, staleTime: 5 * 60 * 1000 });
+  const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects, staleTime: 5 * 60 * 1000 });
+  const testimonialsQuery = useQuery({ queryKey: ['testimonials'], queryFn: getTestimonials, staleTime: 5 * 60 * 1000 });
+  const contactsQuery = useQuery({ queryKey: ['contacts'], queryFn: getContacts, staleTime: 5 * 60 * 1000 });
 
   const settings = settingsQuery.data;
   const services = servicesQuery.data ?? [];
