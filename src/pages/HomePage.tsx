@@ -16,10 +16,10 @@ const fadeUp = {
 };
 
 export function HomePage() {
-  const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings });
-  const servicesQuery = useQuery({ queryKey: ['services'], queryFn: getServices });
-  const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects });
-  const testimonialsQuery = useQuery({ queryKey: ['testimonials'], queryFn: getTestimonials });
+  const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings, staleTime: 5 * 60 * 1000 });
+  const servicesQuery = useQuery({ queryKey: ['services'], queryFn: getServices, staleTime: 5 * 60 * 1000 });
+  const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects, staleTime: 5 * 60 * 1000 });
+  const testimonialsQuery = useQuery({ queryKey: ['testimonials'], queryFn: getTestimonials, staleTime: 5 * 60 * 1000 });
   const [sent, setSent] = useState(false);
   const contactMutation = useMutation({ mutationFn: sendContactMessage, onSuccess: () => setSent(true) });
 
