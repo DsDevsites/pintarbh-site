@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { BarChart3, BriefcaseBusiness, FileText, Globe2, LayoutDashboard, LogOut, MessageSquare, Save, Search, Settings, ShieldCheck, Star, Trash2 } from 'lucide-react';
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import type React from 'react';
 import { ImageUpload } from '../components/ImageUpload';
 import { Logo } from '../components/Logo';
@@ -22,7 +22,23 @@ const nav: { id: Tab; label: string; icon: typeof LayoutDashboard }[] = [
 ];
 
 export function AdminPage() {
-  const [authenticated, setAuthenticated] = useState(isAuthenticated());
+  const [authenticated, setAuthenticated] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    void isAuthenticated().then((value) => {
+      if (mounted) setAuthenticated(value);
+    });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  if (authenticated === null) {
+    return <div className="grid min-h-screen place-items-center text-sm text-zinc-500">Verificando acesso...</div>;
+  }
 
   if (!authenticated) return <Login onLogged={() => setAuthenticated(true)} />;
   return <AdminShell onLogout={() => setAuthenticated(false)} />;
@@ -34,7 +50,7 @@ function Login({ onLogged }: { onLogged: () => void }) {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    const ok = await login(String(form.get('username')), String(form.get('password')));
+    const ok = await login(String(form.get('email')), String(form.get('password')));
     if (ok) onLogged();
     else setError('Usuário ou senha inválidos.');
   }
@@ -46,7 +62,7 @@ function Login({ onLogged }: { onLogged: () => void }) {
         <div className="mt-8 flex items-center gap-2 rounded-lg bg-zinc-50 p-3 text-sm text-zinc-600">
           <ShieldCheck className="h-5 w-5" /> Acesso administrativo protegido.
         </div>
-        <input className="field mt-6" name="username" placeholder="Usuário" autoComplete="username" required />
+        <input className="field mt-6" name="email" type="email" placeholder="E-mail" autoComplete="email" required />
         <input className="field mt-4" name="password" type="password" placeholder="Senha" autoComplete="current-password" required />
         {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
         <button className="button-primary mt-6 w-full">Entrar</button>
@@ -93,7 +109,7 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
         <button
           className="mt-8 flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-zinc-600 hover:bg-zinc-100"
           onClick={() => {
-            logout();
+            void logout();
             onLogout();
           }}
         >
@@ -143,7 +159,7 @@ function Dashboard({ services, projects, testimonials, contacts }: { services: n
         <BarChart3 className="h-6 w-6 text-zinc-500" />
         <h2 className="mt-4 text-xl font-semibold">Estrutura preparada</h2>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-zinc-600">
-          O painel usa autenticação local provisória e serviços de dados isolados. Para migrar para Supabase Auth, troque a implementação em `authService` e mantenha as telas.
+          O acesso administrativo usa a sessão do Supabase Auth quando o Supabase está configurado, com fallback local apenas em ambiente sem Supabase.
         </p>
       </div>
     </div>
