@@ -91,7 +91,7 @@ export async function createQuote(draft: QuoteDraft & { images: Array<{ name: st
   });
   if (error) throw error;
   if (!data?.quoteNumber) throw new Error(data?.error ?? 'Não foi possível registrar o orçamento.');
-  return data as { id: string; quoteNumber: string; emailSent: boolean };
+  return data as { id: string; quoteNumber: string };
 }
 
 export async function getQuotes(): Promise<Quote[]> {
@@ -136,7 +136,7 @@ export async function generateFinalQuote(quote: Quote) {
   });
   if (error) throw error;
   if (!data?.ok) throw new Error(data?.error ?? 'Não foi possível gerar o orçamento.');
-  return data as { ok: true; total: number; emailSent: boolean; path: string };
+  return data as { ok: true; total: number; path: string };
 }
 
 export async function getQuoteFileUrl(path: string) {
