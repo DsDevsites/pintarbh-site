@@ -68,6 +68,55 @@ export type ContactMessage = {
   createdAt: string;
 };
 
+export type QuoteStatus = 'new' | 'in_review' | 'sent' | 'approved' | 'completed' | 'cancelled';
+
+export type QuoteImage = {
+  id: string;
+  quoteId: string;
+  imagePath: string;
+  sortOrder: number;
+};
+
+export type Quote = {
+  id: string;
+  quoteNumber: string;
+  name: string;
+  email: string;
+  phone: string;
+  propertyType: string;
+  city: string;
+  neighborhood: string;
+  address: string;
+  serviceTypes: string[];
+  environments: number | null;
+  area: number | null;
+  color: string;
+  finish: string;
+  desiredStartDate: string;
+  urgency: string;
+  budgetRange: string;
+  description: string;
+  status: QuoteStatus;
+  laborAmount: number | null;
+  materialsAmount: number | null;
+  otherAmount: number | null;
+  discountAmount: number | null;
+  totalAmount: number | null;
+  duration: string;
+  paymentTerms: string;
+  adminNotes: string;
+  requestPdfPath: string | null;
+  finalPdfPath: string | null;
+  emailStatus: 'pending' | 'sent' | 'failed';
+  createdAt: string;
+  updatedAt: string;
+  images: QuoteImage[];
+};
+
+export type QuoteDraft = Omit<Quote, 'id' | 'quoteNumber' | 'createdAt' | 'updatedAt' | 'images' | 'requestPdfPath' | 'finalPdfPath' | 'emailStatus' | 'totalAmount'> & {
+  totalAmount?: number | null;
+};
+
 export type AdminUser = {
   id: string;
   username: string;
