@@ -10,6 +10,7 @@ export function Logo({ logoUrl, dark = true, compactMobile = false }: LogoProps)
       <img
         src={logoUrl}
         alt="PintarBH"
+        decoding="async"
         className={compactMobile ? 'h-12 w-12 object-contain md:h-10 md:w-auto md:max-w-[180px]' : 'h-10 w-auto max-w-[180px] object-contain'}
       />
     );
