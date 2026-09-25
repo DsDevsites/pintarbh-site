@@ -193,7 +193,8 @@ export async function sendContactMessage(message: Omit<ContactMessage, 'id' | 'c
 
 export async function getContacts(): Promise<ContactMessage[]> {
   if (supabase) {
-    const { data } = await supabase.from('contacts').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabase.from('contacts').select('*').order('created_at', { ascending: false });
+    if (error) throw new Error(error.message);
     if (data?.length) return (data as DbContact[]).map((item) => ({ ...item, createdAt: item.created_at }));
   }
   return readLocal(keys.contacts, []);
