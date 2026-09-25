@@ -14,7 +14,18 @@ export function ProjectPage() {
   const settings = settingsQuery.data;
   const project = projectsQuery.data?.find((item) => item.slug === slug);
 
-  if (!settings) return <div className="grid min-h-screen place-items-center text-sm text-zinc-500">Carregando...</div>;
+  if (settingsQuery.isError || projectsQuery.isError) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-white px-5 text-center text-sm text-zinc-600">
+        Não foi possível carregar este projeto. Atualize a página e tente novamente.
+      </div>
+    );
+  }
+
+  if (settingsQuery.isPending || projectsQuery.isPending || !settings) {
+    return <div className="grid min-h-screen place-items-center text-sm text-zinc-500">Carregando projeto...</div>;
+  }
+
   if (!project) {
     return (
       <div>
@@ -63,8 +74,8 @@ export function ProjectPage() {
             <div>
               <img src={project.coverImage} alt={project.title} width="1400" height="1050" fetchPriority="high" decoding="async" className="aspect-[4/3] w-full rounded-3xl object-cover shadow-soft" />
               <div className="mt-4 grid grid-cols-2 gap-4">
-                {project.gallery.map((image) => (
-                  <img key={image} src={image} alt="" loading="lazy" decoding="async" className="aspect-square rounded-2xl object-cover" />
+                {project.gallery.map((image, index) => (
+                  <img key={image} src={image} alt={`${project.title} — foto ${index + 1}`} loading="lazy" decoding="async" className="aspect-square rounded-2xl object-cover" />
                 ))}
               </div>
             </div>
