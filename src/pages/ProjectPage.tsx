@@ -8,8 +8,8 @@ import { getProjects, getSettings } from '../services/contentService';
 
 export function ProjectPage() {
   const { slug } = useParams({ from: '/projeto/$slug' });
-  const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings });
-  const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects });
+  const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings, staleTime: 5 * 60 * 1000 });
+  const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects, staleTime: 5 * 60 * 1000 });
 
   const settings = settingsQuery.data;
   const project = projectsQuery.data?.find((item) => item.slug === slug);
