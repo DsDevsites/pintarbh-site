@@ -197,7 +197,7 @@ export function QuoteForm({ services }: Props) {
 
       {sentNumber && (
         <div className="mt-4 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-700" role="status">
-          Solicitação registrada. Protocolo <strong>{sentNumber}</strong>. O PDF foi gerado e será enviado ao e-mail informado quando o serviço de e-mail estiver configurado.
+          Solicitação registrada. Protocolo <strong>{sentNumber}</strong>. O PDF da solicitação foi gerado e ficou disponível para a equipe analisar no painel administrativo.
         </div>
       )}
       {mutation.isError && (
