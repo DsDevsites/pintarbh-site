@@ -45,6 +45,16 @@ function writeLocal<T>(key: string, value: T): T {
   return value;
 }
 
+function ensureUuid(value: string) {
+  const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuid.test(value) ? value : crypto.randomUUID();
+}
+
+async function assertSupabase<T>(result: { data: T | null; error: { message: string } | null }) {
+  if (result.error) throw new Error(result.error.message);
+  return result.data;
+}
+
 export async function getSettings(): Promise<SiteSettings> {
   if (supabase) {
     const { data } = await supabase.from('site_settings').select('*').limit(1).maybeSingle();
@@ -55,7 +65,12 @@ export async function getSettings(): Promise<SiteSettings> {
 
 export async function saveSettings(settings: SiteSettings) {
   if (supabase) {
-    await supabase.from('site_settings').upsert({ id: 'default', content: settings, updated_at: new Date().toISOString() });
+    await assertSupabase(
+      await supabase
+        .from('site_settings')
+        .upsert({ id: 'default', content: settings, updated_at: new Date().toISOString() })
+    );
+    return settings;
   }
   return writeLocal(keys.settings, settings);
 }
@@ -69,7 +84,20 @@ export async function getServices(): Promise<Service[]> {
 }
 
 export async function saveServices(services: Service[]) {
-  return writeLocal(keys.services, services);
+  const normalized = services.map((service) => ({
+    ...service,
+    id: ensureUuid(service.id),
+  }));
+
+  if (supabase) {
+    await assertSupabase(await supabase.from('services').delete().not('id', 'is', null));
+    if (normalized.length) {
+      await assertSupabase(await supabase.from('services').insert(normalized));
+    }
+    return normalized;
+  }
+
+  return writeLocal(keys.services, normalized);
 }
 
 export async function getProjects(): Promise<Project[]> {
@@ -89,7 +117,52 @@ export async function getProjects(): Promise<Project[]> {
 }
 
 export async function saveProjects(projects: Project[]) {
-  return writeLocal(keys.projects, projects.map((project) => ({ ...project, slug: project.slug || slugify(project.title) })));
+  const normalized = projects.map((project) => ({
+    ...project,
+    id: ensureUuid(project.id),
+    slug: project.slug || slugify(project.title),
+  }));
+
+  if (supabase) {
+    await assertSupabase(await supabase.from('project_images').delete().not('id', 'is', null));
+    await assertSupabase(await supabase.from('projects').delete().not('id', 'is', null));
+
+    if (normalized.length) {
+      await assertSupabase(
+        await supabase.from('projects').insert(
+          normalized.map((project) => ({
+            id: project.id,
+            slug: project.slug,
+            title: project.title,
+            category: project.category,
+            location: project.location,
+            date: project.date,
+            cover_image: project.coverImage,
+            short_description: project.shortDescription,
+            full_description: project.fullDescription,
+            services: project.services,
+            featured: project.featured,
+          }))
+        )
+      );
+
+      const galleryRows = normalized.flatMap((project) =>
+        project.gallery.map((imageUrl, sortOrder) => ({
+          project_id: project.id,
+          image_url: imageUrl,
+          sort_order: sortOrder,
+        }))
+      );
+
+      if (galleryRows.length) {
+        await assertSupabase(await supabase.from('project_images').insert(galleryRows));
+      }
+    }
+
+    return normalized;
+  }
+
+  return writeLocal(keys.projects, normalized);
 }
 
 export async function getTestimonials(): Promise<Testimonial[]> {
@@ -101,7 +174,20 @@ export async function getTestimonials(): Promise<Testimonial[]> {
 }
 
 export async function saveTestimonials(testimonials: Testimonial[]) {
-  return writeLocal(keys.testimonials, testimonials);
+  const normalized = testimonials.map((testimonial) => ({
+    ...testimonial,
+    id: ensureUuid(testimonial.id),
+  }));
+
+  if (supabase) {
+    await assertSupabase(await supabase.from('testimonials').delete().not('id', 'is', null));
+    if (normalized.length) {
+      await assertSupabase(await supabase.from('testimonials').insert(normalized));
+    }
+    return normalized;
+  }
+
+  return writeLocal(keys.testimonials, normalized);
 }
 
 export async function sendContactMessage(message: Omit<ContactMessage, 'id' | 'createdAt'>) {
@@ -115,14 +201,17 @@ export async function sendContactMessage(message: Omit<ContactMessage, 'id' | 'c
   };
 
   if (supabase) {
-    await supabase.from('contacts').insert({
-      id: cleanMessage.id,
-      name: cleanMessage.name,
-      email: cleanMessage.email,
-      phone: cleanMessage.phone,
-      message: cleanMessage.message,
-      created_at: cleanMessage.createdAt,
-    });
+    await assertSupabase(
+      await supabase.from('contacts').insert({
+        id: cleanMessage.id,
+        name: cleanMessage.name,
+        email: cleanMessage.email,
+        phone: cleanMessage.phone,
+        message: cleanMessage.message,
+        created_at: cleanMessage.createdAt,
+      })
+    );
+    return cleanMessage;
   }
 
   const current = readLocal<ContactMessage[]>(keys.contacts, []);
