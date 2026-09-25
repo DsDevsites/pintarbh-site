@@ -376,7 +376,7 @@ function QuoteEditor({ quote, onSaved }: { quote: Quote; onSaved: () => void }) 
   async function generate() {
     try {
       const result = await generateMutation.mutateAsync({ ...draft, totalAmount: total });
-      setFeedback(result.emailSent ? 'PDF final gerado e enviado ao e-mail do cliente.' : 'PDF final gerado. Configure o remetente do Resend para enviar automaticamente por e-mail.');
+      setFeedback('PDF final gerado com sucesso. Ele ficará disponível no painel para a equipe enviar ao cliente manualmente.');
       onSaved();
     } catch {
       setFeedback('Não foi possível gerar o orçamento final.');
