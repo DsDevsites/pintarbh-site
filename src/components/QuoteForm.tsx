@@ -1,4 +1,4 @@
-import { FormEvent, useRef, useState } from 'react';
+import { ChangeEvent, FormEvent, useRef, useState } from 'react';
 import { Camera, FileText, ImagePlus, Send, X } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { createQuote } from '../services/quoteService';
@@ -48,7 +48,7 @@ export function QuoteForm({ services }: Props) {
   const [sentNumber, setSentNumber] = useState('');
   const mutation = useMutation({ mutationFn: createQuote });
 
-  function addFiles(event: React.ChangeEvent<HTMLInputElement>) {
+  function addFiles(event: ChangeEvent<HTMLInputElement>) {
     const incoming = Array.from(event.target.files ?? []);
     setFiles((current) => [...current, ...incoming].slice(0, 5));
     event.target.value = '';
