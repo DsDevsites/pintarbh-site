@@ -1,11 +1,11 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle2, MapPin, MessageCircle, Paintbrush, Send, Star } from 'lucide-react';
-import { FormEvent, useState } from 'react';
-import { getProjects, getServices, getSettings, getTestimonials, sendContactMessage } from '../services/contentService';
+import { ArrowRight, CheckCircle2, MapPin, MessageCircle, Paintbrush, Star } from 'lucide-react';
+import { getProjects, getServices, getSettings, getTestimonials } from '../services/contentService';
 import { Footer, PublicHeader } from '../components/PublicLayout';
 import { Seo } from '../components/Seo';
+import { QuoteForm } from '../components/QuoteForm';
 import { whatsappUrl } from '../lib/utils';
 
 const fadeUp = {
@@ -20,12 +20,6 @@ export function HomePage() {
   const servicesQuery = useQuery({ queryKey: ['services'], queryFn: getServices, staleTime: 5 * 60 * 1000 });
   const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects, staleTime: 5 * 60 * 1000 });
   const testimonialsQuery = useQuery({ queryKey: ['testimonials'], queryFn: getTestimonials, staleTime: 5 * 60 * 1000 });
-  const [sent, setSent] = useState(false);
-  const contactMutation = useMutation({
-    mutationFn: sendContactMessage,
-    onSuccess: () => setSent(true),
-  });
-
   const settings = settingsQuery.data;
   const services = servicesQuery.data ?? [];
   const projects = projectsQuery.data ?? [];
@@ -40,23 +34,6 @@ export function HomePage() {
   }
 
   if (!settings) return <div className="grid min-h-screen place-items-center text-sm text-zinc-500">Carregando PintarBH...</div>;
-
-  function handleContact(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSent(false);
-
-    const formElement = event.currentTarget;
-    const form = new FormData(formElement);
-
-    contactMutation.mutate({
-      name: String(form.get('name') ?? ''),
-      email: String(form.get('email') ?? ''),
-      phone: String(form.get('phone') ?? ''),
-      message: String(form.get('message') ?? ''),
-    }, {
-      onSuccess: () => formElement.reset(),
-    });
-  }
 
   return (
     <div className="bg-white text-zinc-950">
@@ -240,19 +217,7 @@ export function HomePage() {
                 <span>{settings.address}</span>
               </div>
             </motion.div>
-            <motion.form {...fadeUp} onSubmit={handleContact} className="rounded-2xl bg-white p-6 text-zinc-950 md:p-8">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <input className="field" name="name" placeholder="Nome" autoComplete="name" minLength={2} required />
-                <input className="field" name="phone" type="tel" inputMode="tel" placeholder="Telefone" autoComplete="tel" required />
-              </div>
-              <input className="field mt-4" name="email" type="email" inputMode="email" autoComplete="email" placeholder="E-mail" required />
-              <textarea className="field mt-4 min-h-36 resize-y" name="message" placeholder="Conte sobre o seu projeto" minLength={10} required />
-              <button type="submit" className="button-primary mt-5 w-full" disabled={contactMutation.isPending}>
-                <Send className="h-5 w-5" /> {contactMutation.isPending ? 'Enviando...' : 'Enviar mensagem'}
-              </button>
-              {sent && <p className="mt-4 text-sm font-medium text-emerald-600" role="status" aria-live="polite">Mensagem registrada com sucesso.</p>}
-              {contactMutation.isError && <p className="mt-4 text-sm font-medium text-red-600" role="alert">Não foi possível enviar sua mensagem. Tente novamente.</p>}
-            </motion.form>
+            <motion.div {...fadeUp}><QuoteForm services={services} /></motion.div>
           </div>
         </section>
       </main>
