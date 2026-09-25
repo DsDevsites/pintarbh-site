@@ -1,4 +1,5 @@
 create extension if not exists "pgcrypto";
+create schema if not exists private;
 
 create table if not exists site_settings (
   id text primary key default 'default',
@@ -94,7 +95,7 @@ create policy "Public read project images" on project_images for select using (t
 create policy "Public read testimonials" on testimonials for select using (true);
 create policy "Public insert contacts" on contacts for insert with check (true);
 
-create or replace function public.is_admin()
+create or replace function private.is_admin()
 returns boolean
 language sql
 stable
@@ -109,8 +110,8 @@ as $$
   );
 $$;
 
-revoke all on function public.is_admin() from public;
-grant execute on function public.is_admin() to authenticated;
+revoke all on function private.is_admin() from public;
+grant execute on function private.is_admin() to authenticated;
 
 drop policy if exists "Admin read contacts" on contacts;
 drop policy if exists "Admin manage settings" on site_settings;
@@ -122,32 +123,32 @@ drop policy if exists "Admin read own access" on admin_access;
 
 create policy "Admin read contacts"
 on contacts for select to authenticated
-using (public.is_admin());
+using (private.is_admin());
 
 create policy "Admin manage settings"
 on site_settings for all to authenticated
-using (public.is_admin())
-with check (public.is_admin());
+using (private.is_admin())
+with check (private.is_admin());
 
 create policy "Admin manage services"
 on services for all to authenticated
-using (public.is_admin())
-with check (public.is_admin());
+using (private.is_admin())
+with check (private.is_admin());
 
 create policy "Admin manage projects"
 on projects for all to authenticated
-using (public.is_admin())
-with check (public.is_admin());
+using (private.is_admin())
+with check (private.is_admin());
 
 create policy "Admin manage project images"
 on project_images for all to authenticated
-using (public.is_admin())
-with check (public.is_admin());
+using (private.is_admin())
+with check (private.is_admin());
 
 create policy "Admin manage testimonials"
 on testimonials for all to authenticated
-using (public.is_admin())
-with check (public.is_admin());
+using (private.is_admin())
+with check (private.is_admin());
 
 create policy "Admin read own access"
 on admin_access for select to authenticated
@@ -180,27 +181,105 @@ create policy "Admin upload PintarBH images"
 on storage.objects for insert to authenticated
 with check (
   bucket_id = 'pintarbh-images'
-  and public.is_admin()
+  and private.is_admin()
 );
 
 create policy "Admin update PintarBH images"
 on storage.objects for update to authenticated
 using (
   bucket_id = 'pintarbh-images'
-  and public.is_admin()
+  and private.is_admin()
 )
 with check (
   bucket_id = 'pintarbh-images'
-  and public.is_admin()
+  and private.is_admin()
 );
 
 create policy "Admin delete PintarBH images"
 on storage.objects for delete to authenticated
 using (
   bucket_id = 'pintarbh-images'
-  and public.is_admin()
+  and private.is_admin()
 );
 
 create index if not exists projects_slug_idx on projects(slug);
 create index if not exists project_images_project_id_idx on project_images(project_id);
 create index if not exists contacts_created_at_idx on contacts(created_at desc);
+
+
+create table if not exists quotes (
+  id uuid primary key default gen_random_uuid(),
+  quote_number text not null unique,
+  name text not null,
+  email text not null,
+  phone text not null,
+  property_type text not null,
+  city text not null,
+  neighborhood text,
+  address text,
+  service_types text[] not null default '{}',
+  environments integer,
+  area numeric(12,2),
+  color text,
+  finish text,
+  desired_start_date date,
+  urgency text,
+  budget_range text,
+  description text not null,
+  status text not null default 'new' check (status in ('new','in_review','sent','approved','completed','cancelled')),
+  labor_amount numeric(12,2),
+  materials_amount numeric(12,2),
+  other_amount numeric(12,2),
+  discount_amount numeric(12,2),
+  total_amount numeric(12,2),
+  duration text,
+  payment_terms text,
+  admin_notes text,
+  request_pdf_path text,
+  final_pdf_path text,
+  email_status text not null default 'pending' check (email_status in ('pending','sent','failed')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists quote_images (
+  id uuid primary key default gen_random_uuid(),
+  quote_id uuid not null references quotes(id) on delete cascade,
+  image_path text not null,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now()
+);
+
+alter table quotes enable row level security;
+alter table quote_images enable row level security;
+
+drop policy if exists "Admin manage quotes" on quotes;
+create policy "Admin manage quotes" on quotes for all to authenticated
+using (private.is_admin()) with check (private.is_admin());
+
+drop policy if exists "Admin manage quote images" on quote_images;
+create policy "Admin manage quote images" on quote_images for all to authenticated
+using (private.is_admin()) with check (private.is_admin());
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('pintarbh-quotes','pintarbh-quotes',false,8388608,array['image/jpeg','image/png','image/webp','application/pdf'])
+on conflict (id) do update set public=excluded.public,file_size_limit=excluded.file_size_limit,allowed_mime_types=excluded.allowed_mime_types;
+
+drop policy if exists "Admin read PintarBH quote files" on storage.objects;
+drop policy if exists "Admin upload PintarBH quote files" on storage.objects;
+drop policy if exists "Admin update PintarBH quote files" on storage.objects;
+drop policy if exists "Admin delete PintarBH quote files" on storage.objects;
+
+create policy "Admin read PintarBH quote files" on storage.objects for select to authenticated
+using (bucket_id='pintarbh-quotes' and private.is_admin());
+create policy "Admin upload PintarBH quote files" on storage.objects for insert to authenticated
+with check (bucket_id='pintarbh-quotes' and private.is_admin());
+create policy "Admin update PintarBH quote files" on storage.objects for update to authenticated
+using (bucket_id='pintarbh-quotes' and private.is_admin())
+with check (bucket_id='pintarbh-quotes' and private.is_admin());
+create policy "Admin delete PintarBH quote files" on storage.objects for delete to authenticated
+using (bucket_id='pintarbh-quotes' and private.is_admin());
+
+create index if not exists quotes_created_at_idx on quotes(created_at desc);
+create index if not exists quotes_status_idx on quotes(status);
+create index if not exists quote_images_quote_id_idx on quote_images(quote_id);
