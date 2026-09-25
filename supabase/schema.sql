@@ -65,7 +65,6 @@ create table if not exists admin_users (
   created_at timestamptz not null default now()
 );
 
--- Supabase Auth users that are allowed to administer this site.
 create table if not exists admin_access (
   user_id uuid primary key references auth.users(id) on delete cascade,
   role text not null default 'admin' check (role = 'admin'),
@@ -81,7 +80,6 @@ alter table contacts enable row level security;
 alter table admin_users enable row level security;
 alter table admin_access enable row level security;
 
--- Public read policies.
 drop policy if exists "Public read settings" on site_settings;
 drop policy if exists "Public read services" on services;
 drop policy if exists "Public read projects" on projects;
@@ -96,7 +94,6 @@ create policy "Public read project images" on project_images for select using (t
 create policy "Public read testimonials" on testimonials for select using (true);
 create policy "Public insert contacts" on contacts for insert with check (true);
 
--- Admin access is controlled by the authenticated Supabase user UUID.
 create or replace function public.is_admin()
 returns boolean
 language sql
@@ -155,6 +152,54 @@ with check (public.is_admin());
 create policy "Admin read own access"
 on admin_access for select to authenticated
 using (user_id = auth.uid());
+
+-- Public image delivery + admin-only writes.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'pintarbh-images',
+  'pintarbh-images',
+  true,
+  10485760,
+  array['image/jpeg','image/png','image/webp','image/gif','image/svg+xml']
+)
+on conflict (id) do update set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+
+drop policy if exists "Public read PintarBH images" on storage.objects;
+drop policy if exists "Admin upload PintarBH images" on storage.objects;
+drop policy if exists "Admin update PintarBH images" on storage.objects;
+drop policy if exists "Admin delete PintarBH images" on storage.objects;
+
+create policy "Public read PintarBH images"
+on storage.objects for select
+using (bucket_id = 'pintarbh-images');
+
+create policy "Admin upload PintarBH images"
+on storage.objects for insert to authenticated
+with check (
+  bucket_id = 'pintarbh-images'
+  and public.is_admin()
+);
+
+create policy "Admin update PintarBH images"
+on storage.objects for update to authenticated
+using (
+  bucket_id = 'pintarbh-images'
+  and public.is_admin()
+)
+with check (
+  bucket_id = 'pintarbh-images'
+  and public.is_admin()
+);
+
+create policy "Admin delete PintarBH images"
+on storage.objects for delete to authenticated
+using (
+  bucket_id = 'pintarbh-images'
+  and public.is_admin()
+);
 
 create index if not exists projects_slug_idx on projects(slug);
 create index if not exists project_images_project_id_idx on project_images(project_id);
