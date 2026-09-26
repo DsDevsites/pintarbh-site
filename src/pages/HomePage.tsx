@@ -141,10 +141,13 @@ export function HomePage() {
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-400">Contato</p>
               <h2 className="mt-4 max-w-3xl text-3xl font-light md:text-5xl">Vamos planejar sua próxima pintura.</h2>
               <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-300">Fale com a PintarBH pelo WhatsApp ou envie uma solicitação de orçamento completa pela nossa página dedicada.</p>
-              <div className="mt-7 flex flex-wrap gap-x-6 gap-y-3 text-sm text-zinc-300">
-                <a href={whatsappUrl(settings.whatsapp)} className="flex items-center gap-2 hover:text-white"><MessageCircle className="h-5 w-5" /> WhatsApp: {settings.phone}</a>
-                <span>{settings.email}</span><span>{settings.address}</span>
+              <div className="mt-7 grid gap-3 text-sm text-zinc-300">
+                <span>{settings.email}</span>
+                <span>{settings.address}</span>
               </div>
+              <a href={whatsappUrl(settings.whatsapp)} className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-white transition hover:text-zinc-300">
+                <MessageCircle className="h-5 w-5" /> Falar pelo WhatsApp: {settings.phone}
+              </a>
             </motion.div>
             <motion.div {...fadeUp}><Link to="/orcamento" className="button-primary bg-white text-zinc-950 hover:bg-zinc-200"><ArrowRight className="h-5 w-5" /> Abrir orçamento</Link></motion.div>
           </div>

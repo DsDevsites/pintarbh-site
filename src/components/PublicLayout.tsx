@@ -27,7 +27,6 @@ export function PublicHeader({ settings }: { settings: SiteSettings }) {
       </nav>
       {open && <div id="mobile-navigation" className="border-t border-zinc-100 bg-white px-4 py-3 md:hidden"><div className="flex flex-col gap-2">
         {links.map(([label, href]) => <a key={href} href={href} className="rounded-lg px-1 py-2.5 text-sm font-medium" onClick={() => setOpen(false)}>{label}</a>)}
-        <Link to="/orcamento" className="button-primary mt-2 w-full" onClick={() => setOpen(false)}>Solicitar orçamento</Link>
       </div></div>}
     </header>
   );
