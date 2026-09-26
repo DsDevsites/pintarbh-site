@@ -88,6 +88,7 @@ export function HomePage() {
   const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects, staleTime: 5 * 60 * 1000 });
   const testimonialsQuery = useQuery({ queryKey: ['testimonials'], queryFn: getTestimonials, staleTime: 5 * 60 * 1000 });
   const settings = settingsQuery.data;
+  const playlistLink = settings?.playlistButtonLink || 'https://open.spotify.com/playlist/1rAlWRRPcJfU2bUuESTlUQ';
   const services = servicesQuery.data ?? [];
   const projects = projectsQuery.data ?? [];
   const testimonials = testimonialsQuery.data ?? [];
@@ -188,15 +189,15 @@ export function HomePage() {
                         </div>
                         <div><h3 className="text-2xl font-bold">{settings.playlistTitle || 'Playlist Oficial'}</h3><p className="text-zinc-500">{settings.playlistSubtitle || 'O ritmo da PintarBH'}</p></div>
                       </div>
-                      {settings.playlistButtonLink && <a href={settings.playlistButtonLink} target="_blank" rel="noopener noreferrer" className="hidden rounded-full border border-zinc-200 px-4 py-2 text-sm font-semibold text-zinc-700 transition hover:border-zinc-950 hover:text-zinc-950 sm:inline-flex">{settings.playlistButtonText || 'Ouvir no Spotify'}</a>}
+                      {playlistLink && <a href={playlistLink} target="_blank" rel="noopener noreferrer" className="hidden rounded-full border border-zinc-200 px-4 py-2 text-sm font-semibold text-zinc-700 transition hover:border-zinc-950 hover:text-zinc-950 sm:inline-flex">{settings.playlistButtonText || 'Ouvir no Spotify'}</a>}
                     </div>
                     <ul className="space-y-4 text-zinc-600"><li>Ambiente agradável durante o trabalho.</li><li>Clássicos, pop, rock e MPB.</li><li>Atualizada constantemente.</li><li>Ouça enquanto conhece nossos projetos.</li></ul>
                   </div>
                 </div>
-                {settings.playlistButtonLink ? (
+                {playlistLink ? (
                   <div className="overflow-hidden rounded-3xl border border-zinc-200 bg-white p-3 shadow-2xl">
-                    <iframe title={settings.playlistTitle || 'Playlist oficial da PintarBH'} style={{ borderRadius: '20px' }} src={settings.playlistButtonLink.includes('/embed/') ? settings.playlistButtonLink : settings.playlistButtonLink.replace('open.spotify.com/playlist/','open.spotify.com/embed/playlist/').split('?')[0] + '?utm_source=generator'} width="100%" height="480" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" />
-                    <a href={settings.playlistButtonLink} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex w-full items-center justify-center rounded-full border border-zinc-200 px-5 py-3 text-sm font-semibold text-zinc-800 transition hover:border-zinc-950 hover:text-zinc-950 sm:hidden">{settings.playlistButtonText || 'Ouvir no Spotify'}</a>
+                    <iframe title={settings.playlistTitle || 'Playlist oficial da PintarBH'} style={{ borderRadius: '20px' }} src={playlistLink.includes('/embed/') ? playlistLink : playlistLink.replace('open.spotify.com/playlist/','open.spotify.com/embed/playlist/').split('?')[0] + '?utm_source=generator'} width="100%" height="480" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" />
+                    <a href={playlistLink} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex w-full items-center justify-center rounded-full border border-zinc-200 px-5 py-3 text-sm font-semibold text-zinc-800 transition hover:border-zinc-950 hover:text-zinc-950 sm:hidden">{settings.playlistButtonText || 'Ouvir no Spotify'}</a>
                   </div>
                 ) : (
                   <div className="rounded-3xl border border-dashed border-zinc-300 bg-white p-8 text-sm text-zinc-500">Configure o link da playlist no painel administrativo para exibi-la aqui.</div>
