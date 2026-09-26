@@ -439,7 +439,7 @@ function QuoteEditor({ quote, onSaved }: { quote: Quote; onSaved: () => void }) 
             <Save className="h-5 w-5" /> {saveMutation.isPending ? 'Salvando...' : 'Salvar análise'}
           </button>
           <button type="button" className="button-primary" onClick={() => void generate()} disabled={saveMutation.isPending || generateMutation.isPending}>
-            <FileText className="h-5 w-5" /> {generateMutation.isPending ? 'Gerando PDF...' : 'Gerar PDF e enviar'}
+            <FileText className="h-5 w-5" /> {generateMutation.isPending ? 'Gerando PDF...' : 'Gerar PDF para envio manual'}
           </button>
         </div>
         {feedback && <p className="mt-4 text-sm font-medium text-zinc-600" role="status">{feedback}</p>}

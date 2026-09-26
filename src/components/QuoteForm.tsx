@@ -33,11 +33,13 @@ async function compressImage(file: File): Promise<ImagePayload> {
   context.drawImage(bitmap, 0, 0, width, height);
   bitmap.close();
 
-  let blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.78));
-  if (!blob) throw new Error('Não foi possível preparar a imagem.');
+  const firstBlob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.78));
+  if (!firstBlob) throw new Error('Não foi possível preparar a imagem.');
+  let blob: Blob = firstBlob;
   if (blob.size > 700_000) {
-    blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.62));
-    if (!blob) throw new Error('Não foi possível preparar a imagem.');
+    const smallerBlob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.62));
+    if (!smallerBlob) throw new Error('Não foi possível preparar a imagem.');
+    blob = smallerBlob;
   }
   if (blob.size > 700_000) throw new Error('Uma das fotos ficou muito grande. Escolha uma foto menor.');
   return { name: file.name.replace(/\.[^.]+$/, '.jpg'), type: 'image/jpeg', data: await readAsDataUrl(blob) };
@@ -66,6 +68,7 @@ export function QuoteForm({ services }: Props) {
     const selectedServices = form.getAll('serviceTypes').map(String);
 
     try {
+      if (!selectedServices.length) throw new Error('Selecione pelo menos um serviço.');
       const images = await Promise.all(files.map(compressImage));
       const draft: QuoteDraft = {
         name: String(form.get('name') ?? ''),
@@ -115,7 +118,7 @@ export function QuoteForm({ services }: Props) {
         <input className="field" name="name" placeholder="Nome" autoComplete="name" minLength={2} required />
         <input className="field" name="phone" type="tel" inputMode="tel" placeholder="Telefone / WhatsApp" autoComplete="tel" required />
       </div>
-      <input className="field mt-4" name="email" type="email" inputMode="email" autoComplete="email" placeholder="E-mail para receber o PDF" required />
+      <input className="field mt-4" name="email" type="email" inputMode="email" autoComplete="email" placeholder="E-mail para contato" required />
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <label className="block">
@@ -150,7 +153,10 @@ export function QuoteForm({ services }: Props) {
           <option value="">Tipo de acabamento</option>
           <option>Fosco</option><option>Acetinado</option><option>Semi-brilho</option><option>Texturizado</option><option>Não sei ainda</option>
         </select>
-        <input className="field" name="desiredStartDate" type="date" aria-label="Data desejada para início" />
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-zinc-700">Data desejada para início</span>
+          <input className="field" name="desiredStartDate" type="date" />
+        </label>
         <select className="field" name="urgency" defaultValue="">
           <option value="">Quando pretende realizar?</option>
           <option>O quanto antes</option><option>Nos próximos 30 dias</option><option>Nos próximos 60 dias</option><option>Estou apenas planejando</option>
