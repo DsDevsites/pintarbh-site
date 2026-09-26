@@ -164,7 +164,7 @@ export function HomePage() {
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Serviços</p>
                 <h2 className="mt-4 text-3xl font-light md:text-5xl">Soluções completas para transformar ambientes.</h2>
               </div>
-              <Link to="/#visita" className="button-secondary w-full sm:w-fit"><ArrowRight className="h-5 w-5" /> Solicitar visita</Link>
+              <a href="#visita" className="button-secondary w-full sm:w-fit"><ArrowRight className="h-5 w-5" /> Solicitar visita</a>
             </motion.div>
             <div className="mt-8 grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8">
               {services.length ? services.map((service, index) => (
