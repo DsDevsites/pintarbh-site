@@ -1,8 +1,10 @@
 import { ChangeEvent, FormEvent, useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, Camera, CheckCircle2, FileText, ImagePlus, Send, X } from 'lucide-react';
-import { useMutation } from '@tanstack/react-query';
+import { ArrowLeft, ArrowRight, Camera, CheckCircle2, FileText, ImagePlus, MessageCircle, Send, X } from 'lucide-react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { createQuote } from '../services/quoteService';
 import type { QuoteDraft, Service } from '../types';
+import { quoteWhatsappMessage, whatsappUrl } from '../lib/utils';
+import { getSettings } from '../services/contentService';
 import type { CustomerProfile } from '../services/customerAuthService';
 
 type Props = { services: Service[] };
@@ -48,6 +50,8 @@ export function QuoteForm({ services, profile }: Props & { profile: CustomerProf
   const [step, setStep] = useState(1);
   const [files, setFiles] = useState<File[]>([]);
   const [sentNumber, setSentNumber] = useState('');
+  const [submittedDetails, setSubmittedDetails] = useState<{ serviceTypes: string[]; propertyType: string; neighborhood: string; address: string; area: number | null; city: string } | null>(null);
+  const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings, staleTime: 5 * 60 * 1000 });
   const mutation = useMutation({ mutationFn: createQuote });
 
   function addFiles(event: ChangeEvent<HTMLInputElement>) {
@@ -105,6 +109,14 @@ export function QuoteForm({ services, profile }: Props & { profile: CustomerProf
       };
       const result = await mutation.mutateAsync({ ...draft, images });
       setSentNumber(result.quoteNumber);
+      setSubmittedDetails({
+        serviceTypes: selectedServices,
+        propertyType: draft.propertyType,
+        neighborhood: draft.neighborhood,
+        address: draft.address,
+        area: draft.area,
+        city: draft.city,
+      });
       event.currentTarget.reset();
       setFiles([]);
       setStep(1);
@@ -183,7 +195,19 @@ export function QuoteForm({ services, profile }: Props & { profile: CustomerProf
         </div>
       )}
 
-      {sentNumber && <div className="mt-4 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-700" role="status"><div className="flex items-start gap-3"><CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" /><span>Orçamento criado com sucesso. Protocolo <strong>{sentNumber}</strong>. Sua solicitação foi registrada e já está disponível para nossa equipe analisar.</span></div></div>}
+      {sentNumber && <div className="mt-4 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-700" role="status">
+        <div className="flex items-start gap-3"><CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" /><span>Orçamento criado com sucesso. Protocolo <strong>{sentNumber}</strong>. Sua solicitação foi registrada e já está disponível para nossa equipe analisar.</span></div>
+        {submittedDetails && settingsQuery.data?.whatsapp && (
+          <a
+            className="button-primary mt-4 w-full sm:w-fit"
+            href={whatsappUrl(settingsQuery.data.whatsapp, quoteWhatsappMessage(submittedDetails))}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <MessageCircle className="h-5 w-5" /> Enviar resumo pelo WhatsApp
+          </a>
+        )}
+      </div>}
       {mutation.isError && <div className="mt-4 rounded-xl bg-red-50 p-4 text-sm text-red-700" role="alert">Não foi possível enviar a solicitação. Confira os dados e tente novamente.</div>}
       <p className="mt-4 flex items-center gap-2 text-xs leading-5 text-zinc-500"><FileText className="h-4 w-4 shrink-0" /> Seus dados serão usados para analisar e responder à solicitação de orçamento.</p>
     </form>

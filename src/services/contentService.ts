@@ -1,12 +1,12 @@
 import { defaultProjects, defaultServices, defaultSettings, defaultTestimonials } from '../data/seed';
 import { sanitizeText, slugify } from '../lib/utils';
 import { supabase } from '../lib/supabase';
-import type { ContactMessage, Project, Service, SiteSettings, Testimonial } from '../types';
+import type { ContactMessage, Project, Service, SiteSettings, Testimonial, VisitRequest, VisitStatus } from '../types';
 
 type DbProject = {
   id: string; slug: string; title: string; category: string; location: string; date: string;
   cover_image: string; short_description: string; full_description: string; services: string[];
-  featured: boolean; project_images?: { image_url: string; sort_order?: number }[];
+  featured: boolean; before_image?: string; after_image?: string; before_after_enabled?: boolean; before_after_description?: string; project_images?: { image_url: string; sort_order?: number }[];
 };
 
 type DbContact = { id: string; name: string; email: string; phone: string; message: string; created_at: string };
@@ -17,6 +17,7 @@ const keys = {
   projects: 'pintarbh:projects',
   testimonials: 'pintarbh:testimonials',
   contacts: 'pintarbh:contacts',
+  visits: 'pintarbh:visits',
 };
 
 function readLocal<T>(key: string, fallback: T): T {
@@ -97,6 +98,10 @@ export async function getProjects(): Promise<Project[]> {
         coverImage: project.cover_image,
         shortDescription: project.short_description,
         fullDescription: project.full_description,
+        beforeImage: project.before_image ?? '',
+        afterImage: project.after_image ?? '',
+        beforeAfterEnabled: project.before_after_enabled ?? false,
+        beforeAfterDescription: project.before_after_description ?? '',
         gallery: project.project_images
           ?.sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
           .map((image) => image.image_url) ?? [],
@@ -119,6 +124,9 @@ export async function saveProjects(projects: Project[]) {
           location: project.location, date: project.date, cover_image: project.coverImage,
           short_description: project.shortDescription, full_description: project.fullDescription,
           services: project.services, featured: project.featured,
+          before_image: project.beforeImage ?? '', after_image: project.afterImage ?? '',
+          before_after_enabled: project.beforeAfterEnabled ?? false,
+          before_after_description: project.beforeAfterDescription ?? '',
         })),
         { onConflict: 'id' }
       ));
@@ -198,4 +206,113 @@ export async function getContacts(): Promise<ContactMessage[]> {
     if (data?.length) return (data as DbContact[]).map((item) => ({ ...item, createdAt: item.created_at }));
   }
   return readLocal(keys.contacts, []);
+}
+
+
+function mapVisit(row: {
+  id: string;
+  client_id: string | null;
+  name: string;
+  phone: string;
+  service_type: string;
+  address: string;
+  preferred_date: string;
+  preferred_period: string;
+  observations: string | null;
+  status: VisitStatus;
+  created_at: string;
+  updated_at: string;
+}): VisitRequest {
+  return {
+    id: row.id,
+    clientId: row.client_id,
+    name: row.name,
+    phone: row.phone,
+    serviceType: row.service_type,
+    address: row.address,
+    preferredDate: row.preferred_date,
+    preferredPeriod: row.preferred_period,
+    observations: row.observations ?? '',
+    status: row.status,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+export async function createVisitRequest(input: {
+  name: string;
+  phone: string;
+  serviceType: string;
+  address: string;
+  preferredDate: string;
+  preferredPeriod: string;
+  observations: string;
+  clientId?: string | null;
+}) {
+  const clean = {
+    id: crypto.randomUUID(),
+    client_id: input.clientId ?? null,
+    name: sanitizeText(input.name).slice(0, 120),
+    phone: sanitizeText(input.phone).slice(0, 40),
+    service_type: sanitizeText(input.serviceType).slice(0, 100),
+    address: sanitizeText(input.address).slice(0, 240),
+    preferred_date: input.preferredDate,
+    preferred_period: sanitizeText(input.preferredPeriod).slice(0, 60),
+    observations: sanitizeText(input.observations).slice(0, 1500),
+  };
+
+  if (!clean.name || clean.phone.length < 8 || !clean.service_type || !clean.address || !clean.preferred_date || !clean.preferred_period) {
+    throw new Error('Preencha os campos obrigatórios da visita.');
+  }
+
+  if (supabase) {
+    const { error } = await supabase.from('visits').insert(clean);
+    if (error) throw new Error(error.message);
+    return {
+      id: clean.id,
+      clientId: clean.client_id,
+      name: clean.name,
+      phone: clean.phone,
+      serviceType: clean.service_type,
+      address: clean.address,
+      preferredDate: clean.preferred_date,
+      preferredPeriod: clean.preferred_period,
+      observations: clean.observations,
+      status: 'pending',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    } satisfies VisitRequest;
+  }
+
+  const visit: VisitRequest = {
+    ...clean,
+    clientId: clean.client_id,
+    serviceType: clean.service_type,
+    preferredDate: clean.preferred_date,
+    preferredPeriod: clean.preferred_period,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    status: 'pending',
+  };
+  const current = readLocal<VisitRequest[]>(keys.visits, []);
+  return writeLocal(keys.visits, [visit, ...current])[0];
+}
+
+export async function getVisits(): Promise<VisitRequest[]> {
+  if (supabase) {
+    const { data, error } = await supabase.from('visits').select('*').order('created_at', { ascending: false });
+    if (error) throw new Error(error.message);
+    return (data ?? []).map(mapVisit);
+  }
+  return readLocal(keys.visits, []);
+}
+
+export async function updateVisitStatus(id: string, status: VisitStatus) {
+  if (supabase) {
+    const { error } = await supabase.from('visits').update({ status, updated_at: new Date().toISOString() }).eq('id', id);
+    if (error) throw new Error(error.message);
+    return;
+  }
+  const current = readLocal<VisitRequest[]>(keys.visits, []);
+  writeLocal(keys.visits, current.map((visit) => visit.id === id ? { ...visit, status, updatedAt: new Date().toISOString() } : visit));
 }
