@@ -2,32 +2,18 @@ import { createRootRoute, createRoute, createRouter, Outlet } from '@tanstack/re
 import { AdminPage } from '../admin/AdminPage';
 import { HomePage } from '../pages/HomePage';
 import { ProjectPage } from '../pages/ProjectPage';
+import { QuotePage } from '../pages/QuotePage';
 
-const rootRoute = createRootRoute({
-  component: () => <Outlet />,
-});
+const rootRoute = createRootRoute({ component: () => <Outlet /> });
 
-const indexRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/',
-  component: HomePage,
-});
+const indexRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: HomePage });
+const projectRoute = createRoute({ getParentRoute: () => rootRoute, path: '/projeto/$slug', component: ProjectPage });
+const quoteRoute = createRoute({ getParentRoute: () => rootRoute, path: '/orcamento', component: QuotePage });
+const adminRoute = createRoute({ getParentRoute: () => rootRoute, path: '/admin', component: AdminPage });
 
-const projectRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/projeto/$slug',
-  component: ProjectPage,
-});
+const routeTree = rootRoute.addChildren([indexRoute, projectRoute, quoteRoute, adminRoute]);
 
-const adminRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/admin',
-  component: AdminPage,
-});
-
-const routeTree = rootRoute.addChildren([indexRoute, projectRoute, adminRoute]);
-
-export const router = createRouter({ routeTree });
+export const router = createRouter({ routeTree, defaultPreloadStaleTime: 30_000 });
 
 declare module '@tanstack/react-router' {
   interface Register {
