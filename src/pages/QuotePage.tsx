@@ -69,6 +69,7 @@ export function QuotePage() {
   const settings = settingsQuery.data;
   const services = servicesQuery.data ?? [];
   const profile = profileOverride ?? customerQuery.data;
+  const firstName = profile?.name.trim().split(/\s+/)[0] || '';
 
   if (settingsQuery.isError) return <div className="grid min-h-screen place-items-center px-5 text-center text-sm text-zinc-600">Não foi possível carregar a página de orçamento. Atualize a página e tente novamente.</div>;
   if (!settings || customerQuery.isLoading) return <div className="grid min-h-screen place-items-center text-sm text-zinc-500">Carregando orçamento...</div>;
@@ -95,7 +96,15 @@ export function QuotePage() {
         <section className="py-10 md:py-16">
           <div className="mx-auto grid max-w-7xl gap-8 px-5 md:px-8 lg:grid-cols-[minmax(0,1fr)_280px] lg:px-12">
             <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.08 }}>
-              <>{profile ? <><QuoteForm services={services} profile={profile} /><CustomerQuotes profile={profile} /></> : <CustomerAccountGate onReady={setProfileOverride} />}</>
+              {profile ? <>
+                <div className="mb-6 rounded-3xl bg-white p-6 shadow-soft ring-1 ring-zinc-200 md:p-7">
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Área do cliente</p>
+                  <h2 className="mt-2 text-2xl font-semibold">Olá, {firstName}!</h2>
+                  <p className="mt-2 text-sm leading-6 text-zinc-500">Seu acesso está ativo. Vamos continuar com os detalhes do seu orçamento.</p>
+                </div>
+                <QuoteForm services={services} profile={profile} />
+                <CustomerQuotes profile={profile} />
+              </> : <CustomerAccountGate onReady={setProfileOverride} />}
             </motion.div>
             <motion.aside initial={{ opacity: 0, x: 18 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.55, delay: 0.15 }} className="h-fit rounded-2xl border border-zinc-200 bg-white p-6 lg:sticky lg:top-28">
               <ShieldCheck className="h-6 w-6 text-zinc-700" />
