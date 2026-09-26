@@ -15,7 +15,7 @@ export type AuthenticatedCustomerDraft = {
 
 function getAuthRedirectUrl() {
   if (typeof window === 'undefined') return undefined;
-  return `${window.location.origin}/auth/callback`;
+  return `${window.location.origin}/`;
 }
 
 export async function getAuthenticatedCustomerDraft(): Promise<AuthenticatedCustomerDraft | null> {
