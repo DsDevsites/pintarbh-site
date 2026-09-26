@@ -143,7 +143,7 @@ export async function generateFinalQuote(quote: Quote) {
 
 export async function getQuoteFileUrl(path: string) {
   if (!supabase) return null;
-  const { data, error } = await supabase.storage.from('pintarbh-quotes').createSignedUrl(path, 60 * 60);
+  const { data, error } = await supabase.storage.from('pintarbh-quotes').createSignedUrl(path, 24 * 60 * 60);
   if (error) throw new Error(error.message);
   return data.signedUrl;
 }
