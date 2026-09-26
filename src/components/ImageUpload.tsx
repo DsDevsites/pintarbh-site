@@ -344,7 +344,7 @@ export function ImageUpload({ label, value, onChange, multiple, values = [], onC
             <div className="p-5">
               <div
                 ref={cropAreaRef}
-                className="mx-auto w-full max-w-xl overflow-hidden rounded-2xl bg-zinc-950 touch-none"
+                className="relative mx-auto w-full max-w-xl overflow-hidden rounded-2xl bg-zinc-950 touch-none"
                 style={{ aspectRatio: cropAspect }}
               >
                 {cropState.src && (
