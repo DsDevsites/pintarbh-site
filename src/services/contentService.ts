@@ -266,9 +266,22 @@ export async function createVisitRequest(input: {
   }
 
   if (supabase) {
-    const { data, error } = await supabase.from('visits').insert(clean).select('*').single();
+    const { error } = await supabase.from('visits').insert(clean);
     if (error) throw new Error(error.message);
-    return mapVisit(data);
+    return {
+      id: clean.id,
+      clientId: clean.client_id,
+      name: clean.name,
+      phone: clean.phone,
+      serviceType: clean.service_type,
+      address: clean.address,
+      preferredDate: clean.preferred_date,
+      preferredPeriod: clean.preferred_period,
+      observations: clean.observations,
+      status: 'pending',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    } satisfies VisitRequest;
   }
 
   const visit: VisitRequest = {
