@@ -7,6 +7,8 @@ import { getProjects, getServices, getSettings, getTestimonials } from '../servi
 import { Footer, PublicHeader } from '../components/PublicLayout';
 import { Seo } from '../components/Seo';
 import { PaintDecorations } from '../components/PaintDecorations';
+import { BeforeAfter } from '../components/BeforeAfter';
+import { VisitRequestForm } from '../components/VisitRequestForm';
 import { whatsappUrl } from '../lib/utils';
 import { supabase } from '../lib/supabase';
 
@@ -92,6 +94,7 @@ export function HomePage() {
   const services = servicesQuery.data ?? [];
   const projects = projectsQuery.data ?? [];
   const testimonials = testimonialsQuery.data ?? [];
+  const beforeAfterProjects = projects.filter((project) => project.beforeAfterEnabled && project.beforeImage && project.afterImage);
 
   if (settingsQuery.isError) {
     return <div className="grid min-h-screen place-items-center bg-white px-5 text-center text-sm text-zinc-600">Não foi possível carregar o conteúdo do site. Atualize a página e tente novamente.</div>;
@@ -156,9 +159,12 @@ export function HomePage() {
         <section id="servicos" className="relative overflow-hidden py-14 md:py-20 scroll-mt-24">
           <PaintDecorations roller className="paint-decor-bottom-left" />
           <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
-            <motion.div {...fadeUp} className="max-w-2xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Serviços</p>
-              <h2 className="mt-4 text-3xl font-light md:text-5xl">Soluções completas para transformar ambientes.</h2>
+            <motion.div {...fadeUp} className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
+              <div className="max-w-2xl">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Serviços</p>
+                <h2 className="mt-4 text-3xl font-light md:text-5xl">Soluções completas para transformar ambientes.</h2>
+              </div>
+              <Link to="/#visita" className="button-secondary w-full sm:w-fit"><ArrowRight className="h-5 w-5" /> Solicitar visita</Link>
             </motion.div>
             <div className="mt-8 grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8">
               {services.length ? services.map((service, index) => (
@@ -220,6 +226,30 @@ export function HomePage() {
           </div>
         </section>
 
+        {beforeAfterProjects.length > 0 && (
+          <section id="antes-depois" className="relative overflow-hidden py-14 md:py-20 scroll-mt-24">
+            <PaintDecorations roller className="paint-decor-top-right" />
+            <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
+              <motion.div {...fadeUp} className="max-w-2xl">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Antes e Depois</p>
+                <h2 className="mt-4 text-3xl font-light md:text-5xl">A transformação em cada detalhe.</h2>
+                <p className="mt-4 text-sm leading-7 text-zinc-600">Arraste a divisória para comparar o resultado de cada trabalho.</p>
+              </motion.div>
+              <div className="mt-8 grid gap-5 md:grid-cols-2">
+                {beforeAfterProjects.map((project) => (
+                  <BeforeAfter
+                    key={project.id}
+                    beforeImage={project.beforeImage!}
+                    afterImage={project.afterImage!}
+                    title={project.title}
+                    description={project.beforeAfterDescription || project.shortDescription}
+                  />
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         <section id="depoimentos" className="relative overflow-hidden py-14 md:py-20 scroll-mt-24">
           <PaintDecorations roller className="paint-decor-top-right" />
           <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
@@ -227,6 +257,17 @@ export function HomePage() {
             <div className="mt-8 grid gap-4 md:grid-cols-3 md:gap-6 lg:gap-8">
               {testimonials.length ? testimonials.map((testimonial) => <motion.article {...fadeUp} key={testimonial.id} className="rounded-2xl border border-zinc-200 p-6"><div className="flex gap-1 text-amber-400">{Array.from({ length: testimonial.rating }).map((_, index) => <Star key={index} className="h-4 w-4 fill-current" />)}</div><p className="mt-5 text-sm leading-7 text-zinc-600">“{testimonial.comment}”</p><p className="mt-5 font-semibold">{testimonial.name}</p><p className="text-sm text-zinc-500">{testimonial.city}</p></motion.article>) : <div className="rounded-2xl border border-dashed border-zinc-300 p-8 text-sm text-zinc-500 md:col-span-3">Os depoimentos serão apresentados aqui em breve.</div>}
             </div>
+          </div>
+        </section>
+
+        <section id="visita" className="relative overflow-hidden border-y border-zinc-100 bg-zinc-50 py-14 md:py-20 scroll-mt-24">
+          <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
+            <motion.div {...fadeUp} className="mb-8 max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Solicitar visita</p>
+              <h2 className="mt-4 text-3xl font-light md:text-5xl">Prefere que a gente conheça o local?</h2>
+              <p className="mt-4 text-sm leading-7 text-zinc-600">Escolha uma data e período de preferência. A confirmação será feita diretamente pela equipe.</p>
+            </motion.div>
+            <VisitRequestForm services={services} whatsapp={settings.whatsapp} />
           </div>
         </section>
 
@@ -257,7 +298,10 @@ export function HomePage() {
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">Orçamento</p>
                 <h3 className="mt-3 text-2xl font-semibold">Solicite uma análise do seu projeto.</h3>
                 <p className="mt-4 text-sm leading-7 text-zinc-300">Envie seus dados, detalhes do serviço e fotos. A solicitação fica organizada para a equipe analisar antes de preparar o orçamento.</p>
-                <Link to="/orcamento" className="button-primary mt-7 bg-white text-zinc-950 hover:bg-zinc-200"><ArrowRight className="h-5 w-5" /> Abrir orçamento</Link>
+                <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                  <Link to="/orcamento" className="button-primary bg-white text-zinc-950 hover:bg-zinc-200"><ArrowRight className="h-5 w-5" /> Abrir orçamento</Link>
+                  <a href="#visita" className="button-secondary border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"><ArrowRight className="h-5 w-5" /> Solicitar visita</a>
+                </div>
               </motion.div>
             </div>
           </div>
