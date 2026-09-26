@@ -3,6 +3,7 @@ import { AdminPage } from '../admin/AdminPage';
 import { HomePage } from '../pages/HomePage';
 import { ProjectPage } from '../pages/ProjectPage';
 import { QuotePage } from '../pages/QuotePage';
+import { ProfilePage } from '../pages/ProfilePage';
 import { AuthCallbackPage } from '../pages/AuthCallbackPage';
 
 function RouterError({ reset }: { reset: () => void }) {
@@ -43,10 +44,11 @@ const rootRoute = createRootRoute({
 const indexRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: HomePage });
 const projectRoute = createRoute({ getParentRoute: () => rootRoute, path: '/projeto/$slug', component: ProjectPage });
 const quoteRoute = createRoute({ getParentRoute: () => rootRoute, path: '/orcamento', component: QuotePage });
+const profileRoute = createRoute({ getParentRoute: () => rootRoute, path: '/perfil', component: ProfilePage });
 const authCallbackRoute = createRoute({ getParentRoute: () => rootRoute, path: '/auth/callback', component: AuthCallbackPage });
 const adminRoute = createRoute({ getParentRoute: () => rootRoute, path: '/admin', component: AdminPage });
 
-const routeTree = rootRoute.addChildren([indexRoute, projectRoute, quoteRoute, authCallbackRoute, adminRoute]);
+const routeTree = rootRoute.addChildren([indexRoute, projectRoute, quoteRoute, profileRoute, authCallbackRoute, adminRoute]);
 
 export const router = createRouter({ routeTree, defaultPreloadStaleTime: 30_000 });
 
