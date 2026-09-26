@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, MapPin, MessageCircle, Paintbrush, Star } from 'lucide-react';
 import { getProjects, getServices, getSettings, getTestimonials } from '../services/contentService';
@@ -18,6 +18,7 @@ const fadeUp = {
 };
 
 export function HomePage() {
+  const navigate = useNavigate();
   const [authStatus, setAuthStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [authError, setAuthError] = useState('');
 
@@ -39,7 +40,9 @@ export function HomePage() {
       window.sessionStorage.removeItem('pintarbh_oauth_pending');
       setAuthStatus('success');
       window.history.replaceState({}, document.title, '/');
-      window.setTimeout(() => window.location.replace('/orcamento?auth=success'), 1100);
+      window.setTimeout(() => {
+        void navigate({ to: '/orcamento', replace: true });
+      }, 1100);
     };
 
     const finishError = (message: string) => {
