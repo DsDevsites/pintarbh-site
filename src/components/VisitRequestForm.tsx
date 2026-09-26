@@ -87,7 +87,7 @@ export function VisitRequestForm({ services, whatsapp }: Props) {
         <form className="mt-7 grid gap-4" onSubmit={handleSubmit}>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="grid gap-2 text-sm font-medium text-zinc-700">Nome<input className="field" name="name" placeholder="Seu nome" autoComplete="name" minLength={2} required /></label>
-            <label className="grid gap-2 text-sm font-medium text-zinc-700">WhatsApp<label className="sr-only" htmlFor="visit-phone">WhatsApp</label><input id="visit-phone" className="field" name="phone" type="tel" inputMode="tel" placeholder="(31) 99999-9999" autoComplete="tel" minLength={8} required /></label>
+            <label className="grid gap-2 text-sm font-medium text-zinc-700" htmlFor="visit-phone">WhatsApp<input id="visit-phone" className="field" name="phone" type="tel" inputMode="tel" placeholder="(31) 99999-9999" autoComplete="tel" minLength={8} required /></label>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="grid gap-2 text-sm font-medium text-zinc-700">Tipo de serviço<select className="field" name="serviceType" defaultValue="" required><option value="" disabled>Selecione</option>{serviceOptions.map((service) => <option key={service}>{service}</option>)}</select></label>
