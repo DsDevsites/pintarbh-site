@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from '@tanstack/react-router';
 import { ArrowLeft, CheckCircle2, MessageCircle } from 'lucide-react';
+import { BeforeAfter } from '../components/BeforeAfter';
 import { Footer, PublicHeader } from '../components/PublicLayout';
 import { Seo } from '../components/Seo';
 import { quoteWhatsappMessage, whatsappUrl } from '../lib/utils';
@@ -76,6 +77,16 @@ export function ProjectPage() {
             </div>
             <div>
               <div className="paint-image-frame paint-image-frame--hero rounded-3xl"><img src={project.coverImage} alt={project.title} width="1400" height="1050" fetchPriority="high" decoding="async" className="aspect-[4/3] w-full rounded-[23px] object-cover shadow-soft" /></div>
+              {project.beforeAfterEnabled && project.beforeImage && project.afterImage && (
+                <div className="mt-6">
+                  <BeforeAfter
+                    beforeImage={project.beforeImage}
+                    afterImage={project.afterImage}
+                    title={project.title}
+                    description={project.beforeAfterDescription}
+                  />
+                </div>
+              )}
               <div className="mt-4 grid grid-cols-2 gap-4">
                 {project.gallery.map((image, index) => (
                   <div key={image} className="paint-image-frame rounded-2xl"><img src={image} alt={`${project.title} — foto ${index + 1}`} loading="lazy" decoding="async" className="aspect-square rounded-[15px] object-cover" /></div>
