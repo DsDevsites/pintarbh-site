@@ -33,10 +33,11 @@ async function compressImage(file: File): Promise<ImagePayload> {
   context.drawImage(bitmap, 0, 0, width, height);
   bitmap.close();
 
-  let blob: Blob | null = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.78));
+  let blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.78));
   if (!blob) throw new Error('Não foi possível preparar a imagem.');
   if (blob.size > 700_000) {
     blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.62));
+    if (!blob) throw new Error('Não foi possível preparar a imagem.');
   }
   if (blob.size > 700_000) throw new Error('Uma das fotos ficou muito grande. Escolha uma foto menor.');
   return { name: file.name.replace(/\.[^.]+$/, '.jpg'), type: 'image/jpeg', data: await readAsDataUrl(blob) };
