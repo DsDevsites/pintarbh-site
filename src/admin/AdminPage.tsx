@@ -296,8 +296,8 @@ function ProjectsEditor({ projects, onSaved }: { projects: Project[]; onSaved: (
               <input type="checkbox" checked={project.beforeAfterEnabled ?? false} onChange={(event) => setItems(update(items, index, { ...project, beforeAfterEnabled: event.target.checked }))} />
               Publicar este projeto na seção Antes e Depois
             </label>
-            <ImageUpload label="Imagem Antes" value={project.beforeImage ?? ''} onChange={(beforeImage) => setItems(update(items, index, { ...project, beforeImage }))} cropAspect={4 / 3} cropHint="Corte 4:3 recomendado para manter o comparador alinhado." />
-            <ImageUpload label="Imagem Depois" value={project.afterImage ?? ''} onChange={(afterImage) => setItems(update(items, index, { ...project, afterImage }))} cropAspect={4 / 3} cropHint="Corte 4:3 recomendado para manter o comparador alinhado." />
+            <ImageUpload label="Imagem Antes" value={project.beforeImage ?? ''} onChange={(beforeImage) => setItems(update(items, index, { ...project, beforeImage }))} cropHint="A imagem será mantida inteira, sem corte." />
+            <ImageUpload label="Imagem Depois" value={project.afterImage ?? ''} onChange={(afterImage) => setItems(update(items, index, { ...project, afterImage }))} cropHint="A imagem será mantida inteira, sem corte." />
             <Area label="Descrição do Antes e Depois" value={project.beforeAfterDescription ?? ''} onChange={(beforeAfterDescription) => setItems(update(items, index, { ...project, beforeAfterDescription }))} />
           </section>
         </EditorCard>

@@ -4,12 +4,14 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, MessageCircle, ShieldCheck } from 'lucide-react';
 import { QuoteForm } from '../components/QuoteForm';
 import { CustomerAccountGate } from '../components/CustomerAccountGate';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getCurrentCustomer, type CustomerProfile } from '../services/customerAuthService';
 import { Footer, PublicHeader } from '../components/PublicLayout';
 import { Seo } from '../components/Seo';
 import { getServices, getSettings } from '../services/contentService';
+import { PRE_QUOTE_STORAGE_KEY } from '../components/PreQuoteForm';
 import { whatsappUrl } from '../lib/utils';
+import type { PreQuoteDraft } from '../types';
 import { getCustomerQuotes, getQuoteFileUrl } from '../services/quoteService';
 
 function CustomerQuotes({ profile }: { profile: CustomerProfile }) {
@@ -64,6 +66,16 @@ function CustomerPdf({ path }: { path: string }) { const [url, setUrl] = useStat
 export function QuotePage() {
   const customerQuery = useQuery({ queryKey: ['customer-profile'], queryFn: getCurrentCustomer, staleTime: 0 });
   const [profileOverride, setProfileOverride] = useState<CustomerProfile | null>(null);
+  const [preQuote, setPreQuote] = useState<PreQuoteDraft | null>(null);
+  useEffect(() => {
+    try {
+      const stored = window.sessionStorage.getItem(PRE_QUOTE_STORAGE_KEY);
+      if (stored) setPreQuote(JSON.parse(stored) as PreQuoteDraft);
+    } catch {
+      setPreQuote(null);
+    }
+  }, []);
+
   const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings, staleTime: 5 * 60 * 1000 });
   const servicesQuery = useQuery({ queryKey: ['services'], queryFn: getServices, staleTime: 5 * 60 * 1000 });
   const settings = settingsQuery.data;
@@ -87,7 +99,7 @@ export function QuotePage() {
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">PintarBH • Orçamento</p>
                 <h1 className="mt-4 max-w-3xl text-4xl font-light leading-tight md:text-6xl">Vamos entender o seu projeto.</h1>
-                <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-600 md:text-lg">Comece com seus dados e, na próxima etapa, conte os detalhes da pintura, reforma ou acabamento que você deseja realizar.</p>
+                <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-600 md:text-lg">Comece com algumas informações e, na próxima etapa, finalize os detalhes da pintura, reforma ou acabamento que você deseja realizar.</p>
               </motion.div>
               <a href={whatsappUrl(settings.whatsapp)} className="button-secondary w-full sm:w-auto"><MessageCircle className="h-5 w-5" /> Falar pelo WhatsApp</a>
             </div>
@@ -103,7 +115,7 @@ export function QuotePage() {
                   <h2 className="mt-2 text-2xl font-semibold">Olá, {firstName}!</h2>
                   <p className="mt-2 text-sm leading-6 text-zinc-500">Seu acesso está ativo. Vamos continuar com os detalhes do seu orçamento.</p>
                 </div>
-                <QuoteForm services={services} profile={profile} />
+                <QuoteForm services={services} profile={profile} initialPreQuote={preQuote} />
                 <CustomerQuotes profile={profile} />
               </> : <CustomerAccountGate onReady={setProfileOverride} initialMode={initialLogin ? 'login' : 'signup'} />}
             </motion.div>

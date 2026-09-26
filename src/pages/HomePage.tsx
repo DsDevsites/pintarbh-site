@@ -9,6 +9,7 @@ import { Seo } from '../components/Seo';
 import { PaintDecorations } from '../components/PaintDecorations';
 import { BeforeAfter } from '../components/BeforeAfter';
 import { VisitRequestForm } from '../components/VisitRequestForm';
+import { PreQuoteForm } from '../components/PreQuoteForm';
 import { whatsappUrl } from '../lib/utils';
 import { supabase } from '../lib/supabase';
 
@@ -125,7 +126,7 @@ export function HomePage() {
               <p className="mx-auto mt-5 max-w-2xl text-lg font-light leading-7 text-zinc-600 md:leading-8 lg:mx-0">{settings.heroSubtitle}</p>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row lg:mt-8">
                 <a className="button-primary h-11 w-full sm:w-auto" href={whatsappUrl(settings.whatsapp)}><MessageCircle className="h-5 w-5" /> WhatsApp</a>
-                <Link to="/orcamento" className="button-secondary h-11 w-full sm:w-auto"><ArrowRight className="h-5 w-5" /> Solicitar orçamento</Link>
+                <a href="#pre-orcamento" className="button-secondary h-11 w-full sm:w-auto"><ArrowRight className="h-5 w-5" /> Solicitar orçamento</a>
               </div>
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.1 }} className="relative">
@@ -174,6 +175,17 @@ export function HomePage() {
                 </motion.article>
               )) : <div className="rounded-2xl border border-dashed border-zinc-300 p-8 text-sm text-zinc-500 sm:col-span-2 lg:col-span-3">Os serviços serão apresentados aqui em breve.</div>}
             </div>
+          </div>
+        </section>
+
+        <section id="pre-orcamento" className="relative overflow-hidden border-y border-zinc-100 bg-zinc-50 py-14 md:py-20 scroll-mt-24">
+          <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
+            <motion.div {...fadeUp} className="mb-8 max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Orçamento</p>
+              <h2 className="mt-4 text-3xl font-light md:text-5xl">Vamos começar pelo seu projeto.</h2>
+              <p className="mt-4 text-sm leading-7 text-zinc-600">Faça um pré-orçamento rápido com algumas informações. Depois, você seguirá para a página de conclusão, onde poderá detalhar o serviço e enviar fotos.</p>
+            </motion.div>
+            <PreQuoteForm services={services} />
           </div>
         </section>
 
@@ -299,7 +311,7 @@ export function HomePage() {
                 <h3 className="mt-3 text-2xl font-semibold">Solicite uma análise do seu projeto.</h3>
                 <p className="mt-4 text-sm leading-7 text-zinc-300">Envie seus dados, detalhes do serviço e fotos. A solicitação fica organizada para a equipe analisar antes de preparar o orçamento.</p>
                 <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                  <Link to="/orcamento" className="button-primary bg-white text-zinc-950 hover:bg-zinc-200"><ArrowRight className="h-5 w-5" /> Abrir orçamento</Link>
+                  <a href="#pre-orcamento" className="button-primary bg-white text-zinc-950 hover:bg-zinc-200"><ArrowRight className="h-5 w-5" /> Fazer pré-orçamento</a>
                   <a href="#visita" className="button-secondary border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"><ArrowRight className="h-5 w-5" /> Solicitar visita</a>
                 </div>
               </motion.div>
