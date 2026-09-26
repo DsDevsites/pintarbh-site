@@ -116,7 +116,8 @@ export function HomePage() {
           </div>
         </section>
 
-        <section id="portfolio" className="rainbow-arc relative overflow-hidden bg-zinc-50 py-14 md:py-20 scroll-mt-24">\n          <PaintDecorations can roller className="paint-decor-mid-right" />
+        <section id="portfolio" className="rainbow-arc relative overflow-hidden bg-zinc-50 py-14 md:py-20 scroll-mt-24">\n          <PaintDecorations can canClassName="paint-decor-mid-right" />
+          <PaintDecorations roller rollerClassName="paint-decor-mid-left" />
           <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
             <motion.div {...fadeUp} className="flex flex-col justify-between gap-5 md:flex-row md:items-end"><div><p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Portfólio</p><h2 className="mt-4 text-3xl font-light md:text-5xl">Projetos realizados pela PintarBH.</h2><p className="mt-4 max-w-2xl text-sm leading-7 text-zinc-600">Veja alguns trabalhos e conheça os detalhes de cada projeto.</p></div></motion.div>
             <div className="mt-8 grid gap-4 md:gap-6 lg:grid-cols-3 lg:gap-8">

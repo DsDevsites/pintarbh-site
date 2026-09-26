@@ -113,7 +113,7 @@ select,
   position: absolute;
   z-index: 0;
   color: #9ca3af;
-  opacity: 0.13;
+  opacity: 0.17;
   pointer-events: none;
 }
 
@@ -122,13 +122,13 @@ select,
 }
 
 .paint-decor-can {
-  width: 72px;
-  height: 72px;
+  width: 82px;
+  height: 82px;
 }
 
 .paint-decor-roller {
-  width: 104px;
-  height: 78px;
+  width: 118px;
+  height: 88px;
 }
 
 .paint-decor-top-right {
@@ -144,9 +144,15 @@ select,
 }
 
 .paint-decor-mid-right {
-  top: 48%;
-  right: clamp(12px, 3vw, 48px);
+  top: 34%;
+  right: clamp(18px, 5vw, 76px);
   transform: rotate(-6deg);
+}
+
+.paint-decor-mid-left {
+  top: 62%;
+  left: clamp(18px, 5vw, 76px);
+  transform: rotate(7deg);
 }
 
 .field {
@@ -183,16 +189,16 @@ select,
 
 @media (max-width: 767px) {
   .paint-decor-can {
-    width: 56px;
-    height: 56px;
+    width: 68px;
+    height: 68px;
   }
 
   .paint-decor-roller {
-    width: 82px;
-    height: 62px;
+    width: 96px;
+    height: 72px;
   }
 
   .paint-decor {
-    opacity: 0.10;
+    opacity: 0.14;
   }
 }

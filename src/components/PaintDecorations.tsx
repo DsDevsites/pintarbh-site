@@ -2,6 +2,8 @@ type PaintDecorationsProps = {
   can?: boolean;
   roller?: boolean;
   className?: string;
+  canClassName?: string;
+  rollerClassName?: string;
 };
 
 function PaintCan() {
@@ -29,16 +31,16 @@ function PaintRoller() {
   );
 }
 
-export function PaintDecorations({ can = false, roller = false, className = '' }: PaintDecorationsProps) {
+export function PaintDecorations({ can = false, roller = false, className = '', canClassName = '', rollerClassName = '' }: PaintDecorationsProps) {
   return (
     <>
       {can && (
-        <div className={`paint-decor paint-decor-can ${className}`}>
+        <div className={`paint-decor paint-decor-can ${className} ${canClassName}`}>
           <PaintCan />
         </div>
       )}
       {roller && (
-        <div className={`paint-decor paint-decor-roller ${className}`}>
+        <div className={`paint-decor paint-decor-roller ${className} ${rollerClassName}`}>
           <PaintRoller />
         </div>
       )}
