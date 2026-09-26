@@ -54,7 +54,7 @@ export function HomePage() {
 
     const errorDescription = params.get('error_description') || params.get('error');
     if (errorDescription) {
-      finishError(errorDescription.replace(/\\+/g, ' '));
+      finishError(errorDescription.replace(/\+/g, ' '));
       data.subscription.unsubscribe();
       return () => undefined;
     }
@@ -101,7 +101,7 @@ export function HomePage() {
             {authStatus === 'error' && <><div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-red-50 text-red-600"><span className="text-xl font-semibold">!</span></div><h2 className="mt-5 text-2xl font-semibold">Não foi possível concluir o login</h2><p className="mt-3 text-sm leading-6 text-red-600">{authError}</p><button type="button" className="button-primary mt-6 w-full" onClick={() => { window.history.replaceState({}, document.title, '/'); window.location.reload(); }}>Tentar novamente</button></>}
           </div>
         </div>
-      )
+      )}
       <Seo title={settings.seoTitle} description={settings.seoDescription} image={settings.heroImage} />
       <PublicHeader settings={settings} />
 
