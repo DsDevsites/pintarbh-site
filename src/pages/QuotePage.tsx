@@ -70,7 +70,7 @@ export function QuotePage() {
   const services = servicesQuery.data ?? [];
   const profile = profileOverride ?? customerQuery.data;
   const firstName = profile?.name.trim().split(/\s+/)[0] || '';
-  const initialLogin = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('modo') === 'login';
+  const initialLogin = typeof window !== 'undefined' && (window.location.pathname === '/login' || new URLSearchParams(window.location.search).get('modo') === 'login');
 
   if (settingsQuery.isError) return <div className="grid min-h-screen place-items-center px-5 text-center text-sm text-zinc-600">Não foi possível carregar a página de orçamento. Atualize a página e tente novamente.</div>;
   if (!settings || customerQuery.isLoading) return <div className="grid min-h-screen place-items-center text-sm text-zinc-500">Carregando orçamento...</div>;
