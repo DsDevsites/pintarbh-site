@@ -25,7 +25,9 @@ export function HomePage() {
     if (!supabase) return;
 
     const params = new URLSearchParams(window.location.search);
-    const isAuthReturn = params.has('code') || params.has('token_hash') || params.has('error');
+    const pendingOAuth = window.sessionStorage.getItem('pintarbh_oauth_pending') === '1';
+    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const isAuthReturn = pendingOAuth || params.has('code') || params.has('token_hash') || params.has('error') || hashParams.has('access_token') || hashParams.has('refresh_token');
     if (!isAuthReturn) return;
 
     setAuthStatus('loading');
@@ -34,6 +36,7 @@ export function HomePage() {
     const finishLogin = () => {
       if (redirected) return;
       redirected = true;
+      window.sessionStorage.removeItem('pintarbh_oauth_pending');
       setAuthStatus('success');
       window.history.replaceState({}, document.title, '/');
       window.setTimeout(() => window.location.replace('/orcamento?auth=success'), 1100);
@@ -42,6 +45,7 @@ export function HomePage() {
     const finishError = (message: string) => {
       if (redirected) return;
       redirected = true;
+      window.sessionStorage.removeItem('pintarbh_oauth_pending');
       setAuthError(message);
       setAuthStatus('error');
     };
@@ -69,7 +73,7 @@ export function HomePage() {
       } else {
         finishError('Não foi possível concluir o login. Tente novamente.');
       }
-    }, 4500);
+    }, 6000);
 
     return () => {
       window.clearTimeout(fallbackTimer);
