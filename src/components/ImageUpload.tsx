@@ -310,7 +310,7 @@ export function ImageUpload({ label, value, onChange, multiple, values = [], onC
         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {previewItems.map((item, index) => (
             <div key={`${item}-${index}`} className="group relative overflow-hidden rounded-lg border border-zinc-200">
-              <img src={item} alt="" className="h-28 w-full object-cover" />
+              <img src={item} alt="" className="h-28 w-full bg-zinc-100 object-contain" />
               <div className="absolute inset-x-2 bottom-2 flex gap-2 opacity-0 transition group-hover:opacity-100">
                 <button type="button" disabled={uploading} className="grid h-8 flex-1 place-items-center rounded-full bg-white text-zinc-950 disabled:opacity-50" onClick={() => inputRef.current?.click()} title="Substituir imagem">
                   <Upload className="h-4 w-4" />
