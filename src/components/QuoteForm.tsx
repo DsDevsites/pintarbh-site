@@ -2,12 +2,12 @@ import { ChangeEvent, FormEvent, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Camera, CheckCircle2, FileText, ImagePlus, MessageCircle, Send, X } from 'lucide-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { createQuote } from '../services/quoteService';
-import type { QuoteDraft, Service } from '../types';
+import type { PreQuoteDraft, QuoteDraft, Service } from '../types';
 import { quoteWhatsappMessage, whatsappUrl } from '../lib/utils';
 import { getSettings } from '../services/contentService';
 import type { CustomerProfile } from '../services/customerAuthService';
 
-type Props = { services: Service[] };
+type Props = { services: Service[]; initialPreQuote?: PreQuoteDraft | null };
 type ImagePayload = { name: string; type: string; data: string };
 
 function readAsDataUrl(file: Blob) {
@@ -53,9 +53,9 @@ async function compressImage(file: File): Promise<ImagePayload> {
   return { name: file.name.replace(/\.[^.]+$/, '.jpg'), type: 'image/jpeg', data: await readAsDataUrl(blob) };
 }
 
-export function QuoteForm({ services, profile }: Props & { profile: CustomerProfile }) {
+export function QuoteForm({ services, profile, initialPreQuote }: Props & { profile: CustomerProfile }) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(initialPreQuote ? 2 : 1);
   const [files, setFiles] = useState<File[]>([]);
   const [sentNumber, setSentNumber] = useState('');
   const [submittedDetails, setSubmittedDetails] = useState<{ serviceTypes: string[]; propertyType: string; neighborhood: string; address: string; area: number | null; city: string } | null>(null);
@@ -90,16 +90,16 @@ export function QuoteForm({ services, profile }: Props & { profile: CustomerProf
       const images = await Promise.all(files.map(compressImage));
       const draft: QuoteDraft = {
         clientId: profile.id,
-        name: String(form.get('name') ?? ''),
+        name: String(form.get('name') ?? initialPreQuote?.name ?? ''),
         email: String(form.get('email') ?? ''),
-        phone: String(form.get('phone') ?? ''),
-        propertyType: String(form.get('propertyType') ?? ''),
-        city: String(form.get('city') ?? ''),
-        neighborhood: String(form.get('neighborhood') ?? ''),
+        phone: String(form.get('phone') ?? initialPreQuote?.phone ?? ''),
+        propertyType: String(form.get('propertyType') ?? initialPreQuote?.propertyType ?? ''),
+        city: String(form.get('city') ?? initialPreQuote?.city ?? ''),
+        neighborhood: String(form.get('neighborhood') ?? initialPreQuote?.neighborhood ?? ''),
         address: String(form.get('address') ?? ''),
-        serviceTypes: selectedServices,
+        serviceTypes: selectedServices.length ? selectedServices : initialPreQuote?.serviceType ? [initialPreQuote.serviceType] : [],
         environments: Number(form.get('environments')) || null,
-        area: Number(form.get('area')) || null,
+        area: Number(form.get('area')) || initialPreQuote?.area || null,
         color: String(form.get('color') ?? ''),
         finish: String(form.get('finish') ?? ''),
         desiredStartDate: String(form.get('desiredStartDate') ?? ''),
@@ -128,6 +128,7 @@ export function QuoteForm({ services, profile }: Props & { profile: CustomerProf
       event.currentTarget.reset();
       setFiles([]);
       setStep(1);
+      if (typeof window !== 'undefined') window.sessionStorage.removeItem('pintarbh:prequote');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch {
       // mutation displays the error state below.
@@ -153,19 +154,19 @@ export function QuoteForm({ services, profile }: Props & { profile: CustomerProf
       </div>
 
       <div className={step === 1 ? 'grid gap-4 sm:grid-cols-2' : 'hidden'} aria-hidden={step !== 1}>
-        <input className="field" name="name" placeholder="Nome" autoComplete="name" minLength={2} required defaultValue={profile.name} />
-        <input className="field" name="phone" type="tel" inputMode="tel" placeholder="Telefone / WhatsApp" autoComplete="tel" required defaultValue={profile.phone} />
+        <input className="field" name="name" placeholder="Nome" autoComplete="name" minLength={2} required defaultValue={initialPreQuote?.name || profile.name} />
+        <input className="field" name="phone" type="tel" inputMode="tel" placeholder="Telefone / WhatsApp" autoComplete="tel" required defaultValue={initialPreQuote?.phone || profile.phone} />
         <input className="field sm:col-span-2" name="email" type="email" inputMode="email" autoComplete="email" placeholder="E-mail para contato" required defaultValue={profile.email} />
-        <input className="field sm:col-span-2" name="city" placeholder="Cidade" defaultValue="Belo Horizonte" required />
+        <input className="field sm:col-span-2" name="city" placeholder="Cidade" defaultValue={initialPreQuote?.city || "Belo Horizonte"} required />
       </div>
 
       <div className={step === 2 ? 'block' : 'hidden'} aria-hidden={step !== 2}>
         <div className="grid gap-4 sm:grid-cols-2">
-          <label className="block"><span className="mb-2 block text-sm font-medium text-zinc-700">Tipo de imóvel</span><select className="field" name="propertyType" required disabled={step !== 2} defaultValue=""><option value="" disabled>Selecione</option><option>Casa</option><option>Apartamento</option><option>Comércio</option><option>Escritório</option><option>Condomínio</option><option>Outro</option></select></label>
-          <input className="field sm:mt-7" name="neighborhood" placeholder="Bairro" disabled={step !== 2} />
+          <label className="block"><span className="mb-2 block text-sm font-medium text-zinc-700">Tipo de imóvel</span><select className="field" name="propertyType" required disabled={step !== 2} defaultValue={initialPreQuote?.propertyType || ""}><option value="" disabled>Selecione</option><option>Casa</option><option>Apartamento</option><option>Comércio</option><option>Escritório</option><option>Condomínio</option><option>Outro</option></select></label>
+          <input className="field sm:mt-7" name="neighborhood" placeholder="Bairro" disabled={step !== 2} defaultValue={initialPreQuote?.neighborhood || ""} />
           <input className="field" name="address" placeholder="Endereço (opcional)" autoComplete="street-address" disabled={step !== 2} />
           <input className="field" name="environments" type="number" min="1" max="100" placeholder="Quantidade de ambientes" disabled={step !== 2} />
-          <input className="field" name="area" type="number" min="1" step="0.01" placeholder="Área aproximada em m²" disabled={step !== 2} />
+          <input className="field" name="area" type="number" min="1" step="0.01" placeholder="Área aproximada em m²" disabled={step !== 2} defaultValue={initialPreQuote?.area ?? ""} />
         </div>
 
         <div className="mt-6">
