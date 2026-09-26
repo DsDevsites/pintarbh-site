@@ -49,6 +49,27 @@ export type Project = {
   fullDescription: string;
   services: string[];
   featured: boolean;
+  beforeImage?: string;
+  afterImage?: string;
+  beforeAfterEnabled?: boolean;
+  beforeAfterDescription?: string;
+};
+
+export type VisitStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled';
+
+export type VisitRequest = {
+  id: string;
+  clientId: string | null;
+  name: string;
+  phone: string;
+  serviceType: string;
+  address: string;
+  preferredDate: string;
+  preferredPeriod: string;
+  observations: string;
+  status: VisitStatus;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type Testimonial = {
