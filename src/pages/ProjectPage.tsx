@@ -3,7 +3,7 @@ import { Link, useParams } from '@tanstack/react-router';
 import { ArrowLeft, CheckCircle2, MessageCircle } from 'lucide-react';
 import { Footer, PublicHeader } from '../components/PublicLayout';
 import { Seo } from '../components/Seo';
-import { whatsappUrl } from '../lib/utils';
+import { quoteWhatsappMessage, whatsappUrl } from '../lib/utils';
 import { getProjects, getSettings } from '../services/contentService';
 
 export function ProjectPage() {
@@ -67,7 +67,10 @@ export function ProjectPage() {
                   ))}
                 </div>
               </div>
-              <a className="button-primary mt-8" href={whatsappUrl(settings.whatsapp, `Olá, gostaria de falar sobre um projeto parecido com ${project.title}.`)}>
+              <a className="button-primary mt-8" href={whatsappUrl(settings.whatsapp, quoteWhatsappMessage({
+                serviceTypes: project.services.length ? project.services : [project.category],
+                neighborhood: project.location,
+              }))}>
                 <MessageCircle className="h-5 w-5" /> Falar no WhatsApp
               </a>
             </div>
