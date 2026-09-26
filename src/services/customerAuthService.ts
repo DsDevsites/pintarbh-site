@@ -99,6 +99,7 @@ export async function customerLogin(email: string, password: string) {
 
 export async function customerLoginWithGoogle() {
   if (!supabase) throw new Error('Sistema de login indisponível.');
+  if (typeof window !== 'undefined') window.sessionStorage.setItem('pintarbh_oauth_pending', '1');
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo: getAuthRedirectUrl() },
