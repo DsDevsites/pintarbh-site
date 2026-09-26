@@ -46,7 +46,8 @@ function toInFilter(ids: string[]) {
 
 export async function getSettings(): Promise<SiteSettings> {
   if (supabase) {
-    const { data } = await supabase.from('site_settings').select('*').limit(1).maybeSingle();
+    const { data, error } = await supabase.from('site_settings').select('*').limit(1).maybeSingle();
+    if (error) throw new Error(error.message);
     if (data?.content) return { ...defaultSettings, ...(data.content as Partial<SiteSettings>) };
   }
   return { ...defaultSettings, ...readLocal(keys.settings, defaultSettings) };
