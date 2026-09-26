@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { Facebook, Instagram, Mail, MapPin, Menu, Phone, X } from 'lucide-react';
+import { Facebook, Instagram, LogIn, Mail, MapPin, Menu, Phone, ShieldCheck, UserCircle, X } from 'lucide-react';
 import { useState } from 'react';
 import { Logo } from './Logo';
 import type { SiteSettings } from '../types';
@@ -25,9 +25,22 @@ export function PublicHeader({ settings }: { settings: SiteSettings }) {
         
         <button type="button" className="ml-auto grid h-11 w-11 shrink-0 place-items-center rounded-full border border-zinc-200 md:hidden" onClick={() => setOpen(!open)} aria-label={open ? 'Fechar menu' : 'Abrir menu'} aria-expanded={open} aria-controls="mobile-navigation">{open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}</button>
       </nav>
-      {open && <div id="mobile-navigation" className="border-t border-zinc-100 bg-white px-4 py-3 md:hidden"><div className="flex flex-col gap-2">
-        {links.map(([label, href]) => <a key={href} href={href} className="rounded-lg px-1 py-2.5 text-sm font-medium" onClick={() => setOpen(false)}>{label}</a>)}
-      </div></div>}
+      {open && <div id="mobile-navigation" className="border-t border-zinc-100 bg-white px-4 py-3 md:hidden">
+        <div className="flex flex-col gap-2">
+          {links.map(([label, href]) => <a key={href} href={href} className="rounded-lg px-1 py-2.5 text-sm font-medium" onClick={() => setOpen(false)}>{label}</a>)}
+        </div>
+        <div className="mt-3 grid gap-1 border-t border-zinc-100 pt-3">
+          <a href="/orcamento?modo=login" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold" onClick={() => setOpen(false)}>
+            <LogIn className="h-5 w-5 text-zinc-500" /> Login
+          </a>
+          <a href="/perfil" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold" onClick={() => setOpen(false)}>
+            <UserCircle className="h-5 w-5 text-zinc-500" /> Meu perfil
+          </a>
+          <a href="/admin" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold" onClick={() => setOpen(false)}>
+            <ShieldCheck className="h-5 w-5 text-zinc-500" /> Área administrativa
+          </a>
+        </div>
+      </div>}
     </header>
   );
 }
