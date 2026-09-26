@@ -85,10 +85,10 @@ export function HomePage() {
       data.subscription.unsubscribe();
     };
   }, [navigate]);
-  const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings, staleTime: 5 * 60 * 1000 });
-  const servicesQuery = useQuery({ queryKey: ['services'], queryFn: getServices, staleTime: 5 * 60 * 1000 });
-  const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects, staleTime: 5 * 60 * 1000 });
-  const testimonialsQuery = useQuery({ queryKey: ['testimonials'], queryFn: getTestimonials, staleTime: 5 * 60 * 1000 });
+  const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings, staleTime: 0 });
+  const servicesQuery = useQuery({ queryKey: ['services'], queryFn: getServices, staleTime: 0 });
+  const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects, staleTime: 0 });
+  const testimonialsQuery = useQuery({ queryKey: ['testimonials'], queryFn: getTestimonials, staleTime: 0 });
   const settings = settingsQuery.data;
   const playlistLink = settings?.playlistButtonLink || 'https://open.spotify.com/playlist/1rAlWRRPcJfU2bUuESTlUQ';
   const services = servicesQuery.data ?? [];
