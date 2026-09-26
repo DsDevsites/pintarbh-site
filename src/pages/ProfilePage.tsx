@@ -10,7 +10,7 @@ import { customerLogout, getCurrentCustomer, updateCustomerProfile, type Custome
 
 export function ProfilePage() {
   const queryClient = useQueryClient();
-  const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings, staleTime: 5 * 60 * 1000 });
+  const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings, staleTime: 0 });
   const profileQuery = useQuery({ queryKey: ['customer-profile'], queryFn: getCurrentCustomer, staleTime: 0 });
   const [profileOverride, setProfileOverride] = useState<CustomerProfile | null>(null);
 
