@@ -7,9 +7,26 @@ export type CustomerProfile = {
   email: string;
 };
 
+export type AuthenticatedCustomerDraft = {
+  id: string;
+  name: string;
+  email: string;
+};
+
 function getAuthRedirectUrl() {
   if (typeof window === 'undefined') return undefined;
   return `${window.location.origin}/auth/callback`;
+}
+
+export async function getAuthenticatedCustomerDraft(): Promise<AuthenticatedCustomerDraft | null> {
+  if (!supabase) return null;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+  return {
+    id: user.id,
+    name: String(user.user_metadata?.full_name ?? user.user_metadata?.name ?? ''),
+    email: user.email ?? '',
+  };
 }
 
 export async function getCurrentCustomer(): Promise<CustomerProfile | null> {
@@ -19,7 +36,7 @@ export async function getCurrentCustomer(): Promise<CustomerProfile | null> {
   const { data, error } = await supabase.from('customer_profiles').select('id,name,phone,email').eq('id', user.id).maybeSingle();
   if (error) throw new Error(error.message);
   if (data) return data as CustomerProfile;
-  const fallback = { id: user.id, name: String(user.user_metadata?.name ?? ''), phone: String(user.user_metadata?.phone ?? ''), email: user.email ?? '' };
+  const fallback = { id: user.id, name: String(user.user_metadata?.name ?? user.user_metadata?.full_name ?? ''), phone: String(user.user_metadata?.phone ?? ''), email: user.email ?? '' };
   return fallback.name && fallback.phone ? fallback : null;
 }
 
@@ -67,7 +84,7 @@ export async function customerLogin(email: string, password: string) {
   const user = data.user;
   const fallback = {
     id: user.id,
-    name: String(user.user_metadata?.name ?? ''),
+    name: String(user.user_metadata?.name ?? user.user_metadata?.full_name ?? ''),
     phone: String(user.user_metadata?.phone ?? ''),
     email: user.email ?? email.trim().toLowerCase(),
   };
@@ -78,6 +95,36 @@ export async function customerLogin(email: string, password: string) {
   });
   if (profileError) throw new Error(profileError.message);
   return fallback;
+}
+
+export async function customerLoginWithGoogle() {
+  if (!supabase) throw new Error('Sistema de login indisponível.');
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: getAuthRedirectUrl() },
+  });
+  if (error) throw new Error(error.message);
+}
+
+export async function completeCustomerProfile(input: { name: string; phone: string }) {
+  if (!supabase) throw new Error('Sistema de cadastro indisponível.');
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Sua sessão expirou. Entre novamente para continuar.');
+  const name = input.name.trim();
+  const phone = input.phone.trim();
+  if (!name) throw new Error('Informe seu nome completo.');
+  if (!phone) throw new Error('Informe seu WhatsApp ou telefone.');
+
+  const profile = {
+    id: user.id,
+    name,
+    phone,
+    email: user.email ?? '',
+    updated_at: new Date().toISOString(),
+  };
+  const { error } = await supabase.from('customer_profiles').upsert(profile);
+  if (error) throw new Error(error.message);
+  return profile as CustomerProfile;
 }
 
 export async function customerLogout() {
