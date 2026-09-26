@@ -199,6 +199,24 @@ function SettingsEditor({ settings, onSaved }: { settings: SiteSettings; onSaved
       <Area label="Subtítulo do banner" value={draft.heroSubtitle} onChange={(heroSubtitle) => setDraft({ ...draft, heroSubtitle })} />
       <section className="grid gap-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200">
         <div>
+          <h2 className="text-xl font-semibold">Playlist</h2>
+          <p className="mt-2 text-sm leading-6 text-zinc-500">Controle a exibição e o conteúdo da playlist diretamente pelo painel.</p>
+        </div>
+        <label className="flex items-center gap-3 text-sm font-medium">
+          <input type="checkbox" checked={draft.playlistEnabled} onChange={(event) => setDraft({ ...draft, playlistEnabled: event.target.checked })} />
+          Exibir playlist na página inicial
+        </label>
+        <div className="grid gap-5 md:grid-cols-2">
+          <Text label="Título" value={draft.playlistTitle} onChange={(playlistTitle) => setDraft({ ...draft, playlistTitle })} />
+          <Text label="Subtítulo" value={draft.playlistSubtitle} onChange={(playlistSubtitle) => setDraft({ ...draft, playlistSubtitle })} />
+          <Text label="Texto do botão" value={draft.playlistButtonText} onChange={(playlistButtonText) => setDraft({ ...draft, playlistButtonText })} />
+          <Text label="Link da playlist" value={draft.playlistButtonLink} onChange={(playlistButtonLink) => setDraft({ ...draft, playlistButtonLink })} type="url" />
+        </div>
+        <Area label="Descrição" value={draft.playlistDescription} onChange={(playlistDescription) => setDraft({ ...draft, playlistDescription })} />
+      </section>
+
+      <section className="grid gap-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200">
+        <div>
           <h2 className="text-xl font-semibold">Sobre a empresa</h2>
           <p className="mt-2 text-sm leading-6 text-zinc-500">
             Configure a foto, chamada, título e textos institucionais exibidos na seção Sobre do site.

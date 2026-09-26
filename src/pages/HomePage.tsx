@@ -82,7 +82,7 @@ export function HomePage() {
       window.clearTimeout(fallbackTimer);
       data.subscription.unsubscribe();
     };
-  }, []);
+  }, [navigate]);
   const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings, staleTime: 5 * 60 * 1000 });
   const servicesQuery = useQuery({ queryKey: ['services'], queryFn: getServices, staleTime: 5 * 60 * 1000 });
   const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects, staleTime: 5 * 60 * 1000 });
@@ -170,29 +170,41 @@ export function HomePage() {
           </div>
         </section>
 
-        <section className="relative overflow-hidden bg-gradient-to-b from-white to-zinc-50 py-20">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="mb-12 text-center">
-              <span className="inline-flex rounded-full border border-zinc-200 bg-white px-5 py-2 text-sm font-semibold uppercase tracking-[0.25em] text-zinc-600 shadow-sm">Playlist Oficial</span>
-              <h2 className="mt-6 text-4xl font-bold tracking-tight text-zinc-900 md:text-5xl">{settings.playlistTitle || 'Conheça nossos projetos'}<br />{settings.playlistSubtitle || 'ao som da PintarBH.'}</h2>
-              <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-zinc-600">{settings.playlistDescription || 'Enquanto você navega pelos nossos trabalhos, aproveite uma seleção de músicas preparada para acompanhar cada pintura, reforma e acabamento.'}</p>
-            </div>
-            <div className="grid items-center gap-10 lg:grid-cols-2">
-              <div className="space-y-8"><div className="rounded-3xl border border-zinc-200 bg-white p-8 shadow-xl">
-                <div className="mb-6 flex items-center justify-between gap-4"><div className="flex items-center gap-4">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#1DB954]"><svg viewBox="0 0 168 168" className="h-8 w-8 fill-white"><path d="M84 0a84 84 0 100 168 84 84 0 000-168zm38.5 121.4a5.2 5.2 0 01-7.2 1.7c-19.7-12-44.6-14.7-74-8a5.2 5.2 0 11-2.3-10.2c32.2-7.2 59.8-4.1 81.7 9.2a5.2 5.2 0 011.8 7.3zm10.3-22.8a6.5 6.5 0 01-8.9 2.1c-22.5-13.8-56.8-17.8-83.4-9.7a6.5 6.5 0 11-3.8-12.4c30.7-9.4 68.8-4.8 94 10.7a6.5 6.5 0 012.1 9.3zm.9-23.7C107.6 59.7 64.8 58 39.4 65.8a7.8 7.8 0 11-4.5-15c29.3-8.8 77.8-7.1 107 10.6a7.8 7.8 0 11-8.2 13.5z"/></svg></div>
-                  <div><h3 className="text-2xl font-bold">{settings.playlistTitle || 'Playlist Oficial'}</h3><p className="text-zinc-500">{settings.playlistSubtitle || 'O ritmo da PintarBH'}</p></div>
+        {settings.playlistEnabled && (
+          <section className="relative overflow-hidden bg-gradient-to-b from-white to-zinc-50 py-20">
+            <div className="mx-auto max-w-7xl px-6 lg:px-8">
+              <div className="mb-12 text-center">
+                <span className="inline-flex rounded-full border border-zinc-200 bg-white px-5 py-2 text-sm font-semibold uppercase tracking-[0.25em] text-zinc-600 shadow-sm">Playlist Oficial</span>
+                <h2 className="mt-6 text-4xl font-bold tracking-tight text-zinc-900 md:text-5xl">{settings.playlistTitle || 'Playlist Oficial'}<br />{settings.playlistSubtitle || 'O ritmo da PintarBH'}</h2>
+                <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-zinc-600">{settings.playlistDescription || 'Ouça nossa playlist enquanto conhece nossos projetos.'}</p>
+              </div>
+              <div className="grid items-center gap-10 lg:grid-cols-2">
+                <div className="space-y-8">
+                  <div className="rounded-3xl border border-zinc-200 bg-white p-8 shadow-xl">
+                    <div className="mb-6 flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#1DB954]">
+                          <svg viewBox="0 0 168 168" className="h-8 w-8 fill-white" aria-hidden="true"><path d="M84 0a84 84 0 100 168 84 84 0 000-168zm38.5 121.4a5.2 5.2 0 01-7.2 1.7c-19.7-12-44.6-14.7-74-8a5.2 5.2 0 11-2.3-10.2c32.2-7.2 59.8-4.1 81.7 9.2a5.2 5.2 0 011.8 7.3zm10.3-22.8a6.5 6.5 0 01-8.9 2.1c-22.5-13.8-56.8-17.8-83.4-9.7a6.5 6.5 0 11-3.8-12.4c30.7-9.4 68.8-4.8 94 10.7a6.5 6.5 0 012.1 9.3zm.9-23.7C107.6 59.7 64.8 58 39.4 65.8a7.8 7.8 0 11-4.5-15c29.3-8.8 77.8-7.1 107 10.6a7.8 7.8 0 11-8.2 13.5z"/></svg>
+                        </div>
+                        <div><h3 className="text-2xl font-bold">{settings.playlistTitle || 'Playlist Oficial'}</h3><p className="text-zinc-500">{settings.playlistSubtitle || 'O ritmo da PintarBH'}</p></div>
+                      </div>
+                      {settings.playlistButtonLink && <a href={settings.playlistButtonLink} target="_blank" rel="noopener noreferrer" className="hidden rounded-full border border-zinc-200 px-4 py-2 text-sm font-semibold text-zinc-700 transition hover:border-zinc-950 hover:text-zinc-950 sm:inline-flex">{settings.playlistButtonText || 'Ouvir no Spotify'}</a>}
+                    </div>
+                    <ul className="space-y-4 text-zinc-600"><li>Ambiente agradável durante o trabalho.</li><li>Clássicos, pop, rock e MPB.</li><li>Atualizada constantemente.</li><li>Ouça enquanto conhece nossos projetos.</li></ul>
+                  </div>
                 </div>
-                <a href={settings.playlistButtonLink || 'https://open.spotify.com/playlist/1rAlWRRPcJfU2bUuESTlUQ'} target="_blank" rel="noopener noreferrer" className="hidden rounded-full border border-zinc-200 px-4 py-2 text-sm font-semibold text-zinc-700 transition hover:border-zinc-950 hover:text-zinc-950 sm:inline-flex">{settings.playlistButtonText || 'Ouvir no Spotify'}</a></div>
-                <ul className="space-y-4 text-zinc-600"><li>Ambiente agradável durante o trabalho.</li><li>Clássicos, pop, rock e MPB.</li><li>Atualizada constantemente.</li><li>Ouça enquanto conhece nossos projetos.</li></ul>
-              </div></div>
-              <div className="overflow-hidden rounded-3xl border border-zinc-200 bg-white p-3 shadow-2xl">
-                <iframe title="Playlist oficial da PintarBH no Spotify" style={{ borderRadius: '20px' }} src="https://open.spotify.com/embed/playlist/1rAlWRRPcJfU2bUuESTlUQ?utm_source=generator" width="100%" height="480" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" />
-                <a href={settings.playlistButtonLink || 'https://open.spotify.com/playlist/1rAlWRRPcJfU2bUuESTlUQ'} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex w-full items-center justify-center rounded-full border border-zinc-200 px-5 py-3 text-sm font-semibold text-zinc-800 transition hover:border-zinc-950 hover:text-zinc-950 sm:hidden">{settings.playlistButtonText || 'Ouvir no Spotify'}</a>
+                {settings.playlistButtonLink ? (
+                  <div className="overflow-hidden rounded-3xl border border-zinc-200 bg-white p-3 shadow-2xl">
+                    <iframe title={settings.playlistTitle || 'Playlist oficial da PintarBH'} style={{ borderRadius: '20px' }} src={settings.playlistButtonLink.includes('/embed/') ? settings.playlistButtonLink : settings.playlistButtonLink.replace('open.spotify.com/playlist/','open.spotify.com/embed/playlist/').split('?')[0] + '?utm_source=generator'} width="100%" height="480" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" />
+                    <a href={settings.playlistButtonLink} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex w-full items-center justify-center rounded-full border border-zinc-200 px-5 py-3 text-sm font-semibold text-zinc-800 transition hover:border-zinc-950 hover:text-zinc-950 sm:hidden">{settings.playlistButtonText || 'Ouvir no Spotify'}</a>
+                  </div>
+                ) : (
+                  <div className="rounded-3xl border border-dashed border-zinc-300 bg-white p-8 text-sm text-zinc-500">Configure o link da playlist no painel administrativo para exibi-la aqui.</div>
+                )}
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         <section id="portfolio" className="rainbow-arc relative overflow-hidden bg-zinc-50 py-14 md:py-20 scroll-mt-24">
           <PaintDecorations can canClassName="paint-decor-mid-right" />
