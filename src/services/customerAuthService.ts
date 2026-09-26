@@ -7,6 +7,11 @@ export type CustomerProfile = {
   email: string;
 };
 
+function getAuthRedirectUrl() {
+  if (typeof window === 'undefined') return undefined;
+  return `${window.location.origin}/orcamento`;
+}
+
 export async function getCurrentCustomer(): Promise<CustomerProfile | null> {
   if (!supabase) return null;
   const { data: { user } } = await supabase.auth.getUser();
@@ -23,7 +28,10 @@ export async function customerSignUp(input: { name: string; phone: string; email
   const { data, error } = await supabase.auth.signUp({
     email: input.email.trim().toLowerCase(),
     password: input.password,
-    options: { data: { name: input.name.trim(), phone: input.phone.trim() } },
+    options: {
+      data: { name: input.name.trim(), phone: input.phone.trim() },
+      emailRedirectTo: getAuthRedirectUrl(),
+    },
   });
   if (error) throw new Error(error.message);
   if (!data.user) throw new Error('Não foi possível criar a conta.');
