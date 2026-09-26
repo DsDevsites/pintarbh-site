@@ -29,7 +29,7 @@ export function PreQuoteForm({ services }: Props) {
     };
 
     sessionStorage.setItem(PRE_QUOTE_STORAGE_KEY, JSON.stringify(draft));
-    void navigate({ to: '/orcamento', search: { etapa: 'finalizar' } });
+    void navigate({ to: '/orcamento' });
   }
 
   const serviceOptions = services.length ? services.map((service) => service.title) : fallbackServices;
