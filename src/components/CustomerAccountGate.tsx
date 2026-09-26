@@ -95,8 +95,8 @@ export function CustomerAccountGate({ onReady }: { onReady: (profile: CustomerPr
           <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-zinc-950 text-white"><Chrome className="h-5 w-5" /></div>
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Login com Google</p>
-            <h2 className="mt-2 text-2xl font-semibold">Só falta seu WhatsApp</h2>
-            <p className="mt-2 text-sm leading-6 text-zinc-500">Seu acesso pelo Google foi concluído. Informe o telefone para podermos entrar em contato sobre o orçamento.</p>
+            <h2 className="mt-2 text-2xl font-semibold">Olá, {googleName.split(/\s+/)[0] || 'cliente'}</h2>
+            <p className="mt-2 text-sm leading-6 text-zinc-500">Login realizado com sucesso. Só falta seu WhatsApp para finalizar o cadastro e continuar o orçamento.</p>
           </div>
         </div>
         <form onSubmit={submit} className="mt-7 grid gap-4">
