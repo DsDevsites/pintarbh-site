@@ -9,7 +9,7 @@ export type CustomerProfile = {
 
 function getAuthRedirectUrl() {
   if (typeof window === 'undefined') return undefined;
-  return `${window.location.origin}/orcamento`;
+  return `${window.location.origin}/auth/callback`;
 }
 
 export async function getCurrentCustomer(): Promise<CustomerProfile | null> {
@@ -46,6 +46,16 @@ export async function customerSignUp(input: { name: string; phone: string; email
     if (profileError) throw new Error(profileError.message);
   }
   return { sessionCreated: Boolean(data.session), userId: data.user.id };
+}
+
+export async function resendCustomerConfirmation(email: string) {
+  if (!supabase) throw new Error('Sistema de cadastro indisponível.');
+  const { error } = await supabase.auth.resend({
+    type: 'signup',
+    email: email.trim().toLowerCase(),
+    options: { emailRedirectTo: getAuthRedirectUrl() },
+  });
+  if (error) throw new Error(error.message);
 }
 
 export async function customerLogin(email: string, password: string) {

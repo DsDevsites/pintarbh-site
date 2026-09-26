@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { BarChart3, BriefcaseBusiness, FileText, Globe2, LayoutDashboard, LogOut, MessageCircle, MessageSquare, Save, Search, Settings, ShieldCheck, Star, Trash2 } from 'lucide-react';
+import { ArrowLeft, BarChart3, BriefcaseBusiness, FileText, Globe2, LayoutDashboard, LogOut, MessageCircle, MessageSquare, Save, Search, Settings, ShieldCheck, Star, Trash2 } from 'lucide-react';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import type React from 'react';
 import { ImageUpload } from '../components/ImageUpload';
@@ -60,6 +60,7 @@ function Login({ onLogged }: { onLogged: () => void }) {
   return (
     <main className="grid min-h-screen place-items-center bg-zinc-50 px-5">
       <form onSubmit={handleSubmit} className="w-full max-w-md rounded-2xl bg-white p-8 shadow-soft">
+        <a href="/" className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-zinc-600 transition hover:text-zinc-950"><ArrowLeft className="h-4 w-4" /> Voltar ao site</a>
         <Logo />
         <div className="mt-8 flex items-center gap-2 rounded-lg bg-zinc-50 p-3 text-sm text-zinc-600">
           <ShieldCheck className="h-5 w-5" /> Acesso administrativo protegido.

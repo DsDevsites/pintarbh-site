@@ -1,12 +1,13 @@
 import { FormEvent, useState } from 'react';
-import { LogIn, UserPlus } from 'lucide-react';
-import { customerLogin, customerSignUp, getCurrentCustomer, type CustomerProfile } from '../services/customerAuthService';
+import { LogIn, MailCheck, UserPlus } from 'lucide-react';
+import { customerLogin, customerSignUp, getCurrentCustomer, resendCustomerConfirmation, type CustomerProfile } from '../services/customerAuthService';
 
 export function CustomerAccountGate({ onReady }: { onReady: (profile: CustomerProfile) => void }) {
   const [mode, setMode] = useState<'signup' | 'login'>('signup');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [pending, setPending] = useState(false);
+  const [confirmationEmail, setConfirmationEmail] = useState('');
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setError(''); setMessage(''); setPending(true);
@@ -21,7 +22,7 @@ export function CustomerAccountGate({ onReady }: { onReady: (profile: CustomerPr
         if (password.length < 6) throw new Error('A senha precisa ter pelo menos 6 caracteres.');
         if (password !== confirm) throw new Error('As senhas não conferem.');
         const result = await customerSignUp({ name, phone, email, password });
-        if (!result.sessionCreated) { setMessage('Conta criada. Verifique seu e-mail para ativar o acesso e depois entre na sua conta.'); setMode('login'); return; }
+        if (!result.sessionCreated) { setConfirmationEmail(email); setMessage('Conta criada. Enviamos um e-mail de confirmação. Abra o link recebido para ativar sua conta e voltar ao orçamento.'); setMode('login'); return; }
         const profile = await getCurrentCustomer(); if (!profile) throw new Error('Conta criada, mas não foi possível carregar seus dados.'); onReady(profile);
       } else onReady(await customerLogin(email, password));
     } catch (err) { setError(err instanceof Error ? err.message : 'Não foi possível concluir o acesso.'); }
@@ -39,6 +40,7 @@ export function CustomerAccountGate({ onReady }: { onReady: (profile: CustomerPr
       {message && <p className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-700" role="status">{message}</p>}
       <button className="button-primary w-full" disabled={pending}>{pending ? 'Aguarde...' : mode === 'signup' ? 'Criar minha conta' : 'Entrar e continuar'}</button>
     </form>
+    {message && confirmationEmail && <button type="button" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-zinc-700 underline-offset-4 hover:underline" onClick={async () => { setError(''); setPending(true); try { await resendCustomerConfirmation(confirmationEmail); setMessage('Novo e-mail de confirmação enviado. Verifique também a pasta de spam.'); } catch (err) { setError(err instanceof Error ? err.message : 'Não foi possível reenviar o e-mail.'); } finally { setPending(false); } }} disabled={pending}><MailCheck className="h-4 w-4" /> Reenviar e-mail de confirmação</button>}
     <button type="button" className="mt-5 text-sm font-semibold text-zinc-700 underline-offset-4 hover:underline" onClick={() => { setMode(mode === 'signup' ? 'login' : 'signup'); setError(''); setMessage(''); }}>{mode === 'signup' ? 'Já tenho uma conta' : 'Ainda não tenho uma conta'}</button>
   </div>;
 }
