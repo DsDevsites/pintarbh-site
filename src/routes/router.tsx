@@ -44,11 +44,12 @@ const rootRoute = createRootRoute({
 const indexRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: HomePage });
 const projectRoute = createRoute({ getParentRoute: () => rootRoute, path: '/projeto/$slug', component: ProjectPage });
 const quoteRoute = createRoute({ getParentRoute: () => rootRoute, path: '/orcamento', component: QuotePage });
+const loginRoute = createRoute({ getParentRoute: () => rootRoute, path: '/login', component: QuotePage });
 const profileRoute = createRoute({ getParentRoute: () => rootRoute, path: '/perfil', component: ProfilePage });
 const authCallbackRoute = createRoute({ getParentRoute: () => rootRoute, path: '/auth/callback', component: AuthCallbackPage });
 const adminRoute = createRoute({ getParentRoute: () => rootRoute, path: '/admin', component: AdminPage });
 
-const routeTree = rootRoute.addChildren([indexRoute, projectRoute, quoteRoute, profileRoute, authCallbackRoute, adminRoute]);
+const routeTree = rootRoute.addChildren([indexRoute, projectRoute, quoteRoute, loginRoute, profileRoute, authCallbackRoute, adminRoute]);
 
 export const router = createRouter({ routeTree, defaultPreloadStaleTime: 30_000 });
 

@@ -30,15 +30,15 @@ export function PublicHeader({ settings }: { settings: SiteSettings }) {
           {links.map(([label, href]) => <a key={href} href={href} className="rounded-lg px-1 py-2.5 text-sm font-medium" onClick={() => setOpen(false)}>{label}</a>)}
         </div>
         <div className="mt-3 grid gap-1 border-t border-zinc-100 pt-3">
-          <a href="/orcamento?modo=login" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold" onClick={() => setOpen(false)}>
+          <Link to="/login" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold" onClick={() => setOpen(false)}>
             <LogIn className="h-5 w-5 text-zinc-500" /> Login
-          </a>
-          <a href="/perfil" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold" onClick={() => setOpen(false)}>
+          </Link>
+          <Link to="/perfil" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold" onClick={() => setOpen(false)}>
             <UserCircle className="h-5 w-5 text-zinc-500" /> Meu perfil
-          </a>
-          <a href="/admin" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold" onClick={() => setOpen(false)}>
+          </Link>
+          <Link to="/admin" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold" onClick={() => setOpen(false)}>
             <ShieldCheck className="h-5 w-5 text-zinc-500" /> Área administrativa
-          </a>
+          </Link>
         </div>
       </div>}
     </header>
