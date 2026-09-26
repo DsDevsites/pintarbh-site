@@ -59,7 +59,8 @@ export function HomePage() {
           </div>
         </section>
 
-        <section id="sobre" className="relative overflow-hidden border-y border-zinc-100 py-14 md:py-20 scroll-mt-24">\n          <PaintDecorations can className="paint-decor-top-right" />
+        <section id="sobre" className="relative overflow-hidden border-y border-zinc-100 py-14 md:py-20 scroll-mt-24">
+          <PaintDecorations can className="paint-decor-top-right" />
           <div className="mx-auto grid max-w-7xl gap-6 px-5 md:gap-8 md:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-12">
             <motion.div {...fadeUp} className="paint-image-frame paint-image-frame--soft h-full min-h-[320px] rounded-3xl md:min-h-[420px]"><img src={settings.aboutImage} alt={settings.aboutTitle} loading="lazy" decoding="async" className="h-full min-h-[318px] w-full max-w-full rounded-[23px] object-cover md:min-h-[418px]" /></motion.div>
             <motion.div {...fadeUp}>
@@ -75,7 +76,8 @@ export function HomePage() {
           </div>
         </section>
 
-        <section id="servicos" className="relative overflow-hidden py-14 md:py-20 scroll-mt-24">\n          <PaintDecorations roller className="paint-decor-bottom-left" />
+        <section id="servicos" className="relative overflow-hidden py-14 md:py-20 scroll-mt-24">
+          <PaintDecorations roller className="paint-decor-bottom-left" />
           <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
             <motion.div {...fadeUp} className="max-w-2xl">
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Serviços</p>
@@ -116,7 +118,8 @@ export function HomePage() {
           </div>
         </section>
 
-        <section id="portfolio" className="rainbow-arc relative overflow-hidden bg-zinc-50 py-14 md:py-20 scroll-mt-24">\n          <PaintDecorations can canClassName="paint-decor-mid-right" />
+        <section id="portfolio" className="rainbow-arc relative overflow-hidden bg-zinc-50 py-14 md:py-20 scroll-mt-24">
+          <PaintDecorations can canClassName="paint-decor-mid-right" />
           <PaintDecorations roller rollerClassName="paint-decor-mid-left" />
           <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
             <motion.div {...fadeUp} className="flex flex-col justify-between gap-5 md:flex-row md:items-end"><div><p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Portfólio</p><h2 className="mt-4 text-3xl font-light md:text-5xl">Projetos realizados pela PintarBH.</h2><p className="mt-4 max-w-2xl text-sm leading-7 text-zinc-600">Veja alguns trabalhos e conheça os detalhes de cada projeto.</p></div></motion.div>
@@ -128,7 +131,8 @@ export function HomePage() {
           </div>
         </section>
 
-        <section id="depoimentos" className="relative overflow-hidden py-14 md:py-20 scroll-mt-24">\n          <PaintDecorations roller className="paint-decor-top-right" />
+        <section id="depoimentos" className="relative overflow-hidden py-14 md:py-20 scroll-mt-24">
+          <PaintDecorations roller className="paint-decor-top-right" />
           <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
             <motion.div {...fadeUp} className="max-w-2xl"><p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Depoimentos</p><h2 className="mt-4 text-3xl font-light md:text-5xl">Clientes que confiaram no processo.</h2></motion.div>
             <div className="mt-8 grid gap-4 md:grid-cols-3 md:gap-6 lg:gap-8">
