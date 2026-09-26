@@ -70,6 +70,7 @@ export function QuotePage() {
   const services = servicesQuery.data ?? [];
   const profile = profileOverride ?? customerQuery.data;
   const firstName = profile?.name.trim().split(/\s+/)[0] || '';
+  const initialLogin = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('modo') === 'login';
 
   if (settingsQuery.isError) return <div className="grid min-h-screen place-items-center px-5 text-center text-sm text-zinc-600">Não foi possível carregar a página de orçamento. Atualize a página e tente novamente.</div>;
   if (!settings || customerQuery.isLoading) return <div className="grid min-h-screen place-items-center text-sm text-zinc-500">Carregando orçamento...</div>;
@@ -104,7 +105,7 @@ export function QuotePage() {
                 </div>
                 <QuoteForm services={services} profile={profile} />
                 <CustomerQuotes profile={profile} />
-              </> : <CustomerAccountGate onReady={setProfileOverride} />}
+              </> : <CustomerAccountGate onReady={setProfileOverride} initialMode={initialLogin ? 'login' : 'signup'} />}
             </motion.div>
             <motion.aside initial={{ opacity: 0, x: 18 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.55, delay: 0.15 }} className="h-fit rounded-2xl border border-zinc-200 bg-white p-6 lg:sticky lg:top-28">
               <ShieldCheck className="h-6 w-6 text-zinc-700" />
