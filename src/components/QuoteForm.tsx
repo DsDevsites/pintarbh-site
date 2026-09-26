@@ -1,10 +1,9 @@
 import { ChangeEvent, FormEvent, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Camera, CheckCircle2, FileText, ImagePlus, MessageCircle, Send, X } from 'lucide-react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { createQuote } from '../services/quoteService';
 import type { QuoteDraft, Service } from '../types';
 import { quoteWhatsappMessage, whatsappUrl } from '../lib/utils';
-import { useQuery } from '@tanstack/react-query';
 import { getSettings } from '../services/contentService';
 import type { CustomerProfile } from '../services/customerAuthService';
 
