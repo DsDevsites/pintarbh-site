@@ -48,9 +48,12 @@ export function AdminPage() {
 
 function Login({ onLogged }: { onLogged: () => void }) {
   const [error, setError] = useState('');
+  const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings, staleTime: 5 * 60 * 1000 });
+  const settings = settingsQuery.data;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setError('');
     const form = new FormData(event.currentTarget);
     const ok = await login(String(form.get('email')), String(form.get('password')));
     if (ok) onLogged();
@@ -61,7 +64,7 @@ function Login({ onLogged }: { onLogged: () => void }) {
     <main className="grid min-h-screen place-items-center bg-zinc-50 px-5">
       <form onSubmit={handleSubmit} className="w-full max-w-md rounded-2xl bg-white p-8 shadow-soft">
         <a href="/" className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-zinc-600 transition hover:text-zinc-950"><ArrowLeft className="h-4 w-4" /> Voltar ao site</a>
-        <Logo />
+        {settings ? <Logo logoUrl={settings.logoUrl} companyName={settings.companyName} /> : <div className="h-10 w-44 animate-pulse rounded-xl bg-zinc-100" />}
         <div className="mt-8 flex items-center gap-2 rounded-lg bg-zinc-50 p-3 text-sm text-zinc-600">
           <ShieldCheck className="h-5 w-5" /> Acesso administrativo protegido.
         </div>
@@ -105,7 +108,7 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-950 lg:grid lg:grid-cols-[280px_1fr]">
       <aside className="border-r border-zinc-200 bg-white p-5">
-        <Logo logoUrl={settings.logoUrl} />
+        <Logo logoUrl={settings.logoUrl} companyName={settings.companyName} />
         <nav className="mt-8 grid gap-2">
           {nav.map((item) => {
             const Icon = item.icon;
@@ -193,8 +196,8 @@ function SettingsEditor({ settings, onSaved }: { settings: SiteSettings; onSaved
         <Text label="Facebook" value={draft.facebook} onChange={(facebook) => setDraft({ ...draft, facebook })} />
         <Text label="Favicon" value={draft.faviconUrl} onChange={(faviconUrl) => setDraft({ ...draft, faviconUrl })} />
       </div>
-      <ImageUpload label="Logo" value={draft.logoUrl} onChange={(logoUrl) => setDraft({ ...draft, logoUrl })} />
-      <ImageUpload label="Banner principal" value={draft.heroImage} onChange={(heroImage) => setDraft({ ...draft, heroImage })} />
+      <ImageUpload label="Logo" value={draft.logoUrl} onChange={(logoUrl) => setDraft({ ...draft, logoUrl })} cropAspect={1} cropHint="Corte quadrado recomendado. Arraste e use o zoom antes de aplicar." />
+      <ImageUpload label="Banner principal" value={draft.heroImage} onChange={(heroImage) => setDraft({ ...draft, heroImage })} cropAspect={4 / 3} cropHint="Corte 4:3 recomendado para o banner principal. Arraste e ajuste o zoom." />
       <Text label="Título do banner" value={draft.heroTitle} onChange={(heroTitle) => setDraft({ ...draft, heroTitle })} />
       <Area label="Subtítulo do banner" value={draft.heroSubtitle} onChange={(heroSubtitle) => setDraft({ ...draft, heroSubtitle })} />
       <section className="grid gap-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200">
