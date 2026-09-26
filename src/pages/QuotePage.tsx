@@ -13,9 +13,48 @@ import { whatsappUrl } from '../lib/utils';
 import { getCustomerQuotes, getQuoteFileUrl } from '../services/quoteService';
 
 function CustomerQuotes({ profile }: { profile: CustomerProfile }) {
-  const quotesQuery = useQuery({ queryKey: ['customer-quotes', profile.id], queryFn: getCustomerQuotes, staleTime: 0, refetchOnWindowFocus: true });
+  const quotesQuery = useQuery({
+    queryKey: ['customer-quotes', profile.id],
+    queryFn: getCustomerQuotes,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+  });
   const quotes = quotesQuery.data ?? [];
-  return <div className="mt-6 rounded-3xl bg-white p-6 shadow-soft md:p-8"><p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Área do cliente</p><h2 className="mt-2 text-2xl font-semibold">Meus orçamentos</h2><div className="mt-5 grid gap-3">{quotes.length ? quotes.map((quote) => <article key={quote.id} className="rounded-2xl border border-zinc-200 p-4"><div className="flex flex-col justify-between gap-2 sm:flex-row"><div><p className="text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">{quote.quoteNumber}</p><p className="mt-1 font-semibold">{quote.serviceTypes.join(', ') || quote.propertyType}</p></div><span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold">{quote.status === 'sent' ? 'Orçamento disponível' : quote.status === 'in_review' ? 'Em análise' : quote.status === 'new' ? 'Solicitação recebida' : quote.status}</span></div>{quote.status === 'sent' && quote.finalPdfPath && <CustomerPdf path={quote.finalPdfPath} />}</article>) : <p className="rounded-2xl bg-zinc-50 p-5 text-sm text-zinc-500">Seu primeiro orçamento aparecerá aqui após o envio.</p>}</div>;
+
+  return (
+    <div className="mt-6 rounded-3xl bg-white p-6 shadow-soft md:p-8">
+      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Área do cliente</p>
+      <h2 className="mt-2 text-2xl font-semibold">Meus orçamentos</h2>
+      <div className="mt-5 grid gap-3">
+        {quotes.length ? (
+          quotes.map((quote) => (
+            <article key={quote.id} className="rounded-2xl border border-zinc-200 p-4">
+              <div className="flex flex-col justify-between gap-2 sm:flex-row">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">{quote.quoteNumber}</p>
+                  <p className="mt-1 font-semibold">{quote.serviceTypes.join(', ') || quote.propertyType}</p>
+                </div>
+                <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold">
+                  {quote.status === 'sent'
+                    ? 'Orçamento disponível'
+                    : quote.status === 'in_review'
+                      ? 'Em análise'
+                      : quote.status === 'new'
+                        ? 'Solicitação recebida'
+                        : quote.status}
+                </span>
+              </div>
+              {quote.status === 'sent' && quote.finalPdfPath && <CustomerPdf path={quote.finalPdfPath} />}
+            </article>
+          ))
+        ) : (
+          <p className="rounded-2xl bg-zinc-50 p-5 text-sm text-zinc-500">
+            Seu primeiro orçamento aparecerá aqui após o envio.
+          </p>
+        )}
+      </div>
+    </div>
+  );
 }
 
 function CustomerPdf({ path }: { path: string }) { const [url, setUrl] = useState<string | null>(null); return <button type="button" className="button-secondary mt-4" onClick={async () => { const signed = url ?? await getQuoteFileUrl(path); setUrl(signed); if (signed) window.open(signed, '_blank', 'noopener,noreferrer'); }}>Baixar orçamento em PDF</button>; }
