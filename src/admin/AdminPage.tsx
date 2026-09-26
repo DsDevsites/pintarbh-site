@@ -1,16 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, BarChart3, BriefcaseBusiness, FileText, Globe2, LayoutDashboard, LogOut, MessageCircle, MessageSquare, Save, Search, Settings, ShieldCheck, Star, Trash2 } from 'lucide-react';
+import { ArrowLeft, BarChart3, BriefcaseBusiness, CalendarDays, FileText, Globe2, LayoutDashboard, LogOut, MessageCircle, MessageSquare, Save, Search, Settings, ShieldCheck, Star, Trash2 } from 'lucide-react';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import type React from 'react';
 import { ImageUpload } from '../components/ImageUpload';
 import { Logo } from '../components/Logo';
 import { isAuthenticated, login, logout } from '../services/authService';
-import { getContacts, getProjects, getServices, getSettings, getTestimonials, saveProjects, saveServices, saveSettings, saveTestimonials } from '../services/contentService';
+import { getContacts, getProjects, getServices, getSettings, getTestimonials, getVisits, saveProjects, saveServices, saveSettings, saveTestimonials, updateVisitStatus } from '../services/contentService';
 import { generateFinalQuote, getQuoteFileUrl, getQuoteImageUrl, getQuotes, updateQuote } from '../services/quoteService';
-import { slugify } from '../lib/utils';
-import type { Project, Quote, Service, SiteSettings, Testimonial } from '../types';
+import { slugify, visitWhatsappMessage, whatsappUrl } from '../lib/utils';
+import type { Project, Quote, Service, SiteSettings, Testimonial, VisitStatus } from '../types';
 
-type Tab = 'dashboard' | 'settings' | 'services' | 'projects' | 'testimonials' | 'contacts' | 'quotes' | 'seo';
+type Tab = 'dashboard' | 'settings' | 'services' | 'projects' | 'testimonials' | 'contacts' | 'quotes' | 'visits' | 'seo';
 
 const nav: { id: Tab; label: string; icon: typeof LayoutDashboard }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -20,6 +20,7 @@ const nav: { id: Tab; label: string; icon: typeof LayoutDashboard }[] = [
   { id: 'testimonials', label: 'Depoimentos', icon: Star },
   { id: 'contacts', label: 'Contatos', icon: MessageSquare },
   { id: 'quotes', label: 'Orçamentos', icon: FileText },
+  { id: 'visits', label: 'Visitas', icon: CalendarDays },
   { id: 'seo', label: 'SEO', icon: Search },
 ];
 
@@ -86,10 +87,12 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
   const testimonialsQuery = useQuery({ queryKey: ['testimonials'], queryFn: getTestimonials, staleTime: 5 * 60 * 1000 });
   const contactsQuery = useQuery({ queryKey: ['contacts'], queryFn: getContacts, staleTime: 0, refetchOnWindowFocus: true });
   const quotesQuery = useQuery({ queryKey: ['quotes'], queryFn: getQuotes, staleTime: 0, refetchOnWindowFocus: true });
+  const visitsQuery = useQuery({ queryKey: ['visits'], queryFn: getVisits, staleTime: 0, refetchOnWindowFocus: true });
 
   useEffect(() => {
     if (tab === 'contacts') void queryClient.invalidateQueries({ queryKey: ['contacts'] });
     if (tab === 'quotes') void queryClient.invalidateQueries({ queryKey: ['quotes'] });
+    if (tab === 'visits') void queryClient.invalidateQueries({ queryKey: ['visits'] });
   }, [queryClient, tab]);
 
   const settings = settingsQuery.data;
@@ -98,6 +101,7 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
   const testimonials = testimonialsQuery.data ?? [];
   const contacts = contactsQuery.data ?? [];
   const quotes = quotesQuery.data ?? [];
+  const visits = visitsQuery.data ?? [];
 
   function invalidate() {
     void queryClient.invalidateQueries();
@@ -140,26 +144,28 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
           </a>
         </div>
 
-        {tab === 'dashboard' && <Dashboard services={services.length} projects={projects.length} testimonials={testimonials.length} contacts={contacts.length} quotes={quotes.length} />}
+        {tab === 'dashboard' && <Dashboard services={services.length} projects={projects.length} testimonials={testimonials.length} contacts={contacts.length} quotes={quotes.length} visits={visits.length} />}
         {tab === 'settings' && <SettingsEditor settings={settings} onSaved={invalidate} />}
         {tab === 'services' && <ServicesEditor services={services} onSaved={invalidate} />}
         {tab === 'projects' && <ProjectsEditor projects={projects} onSaved={invalidate} />}
         {tab === 'testimonials' && <TestimonialsEditor testimonials={testimonials} onSaved={invalidate} />}
         {tab === 'contacts' && <ContactsView contacts={contacts} />}
         {tab === 'quotes' && <QuotesView quotes={quotes} onRefresh={() => void queryClient.invalidateQueries({ queryKey: ['quotes'] })} />}
+        {tab === 'visits' && <VisitsView visits={visits} onRefresh={() => void queryClient.invalidateQueries({ queryKey: ['visits'] })} settingsWhatsapp={settings.whatsapp} />}
         {tab === 'seo' && <SeoEditor settings={settings} onSaved={invalidate} />}
       </main>
     </div>
   );
 }
 
-function Dashboard({ services, projects, testimonials, contacts, quotes }: { services: number; projects: number; testimonials: number; contacts: number; quotes: number }) {
+function Dashboard({ services, projects, testimonials, contacts, quotes, visits }: { services: number; projects: number; testimonials: number; contacts: number; quotes: number; visits: number }) {
   const items = [
     ['Serviços', services, BriefcaseBusiness],
     ['Projetos', projects, FileText],
     ['Depoimentos', testimonials, Star],
     ['Contatos', contacts, MessageSquare],
     ['Orçamentos', quotes, FileText],
+    ['Visitas', visits, CalendarDays],
   ] as const;
   return (
     <div className="grid gap-5 md:grid-cols-4">
@@ -281,6 +287,19 @@ function ProjectsEditor({ projects, onSaved }: { projects: Project[]; onSaved: (
           <Text label="Serviços executados (separados por vírgula)" value={project.services.join(', ')} onChange={(value) => setItems(update(items, index, { ...project, services: value.split(',').map((item) => item.trim()).filter(Boolean) }))} />
           <ImageUpload label="Imagem principal" value={project.coverImage} onChange={(coverImage) => setItems(update(items, index, { ...project, coverImage }))} />
           <ImageUpload label="Galeria" value="" multiple values={project.gallery} onChange={() => undefined} onChangeMany={(gallery) => setItems(update(items, index, { ...project, gallery }))} />
+          <section className="grid gap-5 rounded-2xl border border-zinc-200 bg-zinc-50 p-5">
+            <div>
+              <h3 className="font-semibold">Antes e Depois</h3>
+              <p className="mt-1 text-sm leading-6 text-zinc-500">Use este projeto também como comparação visual no site. As duas imagens são opcionais.</p>
+            </div>
+            <label className="flex items-center gap-3 text-sm font-medium">
+              <input type="checkbox" checked={project.beforeAfterEnabled ?? false} onChange={(event) => setItems(update(items, index, { ...project, beforeAfterEnabled: event.target.checked }))} />
+              Publicar este projeto na seção Antes e Depois
+            </label>
+            <ImageUpload label="Imagem Antes" value={project.beforeImage ?? ''} onChange={(beforeImage) => setItems(update(items, index, { ...project, beforeImage }))} cropAspect={4 / 3} cropHint="Corte 4:3 recomendado para manter o comparador alinhado." />
+            <ImageUpload label="Imagem Depois" value={project.afterImage ?? ''} onChange={(afterImage) => setItems(update(items, index, { ...project, afterImage }))} cropAspect={4 / 3} cropHint="Corte 4:3 recomendado para manter o comparador alinhado." />
+            <Area label="Descrição do Antes e Depois" value={project.beforeAfterDescription ?? ''} onChange={(beforeAfterDescription) => setItems(update(items, index, { ...project, beforeAfterDescription }))} />
+          </section>
         </EditorCard>
       ))}
     </PanelForm>
@@ -323,6 +342,76 @@ function ContactsView({ contacts }: { contacts: Awaited<ReturnType<typeof getCon
           <p className="mt-4 text-sm leading-6 text-zinc-600">{contact.message}</p>
         </article>
       ))}
+    </div>
+  );
+}
+
+function VisitsView({ visits, onRefresh, settingsWhatsapp }: { visits: Awaited<ReturnType<typeof getVisits>>; onRefresh: () => void; settingsWhatsapp: string }) {
+  const [filter, setFilter] = useState<'all' | VisitStatus>('all');
+  const visible = filter === 'all' ? visits : visits.filter((visit) => visit.status === filter);
+
+  if (!visits.length) return <div className="rounded-2xl bg-white p-8 text-sm text-zinc-500 ring-1 ring-zinc-200">Nenhuma solicitação de visita recebida ainda.</div>;
+
+  return (
+    <div className="grid gap-5">
+      <div className="flex flex-wrap gap-2">
+        {[
+          ['all', 'Todas'],
+          ['pending', 'Pendentes'],
+          ['confirmed', 'Confirmadas'],
+          ['completed', 'Concluídas'],
+          ['cancelled', 'Canceladas'],
+        ].map(([value, label]) => (
+          <button key={value} type="button" onClick={() => setFilter(value as 'all' | VisitStatus)} className={`rounded-full px-4 py-2 text-sm font-semibold ring-1 transition ${filter === value ? 'bg-zinc-950 text-white ring-zinc-950' : 'bg-white text-zinc-600 ring-zinc-200 hover:bg-zinc-50'}`}>
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid gap-4">
+        {visible.map((visit) => (
+          <article key={visit.id} className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200">
+            <div className="flex flex-col justify-between gap-3 md:flex-row md:items-start">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">{visit.status}</p>
+                <h2 className="mt-2 text-xl font-semibold">{visit.name}</h2>
+                <p className="mt-1 text-sm text-zinc-500">{visit.phone} · {visit.serviceType}</p>
+              </div>
+              <span className="text-xs text-zinc-500">{new Date(visit.createdAt).toLocaleString('pt-BR')}</span>
+            </div>
+
+            <div className="mt-5 grid gap-4 md:grid-cols-2">
+              <Info label="Endereço / bairro" value={visit.address} />
+              <Info label="Data preferencial" value={new Date(`${visit.preferredDate}T12:00:00`).toLocaleDateString('pt-BR')} />
+              <Info label="Período" value={visit.preferredPeriod} />
+              <Info label="Observações" value={visit.observations} />
+            </div>
+
+            <div className="mt-5 flex flex-wrap gap-3">
+              <select
+                className="field max-w-xs"
+                value={visit.status}
+                onChange={async (event) => {
+                  try {
+                    await updateVisitStatus(visit.id, event.target.value as VisitStatus);
+                    onRefresh();
+                  } catch {
+                    window.alert('Não foi possível atualizar o status da visita.');
+                  }
+                }}
+              >
+                <option value="pending">Pendente</option>
+                <option value="confirmed">Confirmada</option>
+                <option value="completed">Concluída</option>
+                <option value="cancelled">Cancelada</option>
+              </select>
+              <a href={whatsappUrl(settingsWhatsapp, visitWhatsappMessage(visit))} target="_blank" rel="noopener noreferrer" className="button-secondary">
+                <MessageCircle className="h-5 w-5" /> Falar no WhatsApp
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
     </div>
   );
 }
@@ -586,5 +675,9 @@ function emptyProject(): Project {
     fullDescription: '',
     services: [],
     featured: false,
+    beforeImage: '',
+    afterImage: '',
+    beforeAfterEnabled: false,
+    beforeAfterDescription: '',
   };
 }
