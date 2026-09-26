@@ -32,6 +32,7 @@ type DbQuote = {
   request_pdf_path: string | null;
   final_pdf_path: string | null;
   email_status: Quote['emailStatus'];
+  client_id: string | null;
   created_at: string;
   updated_at: string;
   quote_images?: Array<{ id: string; image_path: string; sort_order: number }>;
@@ -40,6 +41,7 @@ type DbQuote = {
 function mapQuote(row: DbQuote): Quote {
   return {
     id: row.id,
+    clientId: row.client_id,
     quoteNumber: row.quote_number,
     name: row.name,
     email: row.email,
@@ -148,4 +150,15 @@ export async function getQuoteFileUrl(path: string) {
 
 export async function getQuoteImageUrl(imagePath: string) {
   return getQuoteFileUrl(imagePath);
+}
+
+
+export async function getCustomerQuotes(): Promise<Quote[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('quotes')
+    .select('*, quote_images(id, image_path, sort_order)')
+    .order('created_at', { ascending: false });
+  if (error) throw new Error(error.message);
+  return (data as DbQuote[]).map(mapQuote);
 }

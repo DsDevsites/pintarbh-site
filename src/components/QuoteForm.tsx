@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, Camera, CheckCircle2, FileText, ImagePlus, Send,
 import { useMutation } from '@tanstack/react-query';
 import { createQuote } from '../services/quoteService';
 import type { QuoteDraft, Service } from '../types';
+import type { CustomerProfile } from '../services/customerAuthService';
 
 type Props = { services: Service[] };
 type ImagePayload = { name: string; type: string; data: string };
@@ -42,7 +43,7 @@ async function compressImage(file: File): Promise<ImagePayload> {
   return { name: file.name.replace(/\.[^.]+$/, '.jpg'), type: 'image/jpeg', data: await readAsDataUrl(blob) };
 }
 
-export function QuoteForm({ services }: Props) {
+export function QuoteForm({ services, profile }: Props & { profile: CustomerProfile }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState(1);
   const [files, setFiles] = useState<File[]>([]);
@@ -131,9 +132,9 @@ export function QuoteForm({ services }: Props) {
       </div>
 
       <div className={step === 1 ? 'grid gap-4 sm:grid-cols-2' : 'hidden'} aria-hidden={step !== 1}>
-        <input className="field" name="name" placeholder="Nome" autoComplete="name" minLength={2} required />
-        <input className="field" name="phone" type="tel" inputMode="tel" placeholder="Telefone / WhatsApp" autoComplete="tel" required />
-        <input className="field sm:col-span-2" name="email" type="email" inputMode="email" autoComplete="email" placeholder="E-mail para contato" required />
+        <input className="field" name="name" placeholder="Nome" autoComplete="name" minLength={2} required defaultValue={profile.name} />
+        <input className="field" name="phone" type="tel" inputMode="tel" placeholder="Telefone / WhatsApp" autoComplete="tel" required defaultValue={profile.phone} />
+        <input className="field sm:col-span-2" name="email" type="email" inputMode="email" autoComplete="email" placeholder="E-mail para contato" required defaultValue={profile.email} />
         <input className="field sm:col-span-2" name="city" placeholder="Cidade" defaultValue="Belo Horizonte" required />
       </div>
 
@@ -181,7 +182,7 @@ export function QuoteForm({ services }: Props) {
         </div>
       )}
 
-      {sentNumber && <div className="mt-4 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-700" role="status"><div className="flex items-start gap-3"><CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" /><span>Solicitação registrada. Protocolo <strong>{sentNumber}</strong>. O PDF da solicitação foi gerado e ficou disponível para a equipe analisar no painel administrativo.</span></div></div>}
+      {sentNumber && <div className="mt-4 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-700" role="status"><div className="flex items-start gap-3"><CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" /><span>Orçamento criado com sucesso. Protocolo <strong>{sentNumber}</strong>. Sua solicitação foi registrada e já está disponível para nossa equipe analisar.</span></div></div>}
       {mutation.isError && <div className="mt-4 rounded-xl bg-red-50 p-4 text-sm text-red-700" role="alert">Não foi possível enviar a solicitação. Confira os dados e tente novamente.</div>}
       <p className="mt-4 flex items-center gap-2 text-xs leading-5 text-zinc-500"><FileText className="h-4 w-4 shrink-0" /> Seus dados serão usados para analisar e responder à solicitação de orçamento.</p>
     </form>

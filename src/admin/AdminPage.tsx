@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { BarChart3, BriefcaseBusiness, FileText, Globe2, LayoutDashboard, LogOut, MessageSquare, Save, Search, Settings, ShieldCheck, Star, Trash2 } from 'lucide-react';
+import { BarChart3, BriefcaseBusiness, FileText, Globe2, LayoutDashboard, LogOut, MessageCircle, MessageSquare, Save, Search, Settings, ShieldCheck, Star, Trash2 } from 'lucide-react';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import type React from 'react';
 import { ImageUpload } from '../components/ImageUpload';
@@ -440,6 +440,24 @@ function QuoteEditor({ quote, onSaved }: { quote: Quote; onSaved: () => void }) 
           </button>
           <button type="button" className="button-primary" onClick={() => void generate()} disabled={saveMutation.isPending || generateMutation.isPending}>
             <FileText className="h-5 w-5" /> {generateMutation.isPending ? 'Gerando PDF...' : 'Gerar PDF para envio manual'}
+          </button>
+          <button
+            type="button"
+            className="button-secondary"
+            onClick={async () => {
+              const popup = window.open('about:blank', '_blank');
+              try {
+                const pdfUrl = draft.finalPdfPath ? await getQuoteFileUrl(draft.finalPdfPath) : null;
+                const message = `Olá, ${draft.name}! Seu orçamento da PintarBH está pronto. Protocolo: ${draft.quoteNumber}.${pdfUrl ? ` Segue o PDF do orçamento: ${pdfUrl}` : ' O PDF está disponível para envio no painel.'}`;
+                const whatsapp = `https://wa.me/${draft.phone.replace(/\\D/g, '')}?text=${encodeURIComponent(message)}`;
+                if (popup) popup.location.href = whatsapp;
+                else window.open(whatsapp, '_blank', 'noopener,noreferrer');
+              } catch {
+                if (popup) popup.close();
+              }
+            }}
+          >
+            <MessageCircle className="h-5 w-5" /> Enviar PDF pelo WhatsApp
           </button>
         </div>
         {feedback && <p className="mt-4 text-sm font-medium text-zinc-600" role="status">{feedback}</p>}

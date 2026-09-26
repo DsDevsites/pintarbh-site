@@ -207,9 +207,27 @@ create index if not exists project_images_project_id_idx on project_images(proje
 create index if not exists contacts_created_at_idx on contacts(created_at desc);
 
 
+create table if not exists customer_profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  name text not null,
+  phone text not null,
+  email text not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table customer_profiles enable row level security;
+drop policy if exists "Customer can read own profile" on customer_profiles;
+create policy "Customer can read own profile" on customer_profiles for select to authenticated using (id = (select auth.uid()));
+drop policy if exists "Customer can insert own profile" on customer_profiles;
+create policy "Customer can insert own profile" on customer_profiles for insert to authenticated with check (id = (select auth.uid()));
+drop policy if exists "Customer can update own profile" on customer_profiles;
+create policy "Customer can update own profile" on customer_profiles for update to authenticated using (id = (select auth.uid())) with check (id = (select auth.uid()));
+
 create table if not exists quotes (
   id uuid primary key default gen_random_uuid(),
   quote_number text not null unique,
+  client_id uuid references auth.users(id) on delete set null,
   name text not null,
   email text not null,
   phone text not null,
@@ -283,3 +301,12 @@ using (bucket_id='pintarbh-quotes' and private.is_admin());
 create index if not exists quotes_created_at_idx on quotes(created_at desc);
 create index if not exists quotes_status_idx on quotes(status);
 create index if not exists quote_images_quote_id_idx on quote_images(quote_id);
+
+
+drop policy if exists "Customer can read own quotes" on quotes;
+create policy "Customer can read own quotes" on quotes for select to authenticated using (client_id = (select auth.uid()));
+drop policy if exists "Customer can read own quote images" on quote_images;
+create policy "Customer can read own quote images" on quote_images for select to authenticated using (exists (select 1 from quotes q where q.id = quote_images.quote_id and q.client_id = (select auth.uid())));
+drop policy if exists "Customer read own quote files" on storage.objects;
+create policy "Customer read own quote files" on storage.objects for select to authenticated using (bucket_id='pintarbh-quotes' and exists (select 1 from quotes q where q.client_id=(select auth.uid()) and name like 'pdfs/' || q.id::text || '/%'));
+create index if not exists quotes_client_id_idx on quotes(client_id);

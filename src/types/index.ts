@@ -79,6 +79,7 @@ export type QuoteImage = {
 
 export type Quote = {
   id: string;
+  clientId: string | null;
   quoteNumber: string;
   name: string;
   email: string;
