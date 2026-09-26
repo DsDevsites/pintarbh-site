@@ -19,6 +19,18 @@ function readAsDataUrl(file: Blob) {
   });
 }
 
+function canvasToBlob(canvas: HTMLCanvasElement, quality: number) {
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        reject(new Error('Não foi possível preparar a imagem.'));
+        return;
+      }
+      resolve(blob);
+    }, 'image/jpeg', quality);
+  });
+}
+
 async function compressImage(file: File): Promise<ImagePayload> {
   const bitmap = await createImageBitmap(file);
   const max = 1400;
@@ -33,13 +45,9 @@ async function compressImage(file: File): Promise<ImagePayload> {
   context.drawImage(bitmap, 0, 0, width, height);
   bitmap.close();
 
-  const firstBlob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.78));
-  if (!firstBlob) throw new Error('Não foi possível preparar a imagem.');
-  let blob: Blob = firstBlob;
+  let blob = await canvasToBlob(canvas, 0.78);
   if (blob.size > 700_000) {
-    const smallerBlob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.62));
-    if (!smallerBlob) throw new Error('Não foi possível preparar a imagem.');
-    blob = smallerBlob;
+    blob = await canvasToBlob(canvas, 0.62);
   }
   if (blob.size > 700_000) throw new Error('Uma das fotos ficou muito grande. Escolha uma foto menor.');
   return { name: file.name.replace(/\.[^.]+$/, '.jpg'), type: 'image/jpeg', data: await readAsDataUrl(blob) };
