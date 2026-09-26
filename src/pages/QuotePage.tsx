@@ -51,7 +51,7 @@ function CustomerQuotes({ profile }: { profile: CustomerProfile }) {
           ))
         ) : (
           <p className="rounded-2xl bg-zinc-50 p-5 text-sm text-zinc-500">
-            Seu primeiro orçamento aparecerá aqui após o envio.
+            Seus orçamentos aparecerão aqui após o primeiro envio.
           </p>
         )}
       </div>
