@@ -59,7 +59,7 @@ function CustomerQuotes({ profile }: { profile: CustomerProfile }) {
   );
 }
 
-function CustomerPdf({ path }: { path: string }) { const [url, setUrl] = useState<string | null>(null); return <button type="button" className="button-secondary mt-4" onClick={async () => { const signed = url ?? await getQuoteFileUrl(path); setUrl(signed); if (signed) window.open(signed, '_blank', 'noopener,noreferrer'); }}>Baixar orçamento em PDF</button>; }
+function CustomerPdf({ path }: { path: string }) { return <button type="button" className="button-secondary mt-4" onClick={async () => { const signed = await getQuoteFileUrl(path); if (signed) window.open(signed, '_blank', 'noopener,noreferrer'); }}>Baixar orçamento em PDF</button>; }
 
 export function QuotePage() {
   const customerQuery = useQuery({ queryKey: ['customer-profile'], queryFn: getCurrentCustomer, staleTime: 0 });
