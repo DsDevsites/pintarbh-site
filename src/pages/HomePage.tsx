@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, MapPin, MessageCircle, Paintbrush, Star } from 'lucide-react';
@@ -7,6 +8,7 @@ import { Footer, PublicHeader } from '../components/PublicLayout';
 import { Seo } from '../components/Seo';
 import { PaintDecorations } from '../components/PaintDecorations';
 import { whatsappUrl } from '../lib/utils';
+import { supabase } from '../lib/supabase';
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -16,6 +18,64 @@ const fadeUp = {
 };
 
 export function HomePage() {
+  const [authStatus, setAuthStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [authError, setAuthError] = useState('');
+
+  useEffect(() => {
+    if (!supabase) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const isAuthReturn = params.has('code') || params.has('token_hash') || params.has('error');
+    if (!isAuthReturn) return;
+
+    setAuthStatus('loading');
+    let redirected = false;
+
+    const finishLogin = () => {
+      if (redirected) return;
+      redirected = true;
+      setAuthStatus('success');
+      window.history.replaceState({}, document.title, '/');
+      window.setTimeout(() => window.location.replace('/orcamento?auth=success'), 1100);
+    };
+
+    const finishError = (message: string) => {
+      if (redirected) return;
+      redirected = true;
+      setAuthError(message);
+      setAuthStatus('error');
+    };
+
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
+        finishLogin();
+      }
+    });
+
+    const errorDescription = params.get('error_description') || params.get('error');
+    if (errorDescription) {
+      finishError(errorDescription.replace(/\\+/g, ' '));
+      data.subscription.unsubscribe();
+      return () => undefined;
+    }
+
+    const fallbackTimer = window.setTimeout(async () => {
+      if (redirected) return;
+      const { data: sessionData, error } = await supabase.auth.getSession();
+      if (error) {
+        finishError(error.message);
+      } else if (sessionData.session) {
+        finishLogin();
+      } else {
+        finishError('Não foi possível concluir o login. Tente novamente.');
+      }
+    }, 4500);
+
+    return () => {
+      window.clearTimeout(fallbackTimer);
+      data.subscription.unsubscribe();
+    };
+  }, []);
   const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings, staleTime: 5 * 60 * 1000 });
   const servicesQuery = useQuery({ queryKey: ['services'], queryFn: getServices, staleTime: 5 * 60 * 1000 });
   const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects, staleTime: 5 * 60 * 1000 });
@@ -33,6 +93,15 @@ export function HomePage() {
 
   return (
     <div className="bg-white text-zinc-950">
+      {authStatus !== 'idle' && (
+        <div className="fixed inset-0 z-[100] grid place-items-center bg-white/95 px-5 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-soft ring-1 ring-zinc-200">
+            {authStatus === 'loading' && <><div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-zinc-200 border-t-zinc-900" /><h2 className="mt-5 text-2xl font-semibold">Finalizando seu login</h2><p className="mt-3 text-sm leading-6 text-zinc-500">Só um instante, estamos confirmando seu acesso.</p></>}
+            {authStatus === 'success' && <><div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-emerald-50 text-emerald-600"><CheckCircle2 className="h-7 w-7" /></div><h2 className="mt-5 text-2xl font-semibold">Login realizado com sucesso!</h2><p className="mt-3 text-sm leading-6 text-zinc-500">Seu acesso foi confirmado. Vamos abrir seu orçamento.</p></>}
+            {authStatus === 'error' && <><div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-red-50 text-red-600"><span className="text-xl font-semibold">!</span></div><h2 className="mt-5 text-2xl font-semibold">Não foi possível concluir o login</h2><p className="mt-3 text-sm leading-6 text-red-600">{authError}</p><button type="button" className="button-primary mt-6 w-full" onClick={() => { window.history.replaceState({}, document.title, '/'); window.location.reload(); }}>Tentar novamente</button></>}
+          </div>
+        </div>
+      )
       <Seo title={settings.seoTitle} description={settings.seoDescription} image={settings.heroImage} />
       <PublicHeader settings={settings} />
 
