@@ -13,20 +13,22 @@ import { whatsappUrl } from '../lib/utils';
 import { getCustomerQuotes, getQuoteFileUrl } from '../services/quoteService';
 
 function CustomerQuotes({ profile }: { profile: CustomerProfile }) {
+  const customerQuotesKey = ['customer-quotes', profile.id] as const;
   const quotesQuery = useQuery({
-    queryKey: ['customer-quotes', profile.id],
+    queryKey: customerQuotesKey,
     queryFn: getCustomerQuotes,
     staleTime: 0,
     refetchOnWindowFocus: true,
   });
   const quotes = quotesQuery.data ?? [];
+  const hasQuotes = quotes.length > 0;
 
   return (
     <div className="mt-6 rounded-3xl bg-white p-6 shadow-soft md:p-8">
       <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Área do cliente</p>
       <h2 className="mt-2 text-2xl font-semibold">Meus orçamentos</h2>
       <div className="mt-5 grid gap-3">
-        {quotes.length ? (
+        {hasQuotes ? (
           quotes.map((quote) => (
             <article key={quote.id} className="rounded-2xl border border-zinc-200 p-4">
               <div className="flex flex-col justify-between gap-2 sm:flex-row">
