@@ -373,7 +373,7 @@ function VisitsView({ visits, onRefresh, settingsWhatsapp }: { visits: Awaited<R
           <article key={visit.id} className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200">
             <div className="flex flex-col justify-between gap-3 md:flex-row md:items-start">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">{visit.status}</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">{visitStatusLabel(visit.status)}</p>
                 <h2 className="mt-2 text-xl font-semibold">{visit.name}</h2>
                 <p className="mt-1 text-sm text-zinc-500">{visit.phone} · {visit.serviceType}</p>
               </div>
@@ -414,6 +414,15 @@ function VisitsView({ visits, onRefresh, settingsWhatsapp }: { visits: Awaited<R
       </div>
     </div>
   );
+}
+
+function visitStatusLabel(status: VisitStatus) {
+  return {
+    pending: 'Pendente',
+    confirmed: 'Confirmada',
+    completed: 'Concluída',
+    cancelled: 'Cancelada',
+  }[status];
 }
 
 function QuotesView({ quotes, onRefresh }: { quotes: Quote[]; onRefresh: () => void }) {
