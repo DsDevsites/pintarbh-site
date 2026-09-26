@@ -77,6 +77,7 @@ export function QuoteForm({ services, profile }: Props & { profile: CustomerProf
       if (!selectedServices.length) throw new Error('Selecione pelo menos um serviço.');
       const images = await Promise.all(files.map(compressImage));
       const draft: QuoteDraft = {
+        clientId: profile.id,
         name: String(form.get('name') ?? ''),
         email: String(form.get('email') ?? ''),
         phone: String(form.get('phone') ?? ''),
