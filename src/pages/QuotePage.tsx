@@ -64,8 +64,8 @@ function CustomerPdf({ path }: { path: string }) { const [url, setUrl] = useStat
 export function QuotePage() {
   const customerQuery = useQuery({ queryKey: ['customer-profile'], queryFn: getCurrentCustomer, staleTime: 0 });
   const [profileOverride, setProfileOverride] = useState<CustomerProfile | null>(null);
-  const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings, staleTime: 5 * 60 * 1000 });
-  const servicesQuery = useQuery({ queryKey: ['services'], queryFn: getServices, staleTime: 5 * 60 * 1000 });
+  const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings, staleTime: 0 });
+  const servicesQuery = useQuery({ queryKey: ['services'], queryFn: getServices, staleTime: 0 });
   const settings = settingsQuery.data;
   const services = servicesQuery.data ?? [];
   const profile = profileOverride ?? customerQuery.data;
