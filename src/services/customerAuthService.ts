@@ -128,6 +128,30 @@ export async function completeCustomerProfile(input: { name: string; phone: stri
   return profile as CustomerProfile;
 }
 
+export async function updateCustomerProfile(input: { name: string; phone: string }) {
+  if (!supabase) throw new Error('Sistema de perfil indisponível.');
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Sua sessão expirou. Entre novamente.');
+
+  const name = input.name.trim();
+  const phone = input.phone.trim();
+  if (!name) throw new Error('Informe seu nome completo.');
+  if (!phone) throw new Error('Informe seu WhatsApp ou telefone.');
+
+  const profile = {
+    id: user.id,
+    name,
+    phone,
+    email: user.email ?? '',
+    updated_at: new Date().toISOString(),
+  };
+
+  const { error } = await supabase.from('customer_profiles').upsert(profile);
+  if (error) throw new Error(error.message);
+  return profile as CustomerProfile;
+}
+
 export async function customerLogout() {
   if (supabase) await supabase.auth.signOut();
 }
