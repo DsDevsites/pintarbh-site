@@ -11,8 +11,8 @@ import {
   type CustomerProfile,
 } from '../services/customerAuthService';
 
-export function CustomerAccountGate({ onReady }: { onReady: (profile: CustomerProfile) => void }) {
-  const [mode, setMode] = useState<'signup' | 'login' | 'google-complete'>('signup');
+export function CustomerAccountGate({ onReady, initialMode = 'signup' }: { onReady: (profile: CustomerProfile) => void; initialMode?: 'signup' | 'login' }) {
+  const [mode, setMode] = useState<'signup' | 'login' | 'google-complete'>(initialMode);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [pending, setPending] = useState(false);
