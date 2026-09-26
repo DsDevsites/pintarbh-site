@@ -89,6 +89,16 @@ export type ContactMessage = {
   createdAt: string;
 };
 
+export type PreQuoteDraft = {
+  name: string;
+  phone: string;
+  city: string;
+  propertyType: string;
+  serviceType: string;
+  neighborhood: string;
+  area: number | null;
+};
+
 export type QuoteStatus = 'new' | 'in_review' | 'sent' | 'approved' | 'completed' | 'cancelled';
 
 export type QuoteImage = {
