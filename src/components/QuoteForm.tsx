@@ -86,7 +86,7 @@ export function QuoteForm({ services, profile, initialPreQuote }: Props & { prof
     const selectedServices = form.getAll('serviceTypes').map(String);
 
     try {
-      if (!selectedServices.length) throw new Error('Selecione pelo menos um serviço.');
+      if (!selectedServices.length && !initialPreQuote?.serviceType) throw new Error('Selecione pelo menos um serviço.');
       const images = await Promise.all(files.map(compressImage));
       const draft: QuoteDraft = {
         clientId: profile.id,
@@ -173,7 +173,7 @@ export function QuoteForm({ services, profile, initialPreQuote }: Props & { prof
           <span className="mb-3 block text-sm font-medium text-zinc-700">Serviços desejados</span>
           <div className="grid gap-2 sm:grid-cols-2">
             {(services.length ? services.map((service) => service.title) : ['Pintura interna', 'Pintura externa', 'Textura', 'Acabamento']).map((service) => (
-              <label key={service} className="flex items-center gap-3 rounded-xl border border-zinc-200 px-4 py-3 text-sm transition hover:border-zinc-400"><input type="checkbox" name="serviceTypes" value={service} disabled={step !== 2} /><span>{service}</span></label>
+              <label key={service} className="flex items-center gap-3 rounded-xl border border-zinc-200 px-4 py-3 text-sm transition hover:border-zinc-400"><input type="checkbox" name="serviceTypes" value={service} disabled={step !== 2} defaultChecked={initialPreQuote?.serviceType === service} /><span>{service}</span></label>
             ))}
           </div>
         </div>
