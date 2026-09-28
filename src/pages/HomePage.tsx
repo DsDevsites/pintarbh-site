@@ -125,7 +125,7 @@ export function HomePage() {
               <h1 className="hero-title mx-auto mt-5 max-w-3xl text-4xl font-light leading-tight tracking-normal text-zinc-950 md:text-6xl md:leading-tight lg:mx-0 lg:text-7xl">{settings.heroTitle}</h1>
               <p className="mx-auto mt-5 max-w-2xl text-lg font-light leading-7 text-zinc-600 md:leading-8 lg:mx-0">{settings.heroSubtitle}</p>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row lg:mt-8">
-                <a className="button-primary h-11 w-full sm:w-auto" href={whatsappUrl(settings.whatsapp)}><MessageCircle className="h-5 w-5" /> WhatsApp</a>
+                <a className="button-primary whatsapp-button h-11 w-full sm:w-auto" href={whatsappUrl(settings.whatsapp)}><MessageCircle className="h-5 w-5" /> WhatsApp</a>
                 <a href="#pre-orcamento" className="button-secondary h-11 w-full sm:w-auto"><ArrowRight className="h-5 w-5" /> Solicitar orçamento</a>
               </div>
             </motion.div>
