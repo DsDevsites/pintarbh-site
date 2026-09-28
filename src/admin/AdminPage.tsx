@@ -3,6 +3,7 @@ import { ArrowLeft, BarChart3, BriefcaseBusiness, CalendarDays, FileText, Globe2
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import type React from 'react';
 import { ImageUpload } from '../components/ImageUpload';
+import { VideoUpload } from '../components/VideoUpload';
 import { Logo } from '../components/Logo';
 import { isAuthenticated, login, logout } from '../services/authService';
 import { getContacts, getProjects, getServices, getSettings, getTestimonials, getVisits, saveProjects, saveServices, saveSettings, saveTestimonials, updateVisitStatus } from '../services/contentService';
@@ -220,8 +221,8 @@ function SettingsEditor({ settings, onSaved }: { settings: SiteSettings; onSaved
           <Text label="Título da seção" value={draft.adviceVideoTitle} onChange={(adviceVideoTitle) => setDraft({ ...draft, adviceVideoTitle })} />
           <Text label="Subtítulo" value={draft.adviceVideoSubtitle} onChange={(adviceVideoSubtitle) => setDraft({ ...draft, adviceVideoSubtitle })} />
         </div>
-        <Text label="Link do vídeo (YouTube, Vimeo ou MP4/WebM)" value={draft.adviceVideoUrl} onChange={(adviceVideoUrl) => setDraft({ ...draft, adviceVideoUrl })} type="url" />
-        <p className="text-xs leading-5 text-zinc-500">Use um link do YouTube/Vimeo ou o endereço direto de um vídeo MP4/WebM. O player terá play, pausa, progresso, volume, tela cheia e botão para recomeçar.</p>
+        <VideoUpload label="Vídeo para os clientes" value={draft.adviceVideoUrl} onChange={(adviceVideoUrl) => setDraft({ ...draft, adviceVideoUrl })} />
+        <p className="text-xs leading-5 text-zinc-500">Escolha o vídeo diretamente do celular ou computador. Aceita MP4, WebM e MOV. O vídeo será armazenado no Supabase e exibido automaticamente na página inicial quando esta seção estiver ativada.</p>
       </section>
 
       <section className="grid gap-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200">
