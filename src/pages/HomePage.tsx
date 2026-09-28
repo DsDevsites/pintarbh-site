@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { motion } from 'framer-motion';
@@ -23,6 +23,7 @@ const fadeUp = {
 
 export function HomePage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [authStatus, setAuthStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [authError, setAuthError] = useState('');
 
@@ -87,10 +88,26 @@ export function HomePage() {
       data.subscription.unsubscribe();
     };
   }, [navigate]);
-  const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings, staleTime: 5 * 60 * 1000 });
-  const servicesQuery = useQuery({ queryKey: ['services'], queryFn: getServices, staleTime: 5 * 60 * 1000 });
-  const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects, staleTime: 5 * 60 * 1000 });
-  const testimonialsQuery = useQuery({ queryKey: ['testimonials'], queryFn: getTestimonials, staleTime: 5 * 60 * 1000 });
+  const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings, staleTime: 0, refetchOnWindowFocus: true });
+  const servicesQuery = useQuery({ queryKey: ['services'], queryFn: getServices, staleTime: 0, refetchOnWindowFocus: true });
+  const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects, staleTime: 0, refetchOnWindowFocus: true });
+  const testimonialsQuery = useQuery({ queryKey: ['testimonials'], queryFn: getTestimonials, staleTime: 0, refetchOnWindowFocus: true });
+
+  useEffect(() => {
+    const refreshOnReturn = () => {
+      void queryClient.invalidateQueries({ queryKey: ['settings'] });
+      void queryClient.invalidateQueries({ queryKey: ['services'] });
+      void queryClient.invalidateQueries({ queryKey: ['projects'] });
+      void queryClient.invalidateQueries({ queryKey: ['testimonials'] });
+    };
+
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) refreshOnReturn();
+    };
+
+    window.addEventListener('pageshow', handlePageShow);
+    return () => window.removeEventListener('pageshow', handlePageShow);
+  }, [queryClient]);
   const settings = settingsQuery.data;
   const playlistLink = settings?.playlistButtonLink || 'https://open.spotify.com/playlist/1rAlWRRPcJfU2bUuESTlUQ';
   const services = servicesQuery.data ?? [];
