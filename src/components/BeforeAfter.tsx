@@ -24,7 +24,7 @@ export function BeforeAfter({ beforeImage, afterImage, title, description }: Pro
     <article className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-zinc-200">
       <div
         ref={frameRef}
-        className="relative aspect-[4/3] overflow-hidden bg-zinc-100 touch-none select-none"
+        className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-zinc-100 touch-none select-none"
         onPointerMove={(event) => {
           if (event.buttons) updatePosition(event.clientX);
         }}
