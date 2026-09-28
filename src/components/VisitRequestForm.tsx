@@ -78,7 +78,7 @@ export function VisitRequestForm({ services, whatsapp }: Props) {
               <p className="mt-1 text-sm leading-6">Entraremos em contato para confirmar a visita.</p>
             </div>
           </div>
-          <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="button-primary mt-5 w-full sm:w-auto">
+          <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="button-primary whatsapp-button mt-5 w-full sm:w-auto">
             <MessageCircle className="h-5 w-5" /> Enviar pelo WhatsApp
           </a>
           <button type="button" className="button-secondary mt-3 w-full sm:w-auto" onClick={() => setSubmitted(null)}>Solicitar outra visita</button>
