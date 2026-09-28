@@ -21,7 +21,7 @@ export function BeforeAfter({ beforeImage, afterImage, title, description }: Pro
   }
 
   return (
-    <article className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-zinc-200">
+    <article className="overflow-hidden rounded-3xl bg-white shadow-sm">
       <div
         ref={frameRef}
         className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-zinc-100 touch-none select-none"
