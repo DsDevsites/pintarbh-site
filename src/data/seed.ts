@@ -10,9 +10,9 @@ export const defaultSettings: SiteSettings = {
   address: 'Belo Horizonte, Minas Gerais',
   instagram: 'https://instagram.com/pintarbh',
   facebook: 'https://facebook.com/pintarbh',
-  heroTitle: 'Pintura profissional com acabamento impecável em Belo Horizonte',
+  heroTitle: 'PintarBH',
   heroSubtitle:
-    'Projetos residenciais, comerciais e corporativos executados com planejamento, limpeza, pontualidade e sofisticação.',
+    'Apês e apezinhos • Casas, casinhas • Paredes e paredinhas',
   heroImage:
     'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=85',
   aboutEyebrow: 'Sobre a empresa',
