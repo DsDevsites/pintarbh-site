@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, BarChart3, BriefcaseBusiness, CalendarDays, FileText, Globe2, LayoutDashboard, LogOut, MessageCircle, MessageSquare, Save, Search, Settings, ShieldCheck, Star, Trash2 } from 'lucide-react';
+import { ArrowLeft, BarChart3, BriefcaseBusiness, CalendarDays, FileText, Globe2, LayoutDashboard, LogOut, MessageCircle, MessageSquare, Plus, Save, Search, Settings, ShieldCheck, Star, Trash2 } from 'lucide-react';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import type React from 'react';
 import { ImageUpload } from '../components/ImageUpload';
@@ -464,6 +464,71 @@ function QuotesView({ quotes, onRefresh }: { quotes: Quote[]; onRefresh: () => v
   );
 }
 
+function emptyQuoteItem(): Quote['serviceItems'][number] {
+  return { id: crypto.randomUUID(), description: '', quantity: 1, unit: 'un.', unitPrice: 0, total: 0 };
+}
+
+function normalizeQuoteItems(items: Quote['serviceItems'] | undefined) {
+  return (items ?? []).map((item) => ({
+    id: item.id || crypto.randomUUID(),
+    description: item.description || '',
+    quantity: Number(item.quantity) || 0,
+    unit: item.unit || 'un.',
+    unitPrice: Number(item.unitPrice) || 0,
+    total: Number(item.total) || (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0),
+  }));
+}
+
+function QuoteItemsEditor({
+  title,
+  items,
+  onChange,
+}: {
+  title: string;
+  items: Quote['serviceItems'];
+  onChange: (items: Quote['serviceItems']) => void;
+}) {
+  function updateItem(index: number, patch: Partial<Quote['serviceItems'][number]>) {
+    onChange(items.map((item, itemIndex) => {
+      if (itemIndex !== index) return item;
+      const next = { ...item, ...patch };
+      next.total = (Number(next.quantity) || 0) * (Number(next.unitPrice) || 0);
+      return next;
+    }));
+  }
+
+  function removeItem(index: number) {
+    onChange(items.filter((_, itemIndex) => itemIndex !== index));
+  }
+
+  return (
+    <div className="mt-6 rounded-2xl border border-zinc-200 p-5">
+      <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+        <div>
+          <h4 className="text-lg font-semibold">{title}</h4>
+          <p className="text-xs text-zinc-500">Cada item aparece separado no PDF, com quantidade, valor unitário e total.</p>
+        </div>
+        <button type="button" className="button-secondary" onClick={() => onChange([...items, emptyQuoteItem()])}>
+          <Plus className="h-4 w-4" /> Adicionar item
+        </button>
+      </div>
+      <div className="mt-4 grid gap-3">
+        {items.map((item, index) => (
+          <div key={item.id} className="grid gap-3 rounded-xl bg-zinc-50 p-3 md:grid-cols-[minmax(0,1fr)_90px_90px_130px_120px_42px] md:items-end">
+            <Text label="Item" value={item.description} onChange={(description) => updateItem(index, { description })} />
+            <Text label="Qtd." type="number" value={String(item.quantity)} onChange={(value) => updateItem(index, { quantity: Number(value) || 0 })} />
+            <Text label="Un." value={item.unit} onChange={(unit) => updateItem(index, { unit })} />
+            <Text label="Valor unitário" type="number" value={String(item.unitPrice)} onChange={(value) => updateItem(index, { unitPrice: Number(value) || 0 })} />
+            <div><span className="mb-2 block text-sm font-medium text-zinc-700">Total</span><div className="rounded-lg border border-zinc-200 bg-white px-4 py-3 text-sm">{item.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div></div>
+            <button type="button" onClick={() => removeItem(index)} className="grid h-11 place-items-center rounded-lg border border-zinc-200 text-red-600 hover:bg-white" aria-label="Remover item"><Trash2 className="h-4 w-4" /></button>
+          </div>
+        ))}
+        {!items.length && <p className="rounded-xl border border-dashed border-zinc-300 p-4 text-sm text-zinc-500">Nenhum item adicionado.</p>}
+      </div>
+    </div>
+  );
+}
+
 function QuoteEditor({ quote, onSaved }: { quote: Quote; onSaved: () => void }) {
   const [draft, setDraft] = useState(quote);
   const [feedback, setFeedback] = useState('');
@@ -481,11 +546,17 @@ function QuoteEditor({ quote, onSaved }: { quote: Quote; onSaved: () => void }) 
     return () => { active = false; };
   }, [quote]);
 
-  const total = Math.max(0, (draft.laborAmount ?? 0) + (draft.materialsAmount ?? 0) + (draft.otherAmount ?? 0) - (draft.discountAmount ?? 0));
+  const serviceItems = normalizeQuoteItems(draft.serviceItems);
+  const materialItems = normalizeQuoteItems(draft.materialItems);
+  const itemLaborTotal = serviceItems.reduce((sum, item) => sum + item.total, 0);
+  const itemMaterialTotal = materialItems.reduce((sum, item) => sum + item.total, 0);
+  const laborAmount = serviceItems.length ? itemLaborTotal : (draft.laborAmount ?? 0);
+  const materialsAmount = materialItems.length ? itemMaterialTotal : (draft.materialsAmount ?? 0);
+  const total = Math.max(0, laborAmount + materialsAmount + (draft.otherAmount ?? 0) - (draft.discountAmount ?? 0));
 
   async function save() {
     try {
-      await saveMutation.mutateAsync({ ...draft, totalAmount: total });
+      await saveMutation.mutateAsync({ ...draft, serviceItems, materialItems, laborAmount, materialsAmount, totalAmount: total });
       setFeedback('Análise salva.');
       onSaved();
     } catch {
@@ -495,7 +566,7 @@ function QuoteEditor({ quote, onSaved }: { quote: Quote; onSaved: () => void }) 
 
   async function generate() {
     try {
-      const result = await generateMutation.mutateAsync({ ...draft, totalAmount: total });
+      const result = await generateMutation.mutateAsync({ ...draft, serviceItems, materialItems, laborAmount, materialsAmount, totalAmount: total });
       setFeedback('PDF final gerado com sucesso. Ele ficará disponível no painel para a equipe enviar ao cliente manualmente.');
       onSaved();
     } catch {
@@ -539,9 +610,9 @@ function QuoteEditor({ quote, onSaved }: { quote: Quote; onSaved: () => void }) 
       <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200">
         <h3 className="text-xl font-semibold">Montar orçamento</h3>
         <p className="mt-2 text-sm leading-6 text-zinc-500">Informe os valores e condições. O total é calculado automaticamente.</p>
+        <QuoteItemsEditor title="Serviços / mão de obra" items={serviceItems} onChange={(serviceItems) => setDraft({ ...draft, serviceItems, laborAmount: serviceItems.reduce((sum, item) => sum + item.total, 0) })} />
+        <QuoteItemsEditor title="Tintas e materiais" items={materialItems} onChange={(materialItems) => setDraft({ ...draft, materialItems, materialsAmount: materialItems.reduce((sum, item) => sum + item.total, 0) })} />
         <div className="mt-5 grid gap-4 md:grid-cols-2">
-          <Money label="Mão de obra" value={draft.laborAmount ?? 0} onChange={(value) => setDraft({ ...draft, laborAmount: value })} />
-          <Money label="Materiais" value={draft.materialsAmount ?? 0} onChange={(value) => setDraft({ ...draft, materialsAmount: value })} />
           <Money label="Outros" value={draft.otherAmount ?? 0} onChange={(value) => setDraft({ ...draft, otherAmount: value })} />
           <Money label="Desconto" value={draft.discountAmount ?? 0} onChange={(value) => setDraft({ ...draft, discountAmount: value })} />
         </div>
