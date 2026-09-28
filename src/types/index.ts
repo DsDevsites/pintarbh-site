@@ -27,6 +27,10 @@ export type SiteSettings = {
   playlistImage: string;
   playlistButtonText: string;
   playlistButtonLink: string;
+  adviceVideoEnabled: boolean;
+  adviceVideoTitle: string;
+  adviceVideoSubtitle: string;
+  adviceVideoUrl: string;
 };
 
 export type Service = {
