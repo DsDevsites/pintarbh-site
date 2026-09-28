@@ -98,9 +98,9 @@ export function HomePage() {
   const beforeAfterProjects = projects.filter((project) => project.beforeAfterEnabled && project.beforeImage && project.afterImage);
   const adviceVideoEmbed = (() => {
     const url = settings.adviceVideoUrl?.trim() || '';
-    const youtube = url.match(/(?:youtube\\.com\\/(?:watch\\?v=|shorts\\/|embed\\/)|youtu\\.be\\/)([A-Za-z0-9_-]{6,})/);
+    const youtube = url.match(/(?:youtube\.com\\/(?:watch\\?v=|shorts\/|embed\/)|youtu\.be\\/)([A-Za-z0-9_-]{6,})/);
     if (youtube) return { type: 'iframe' as const, src: `https://www.youtube.com/embed/${youtube[1]}` };
-    const vimeo = url.match(/vimeo\\.com\\/(?:video\\/)?(\\d+)/);
+    const vimeo = url.match(/vimeo\.com\\/(?:video\\/)?(\d+)/);
     if (vimeo) return { type: 'iframe' as const, src: `https://player.vimeo.com/video/${vimeo[1]}` };
     return url ? { type: 'video' as const, src: url } : null;
   })();
