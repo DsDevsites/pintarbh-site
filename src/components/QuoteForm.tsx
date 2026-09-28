@@ -114,6 +114,8 @@ export function QuoteForm({ services, profile, initialPreQuote }: Props & { prof
         duration: '',
         paymentTerms: '',
         adminNotes: '',
+        serviceItems: [],
+        materialItems: [],
       };
       const result = await mutation.mutateAsync({ ...draft, images });
       setSentNumber(result.quoteNumber);
