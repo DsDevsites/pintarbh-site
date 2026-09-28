@@ -190,10 +190,11 @@ function Dashboard({ services, projects, testimonials, contacts, quotes, visits 
 function SettingsEditor({ settings, onSaved }: { settings: SiteSettings; onSaved: () => void }) {
   const [draft, setDraft] = useState(settings);
   const mutation = useMutation({ mutationFn: saveSettings, onSuccess: onSaved });
+  const fixedDraft = { ...draft, companyName: 'PintarBH' };
   return (
-    <PanelForm onSubmit={() => mutation.mutate(draft)} pending={mutation.isPending}>
+    <PanelForm onSubmit={() => mutation.mutate(fixedDraft)} pending={mutation.isPending}>
       <div className="grid gap-5 md:grid-cols-2">
-        <Text label="Nome da empresa" value={draft.companyName} onChange={(companyName) => setDraft({ ...draft, companyName })} />
+        <label className="block"><span className="mb-2 block text-sm font-medium text-zinc-700">Nome da empresa</span><input className="field bg-zinc-100" value="PintarBH" readOnly /></label>
         <Text label="Telefone" value={draft.phone} onChange={(phone) => setDraft({ ...draft, phone })} />
         <Text label="WhatsApp" value={draft.whatsapp} onChange={(whatsapp) => setDraft({ ...draft, whatsapp })} />
         <Text label="E-mail" value={draft.email} onChange={(email) => setDraft({ ...draft, email })} />
