@@ -44,6 +44,10 @@ playlistImage: "",
 playlistButtonText: "Ouvir no Spotify",
 
 playlistButtonLink: "",
+adviceVideoEnabled: true,
+adviceVideoTitle: 'O que você precisa saber antes da visita ou da pintura',
+adviceVideoSubtitle: 'Veja as orientações do pintor para preparar sua casa e deixar a visita mais rápida e organizada.',
+adviceVideoUrl: '',
 };
 
 export const defaultServices: Service[] = [
