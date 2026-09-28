@@ -140,6 +140,8 @@ export async function generateFinalQuote(quote: Quote) {
       duration: quote.duration,
       paymentTerms: quote.paymentTerms,
       adminNotes: quote.adminNotes,
+      serviceItems: quote.serviceItems,
+      materialItems: quote.materialItems,
     },
   });
   if (error) throw error;
