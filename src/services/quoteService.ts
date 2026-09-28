@@ -35,6 +35,8 @@ type DbQuote = {
   client_id: string | null;
   created_at: string;
   updated_at: string;
+  service_items?: Array<{ id?: string; description: string; quantity: number; unit: string; unitPrice: number; total: number }>;
+  material_items?: Array<{ id?: string; description: string; quantity: number; unit: string; unitPrice: number; total: number }>;
   quote_images?: Array<{ id: string; image_path: string; sort_order: number }>;
 };
 
@@ -71,6 +73,8 @@ function mapQuote(row: DbQuote): Quote {
     requestPdfPath: row.request_pdf_path,
     finalPdfPath: row.final_pdf_path,
     emailStatus: row.email_status,
+    serviceItems: (row.service_items ?? []).map((item) => ({ id: item.id ?? crypto.randomUUID(), description: item.description ?? '', quantity: Number(item.quantity) || 0, unit: item.unit ?? 'un.', unitPrice: Number(item.unitPrice) || 0, total: Number(item.total) || (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0) })),
+    materialItems: (row.material_items ?? []).map((item) => ({ id: item.id ?? crypto.randomUUID(), description: item.description ?? '', quantity: Number(item.quantity) || 0, unit: item.unit ?? 'un.', unitPrice: Number(item.unitPrice) || 0, total: Number(item.total) || (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0) })),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     images: (row.quote_images ?? []).map((image) => ({
@@ -117,6 +121,8 @@ export async function updateQuote(quote: Quote) {
     duration: quote.duration,
     payment_terms: quote.paymentTerms,
     admin_notes: quote.adminNotes,
+    service_items: quote.serviceItems,
+    material_items: quote.materialItems,
     updated_at: new Date().toISOString(),
   }).eq('id', quote.id);
   if (error) throw new Error(error.message);
