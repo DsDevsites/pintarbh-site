@@ -97,11 +97,11 @@ export function HomePage() {
   const testimonials = testimonialsQuery.data ?? [];
   const beforeAfterProjects = projects.filter((project) => project.beforeAfterEnabled && project.beforeImage && project.afterImage);
   const adviceVideoEmbed = (() => {
-    const raw = settings.adviceVideoUrl?.trim() || '';
+    const raw = settings?.adviceVideoUrl?.trim() || '';
     if (!raw) return null;
     try {
       const parsed = new URL(raw);
-      const host = parsed.hostname.replace(/^www\\./, '');
+      const host = parsed.hostname.replace(/^www\./, '');
       if (host === 'youtube.com' || host === 'youtu.be') {
         const id = host === 'youtu.be'
           ? parsed.pathname.split('/').filter(Boolean)[0]
@@ -110,7 +110,7 @@ export function HomePage() {
       }
       if (host === 'vimeo.com') {
         const id = parsed.pathname.split('/').filter(Boolean).pop();
-        if (id && /^\\d+$/.test(id)) return { type: 'iframe' as const, src: `https://player.vimeo.com/video/${id}` };
+        if (id && /^\d+$/.test(id)) return { type: 'iframe' as const, src: `https://player.vimeo.com/video/${id}` };
       }
       return { type: 'video' as const, src: raw };
     } catch {
