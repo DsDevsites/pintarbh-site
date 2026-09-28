@@ -127,6 +127,15 @@ select,
   border-color: var(--pintar-pink) !important;
 }
 
+.paint-image-frame--card {
+  padding: 2px;
+  border-radius: 18px;
+}
+
+.paint-image-frame--card > img {
+  border-radius: 16px;
+}
+
 .paint-image-frame--hero {
   box-shadow: 0 18px 45px rgba(24, 24, 27, 0.10);
 }
@@ -195,8 +204,14 @@ select,
 
 .button-secondary {
   @apply inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-zinc-950 transition hover:-translate-y-0.5;
-  border-color: #ca9fdb;
+  border: 1.5px solid #ca9fdb;
+  box-shadow: 0 6px 18px rgba(202, 159, 219, 0.12);
   min-height: 44px;
+}
+
+.button-secondary:hover {
+  border-color: #f685b3;
+  box-shadow: 0 8px 22px rgba(246, 133, 179, 0.18);
 }
 
 @media (min-width: 768px) {
