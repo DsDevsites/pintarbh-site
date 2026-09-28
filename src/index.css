@@ -97,8 +97,8 @@ select,
   position: relative;
   display: block;
   overflow: hidden;
-  padding: 1px;
-  border-radius: inherit;
+  padding: 2px;
+  border-radius: 28px;
   background: linear-gradient(90deg, #fdbed6, #fc9f97, #f685b3, #ca9fdb, #82d1eb, #33d6c8, #f6f386, #78ba3d);
 }
 
@@ -106,7 +106,25 @@ select,
   display: block;
   width: 100%;
   height: 100%;
-  border-radius: inherit;
+  border-radius: 26px;
+}
+
+/* Paleta PintarBH aplicada às linhas, bordas e contornos públicos. */
+.border-zinc-100 { border-color: var(--pintar-pink) !important; }
+.border-zinc-200 { border-color: var(--pintar-lilac) !important; }
+.border-zinc-300 { border-color: var(--pintar-blue) !important; }
+.border-zinc-400 { border-color: var(--pintar-hot-pink) !important; }
+.ring-zinc-200 { --tw-ring-color: var(--pintar-lilac) !important; }
+
+.whatsapp-button {
+  background: var(--pintar-hot-pink) !important;
+  color: #09090b !important;
+  border-color: var(--pintar-hot-pink) !important;
+}
+
+.whatsapp-button:hover {
+  background: var(--pintar-pink) !important;
+  border-color: var(--pintar-pink) !important;
 }
 
 .paint-image-frame--hero {
