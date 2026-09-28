@@ -8,6 +8,7 @@ import { Footer, PublicHeader } from '../components/PublicLayout';
 import { Seo } from '../components/Seo';
 import { PaintDecorations } from '../components/PaintDecorations';
 import { BeforeAfter } from '../components/BeforeAfter';
+import { ClientAdviceVideo } from '../components/ClientAdviceVideo';
 import { VisitRequestForm } from '../components/VisitRequestForm';
 import { PreQuoteForm } from '../components/PreQuoteForm';
 import { whatsappUrl } from '../lib/utils';
@@ -191,7 +192,7 @@ export function HomePage() {
             <div className="mt-8 grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8">
               {services.length ? services.map((service, index) => (
                 <motion.article {...fadeUp} transition={{ duration: 0.55, delay: index * 0.06, ease: 'easeOut' }} key={service.id} className="overflow-hidden rounded-2xl bg-white transition hover:-translate-y-1 hover:shadow-soft">
-                  <div className="paint-image-frame paint-image-frame--card"><img src={service.image} alt={service.title} loading="lazy" decoding="async" className="h-56 w-full rounded-t-[14px] object-cover" /></div>
+                  <div className="paint-image-frame paint-image-frame--card"><img src={service.image} alt={service.title} loading="lazy" decoding="async" className="h-56 w-full rounded-[16px] object-cover" /></div>
                   <div className="p-6"><Paintbrush className="mb-4 h-6 w-6 text-zinc-500" /><h3 className="text-xl font-semibold">{service.title}</h3><p className="mt-3 text-sm leading-6 text-zinc-600">{service.description}</p></div>
                 </motion.article>
               )) : <div className="rounded-2xl border border-dashed border-zinc-300 p-8 text-sm text-zinc-500 sm:col-span-2 lg:col-span-3">Os serviços serão apresentados aqui em breve.</div>}
@@ -203,18 +204,12 @@ export function HomePage() {
           <section id="orientacoes" className="relative overflow-hidden border-y border-zinc-100 bg-zinc-50 py-14 md:py-20 scroll-mt-24">
             <div className="mx-auto max-w-5xl px-5 md:px-8 lg:px-12">
               <motion.div {...fadeUp} className="mx-auto max-w-3xl text-center">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Antes da visita</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Antes do dia da pintura</p>
                 <h2 className="mt-4 text-3xl font-light md:text-5xl">{settings.adviceVideoTitle}</h2>
                 <p className="mt-4 text-sm leading-7 text-zinc-600 md:text-base">{settings.adviceVideoSubtitle}</p>
               </motion.div>
-              <motion.div {...fadeUp} className="mt-8 overflow-hidden rounded-3xl bg-white p-1.5 shadow-soft ring-1 ring-zinc-200">
-                <div className="aspect-video overflow-hidden rounded-[22px] bg-zinc-100">
-                  {adviceVideoEmbed.type === 'iframe' ? (
-                    <iframe title={settings.adviceVideoTitle} src={adviceVideoEmbed.src} className="h-full w-full" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen />
-                  ) : (
-                    <video src={adviceVideoEmbed.src} className="h-full w-full object-cover" controls playsInline preload="metadata" />
-                  )}
-                </div>
+              <motion.div {...fadeUp} className="mt-8">
+                <ClientAdviceVideo embed={adviceVideoEmbed} title={settings.adviceVideoTitle} />
               </motion.div>
             </div>
           </section>
@@ -274,7 +269,7 @@ export function HomePage() {
             <motion.div {...fadeUp} className="flex flex-col justify-between gap-5 md:flex-row md:items-end"><div><p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Portfólio</p><h2 className="mt-4 text-3xl font-light md:text-5xl">Projetos realizados pela PintarBH.</h2><p className="mt-4 max-w-2xl text-sm leading-7 text-zinc-600">Veja alguns trabalhos e conheça os detalhes de cada projeto.</p></div></motion.div>
             <div className="mt-8 grid gap-4 md:gap-6 lg:grid-cols-3 lg:gap-8">
               {projects.length ? projects.map((project) => (
-                <motion.article {...fadeUp} key={project.id} className="overflow-hidden rounded-2xl bg-white shadow-sm"><div className="paint-image-frame paint-image-frame--card"><img src={project.coverImage} alt={project.title} loading="lazy" decoding="async" className="h-72 w-full rounded-t-[14px] object-cover" /></div><div className="p-6"><div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.12em] text-zinc-500"><MapPin className="h-4 w-4" /> {project.location}</div><h3 className="mt-3 text-2xl font-semibold">{project.title}</h3><p className="mt-3 text-sm leading-6 text-zinc-600">{project.shortDescription}</p><Link to="/projeto/$slug" params={{ slug: project.slug }} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold">Ver detalhes <ArrowRight className="h-4 w-4" /></Link></div></motion.article>
+                <motion.article {...fadeUp} key={project.id} className="overflow-hidden rounded-2xl bg-white shadow-sm"><div className="paint-image-frame paint-image-frame--card"><img src={project.coverImage} alt={project.title} loading="lazy" decoding="async" className="h-72 w-full rounded-[16px] object-cover" /></div><div className="p-6"><div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.12em] text-zinc-500"><MapPin className="h-4 w-4" /> {project.location}</div><h3 className="mt-3 text-2xl font-semibold">{project.title}</h3><p className="mt-3 text-sm leading-6 text-zinc-600">{project.shortDescription}</p><Link to="/projeto/$slug" params={{ slug: project.slug }} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold">Ver detalhes <ArrowRight className="h-4 w-4" /></Link></div></motion.article>
               )) : <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-8 text-sm text-zinc-500 md:col-span-2 lg:col-span-3">Os projetos serão apresentados aqui em breve.</div>}
             </div>
           </div>
