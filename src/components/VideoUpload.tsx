@@ -1,4 +1,4 @@
-import { Check, Film, LoaderCircle, Trash2, Upload, X } from 'lucide-react';
+import { Check, Film, LoaderCircle, Trash2, Upload } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { cn } from '../lib/utils';
