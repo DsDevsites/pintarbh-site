@@ -217,11 +217,11 @@ function SettingsEditor({ settings, onSaved }: { settings: SiteSettings; onSaved
           Exibir vídeo na página inicial
         </label>
         <div className="grid gap-5 md:grid-cols-2">
-          <Text label="Título do vídeo" value={draft.adviceVideoTitle} onChange={(adviceVideoTitle) => setDraft({ ...draft, adviceVideoTitle })} />
+          <Text label="Título da seção" value={draft.adviceVideoTitle} onChange={(adviceVideoTitle) => setDraft({ ...draft, adviceVideoTitle })} />
           <Text label="Subtítulo" value={draft.adviceVideoSubtitle} onChange={(adviceVideoSubtitle) => setDraft({ ...draft, adviceVideoSubtitle })} />
         </div>
-        <Text label="Link do vídeo" value={draft.adviceVideoUrl} onChange={(adviceVideoUrl) => setDraft({ ...draft, adviceVideoUrl })} type="url" />
-        <p className="text-xs leading-5 text-zinc-500">Aceita links do YouTube, Vimeo ou um arquivo de vídeo direto (MP4/WebM). Se o link ficar vazio, a seção não aparece.</p>
+        <Text label="Link do vídeo (YouTube, Vimeo ou MP4/WebM)" value={draft.adviceVideoUrl} onChange={(adviceVideoUrl) => setDraft({ ...draft, adviceVideoUrl })} type="url" />
+        <p className="text-xs leading-5 text-zinc-500">Use um link do YouTube/Vimeo ou o endereço direto de um vídeo MP4/WebM. O player terá play, pausa, progresso, volume, tela cheia e botão para recomeçar.</p>
       </section>
 
       <section className="grid gap-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200">
