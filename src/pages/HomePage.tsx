@@ -199,17 +199,6 @@ export function HomePage() {
           </div>
         </section>
 
-        <section id="pre-orcamento" className="relative overflow-hidden border-y border-zinc-100 bg-zinc-50 py-14 md:py-20 scroll-mt-24">
-          <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
-            <motion.div {...fadeUp} className="mb-8 max-w-2xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Orçamento</p>
-              <h2 className="mt-4 text-3xl font-light md:text-5xl">Vamos começar pelo seu projeto.</h2>
-              <p className="mt-4 text-sm leading-7 text-zinc-600">Faça um pré-orçamento rápido com algumas informações. Depois, você seguirá para a página de conclusão, onde poderá detalhar o serviço e enviar fotos.</p>
-            </motion.div>
-            <PreQuoteForm services={services} />
-          </div>
-        </section>
-
         {settings.adviceVideoEnabled && adviceVideoEmbed && (
           <section id="orientacoes" className="relative overflow-hidden border-y border-zinc-100 bg-zinc-50 py-14 md:py-20 scroll-mt-24">
             <div className="mx-auto max-w-5xl px-5 md:px-8 lg:px-12">
@@ -230,6 +219,17 @@ export function HomePage() {
             </div>
           </section>
         )}
+
+        <section id="pre-orcamento" className="relative overflow-hidden border-y border-zinc-100 bg-zinc-50 py-14 md:py-20 scroll-mt-24">
+          <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
+            <motion.div {...fadeUp} className="mb-8 max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Orçamento</p>
+              <h2 className="mt-4 text-3xl font-light md:text-5xl">Vamos começar pelo seu projeto.</h2>
+              <p className="mt-4 text-sm leading-7 text-zinc-600">Faça um pré-orçamento rápido com algumas informações. Depois, você seguirá para a página de conclusão, onde poderá detalhar o serviço e enviar fotos.</p>
+            </motion.div>
+            <PreQuoteForm services={services} />
+          </div>
+        </section>
 
         {settings.playlistEnabled && (
           <section className="relative overflow-hidden bg-gradient-to-b from-white to-zinc-50 py-20">
