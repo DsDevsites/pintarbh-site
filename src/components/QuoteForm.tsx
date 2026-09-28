@@ -208,7 +208,7 @@ export function QuoteForm({ services, profile, initialPreQuote }: Props & { prof
         <div className="flex items-start gap-3"><CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" /><span>Orçamento criado com sucesso. Protocolo <strong>{sentNumber}</strong>. Sua solicitação foi registrada e já está disponível para nossa equipe analisar.</span></div>
         {submittedDetails && settingsQuery.data?.whatsapp && (
           <a
-            className="button-primary mt-4 w-full sm:w-fit"
+            className="button-primary whatsapp-button mt-4 w-full sm:w-fit"
             href={whatsappUrl(settingsQuery.data.whatsapp, quoteWhatsappMessage(submittedDetails))}
             target="_blank"
             rel="noopener noreferrer"
