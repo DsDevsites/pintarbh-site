@@ -109,13 +109,6 @@ select,
   border-radius: 26px;
 }
 
-/* Paleta PintarBH aplicada às linhas, bordas e contornos públicos. */
-.border-zinc-100 { border-color: var(--pintar-pink) !important; }
-.border-zinc-200 { border-color: var(--pintar-lilac) !important; }
-.border-zinc-300 { border-color: var(--pintar-blue) !important; }
-.border-zinc-400 { border-color: var(--pintar-hot-pink) !important; }
-.ring-zinc-200 { --tw-ring-color: var(--pintar-lilac) !important; }
-
 .whatsapp-button {
   background: var(--pintar-hot-pink) !important;
   color: #09090b !important;
@@ -134,6 +127,7 @@ select,
 
 .paint-image-frame--card > img {
   border-radius: 16px;
+  object-fit: cover;
 }
 
 .paint-image-frame--hero {
