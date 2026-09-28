@@ -97,12 +97,25 @@ export function HomePage() {
   const testimonials = testimonialsQuery.data ?? [];
   const beforeAfterProjects = projects.filter((project) => project.beforeAfterEnabled && project.beforeImage && project.afterImage);
   const adviceVideoEmbed = (() => {
-    const url = settings.adviceVideoUrl?.trim() || '';
-    const youtube = url.match(/(?:youtube\.com\\/(?:watch\\?v=|shorts\/|embed\/)|youtu\.be\\/)([A-Za-z0-9_-]{6,})/);
-    if (youtube) return { type: 'iframe' as const, src: `https://www.youtube.com/embed/${youtube[1]}` };
-    const vimeo = url.match(/vimeo\.com\\/(?:video\\/)?(\d+)/);
-    if (vimeo) return { type: 'iframe' as const, src: `https://player.vimeo.com/video/${vimeo[1]}` };
-    return url ? { type: 'video' as const, src: url } : null;
+    const raw = settings.adviceVideoUrl?.trim() || '';
+    if (!raw) return null;
+    try {
+      const parsed = new URL(raw);
+      const host = parsed.hostname.replace(/^www\\./, '');
+      if (host === 'youtube.com' || host === 'youtu.be') {
+        const id = host === 'youtu.be'
+          ? parsed.pathname.split('/').filter(Boolean)[0]
+          : parsed.searchParams.get('v') || parsed.pathname.split('/').filter(Boolean)[1];
+        if (id) return { type: 'iframe' as const, src: `https://www.youtube.com/embed/${id}` };
+      }
+      if (host === 'vimeo.com') {
+        const id = parsed.pathname.split('/').filter(Boolean).pop();
+        if (id && /^\\d+$/.test(id)) return { type: 'iframe' as const, src: `https://player.vimeo.com/video/${id}` };
+      }
+      return { type: 'video' as const, src: raw };
+    } catch {
+      return { type: 'video' as const, src: raw };
+    }
   })();
 
   if (settingsQuery.isError) {
