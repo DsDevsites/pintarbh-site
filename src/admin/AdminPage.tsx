@@ -209,6 +209,23 @@ function SettingsEditor({ settings, onSaved }: { settings: SiteSettings; onSaved
       <Area label="Subtítulo do banner" value={draft.heroSubtitle} onChange={(heroSubtitle) => setDraft({ ...draft, heroSubtitle })} />
       <section className="grid gap-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200">
         <div>
+          <h2 className="text-xl font-semibold">Vídeo de orientações</h2>
+          <p className="mt-2 text-sm leading-6 text-zinc-500">Adicione um vídeo do pintor com orientações para o cliente antes da visita ou da pintura.</p>
+        </div>
+        <label className="flex items-center gap-3 text-sm font-medium">
+          <input type="checkbox" checked={draft.adviceVideoEnabled} onChange={(event) => setDraft({ ...draft, adviceVideoEnabled: event.target.checked })} />
+          Exibir vídeo na página inicial
+        </label>
+        <div className="grid gap-5 md:grid-cols-2">
+          <Text label="Título do vídeo" value={draft.adviceVideoTitle} onChange={(adviceVideoTitle) => setDraft({ ...draft, adviceVideoTitle })} />
+          <Text label="Subtítulo" value={draft.adviceVideoSubtitle} onChange={(adviceVideoSubtitle) => setDraft({ ...draft, adviceVideoSubtitle })} />
+        </div>
+        <Text label="Link do vídeo" value={draft.adviceVideoUrl} onChange={(adviceVideoUrl) => setDraft({ ...draft, adviceVideoUrl })} type="url" />
+        <p className="text-xs leading-5 text-zinc-500">Aceita links do YouTube, Vimeo ou um arquivo de vídeo direto (MP4/WebM). Se o link ficar vazio, a seção não aparece.</p>
+      </section>
+
+      <section className="grid gap-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200">
+        <div>
           <h2 className="text-xl font-semibold">Playlist</h2>
           <p className="mt-2 text-sm leading-6 text-zinc-500">Controle a exibição e o conteúdo da playlist diretamente pelo painel.</p>
         </div>
