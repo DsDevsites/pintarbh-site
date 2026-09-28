@@ -101,6 +101,15 @@ export type PreQuoteDraft = {
 
 export type QuoteStatus = 'new' | 'in_review' | 'sent' | 'approved' | 'completed' | 'cancelled';
 
+export type QuoteItem = {
+  id: string;
+  description: string;
+  quantity: number;
+  unit: string;
+  unitPrice: number;
+  total: number;
+};
+
 export type QuoteImage = {
   id: string;
   quoteId: string;
@@ -142,6 +151,8 @@ export type Quote = {
   emailStatus: 'pending' | 'sent' | 'failed';
   createdAt: string;
   updatedAt: string;
+  serviceItems: QuoteItem[];
+  materialItems: QuoteItem[];
   images: QuoteImage[];
 };
 
