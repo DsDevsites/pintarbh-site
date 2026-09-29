@@ -152,7 +152,8 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
         {tab === 'settings' && <SettingsEditor settings={settings} onSaved={invalidate} />}
         {tab === 'services' && <ServicesEditor services={services} onSaved={invalidate} />}
         {tab === 'projects' && <ProjectsEditor projects={projects} onSaved={invalidate} />}
-        {tab === 'testimonials' && <TestimonialsEditor testimonials={testimonials} onSaved={invalidate} />}\n        {tab === 'team' && <TeamEditor members={team} onSaved={invalidate} />}
+        {tab === 'testimonials' && <TestimonialsEditor testimonials={testimonials} onSaved={invalidate} />}
+        {tab === 'team' && <TeamEditor members={team} onSaved={invalidate} />}
         {tab === 'contacts' && <ContactsView contacts={contacts} />}
         {tab === 'quotes' && <QuotesView quotes={quotes} onRefresh={() => void queryClient.invalidateQueries({ queryKey: ['quotes'] })} />}
         {tab === 'visits' && <VisitsView visits={visits} onRefresh={() => void queryClient.invalidateQueries({ queryKey: ['visits'] })} settingsWhatsapp={settings.whatsapp} />}
