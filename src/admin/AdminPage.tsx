@@ -1,17 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, BarChart3, BriefcaseBusiness, CalendarDays, FileText, Globe2, LayoutDashboard, LogOut, MessageCircle, MessageSquare, Plus, Save, Search, Settings, ShieldCheck, Star, Trash2 } from 'lucide-react';
+import { ArrowLeft, BarChart3, BriefcaseBusiness, CalendarDays, FileText, Globe2, LayoutDashboard, LogOut, MessageCircle, MessageSquare, Plus, Save, Search, Settings, ShieldCheck, Star, Trash2, Users } from 'lucide-react';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import type React from 'react';
 import { ImageUpload } from '../components/ImageUpload';
 import { VideoUpload } from '../components/VideoUpload';
 import { Logo } from '../components/Logo';
 import { isAuthenticated, login, logout } from '../services/authService';
-import { getContacts, getProjects, getServices, getSettings, getTestimonials, getVisits, saveProjects, saveServices, saveSettings, saveTestimonials, updateVisitStatus } from '../services/contentService';
+import { getContacts, getProjects, getServices, getSettings, getTestimonials, getTeamMembers, getVisits, saveProjects, saveServices, saveSettings, saveTeamMembers, saveTestimonials, updateVisitStatus } from '../services/contentService';
 import { generateFinalQuote, getQuoteFileUrl, getQuoteImageUrl, getQuotes, updateQuote } from '../services/quoteService';
 import { slugify, visitWhatsappMessage, whatsappUrl } from '../lib/utils';
-import type { Project, Quote, Service, SiteSettings, Testimonial, VisitStatus } from '../types';
+import type { Project, Quote, Service, SiteSettings, TeamMember, Testimonial, VisitStatus } from '../types';
 
-type Tab = 'dashboard' | 'settings' | 'services' | 'projects' | 'testimonials' | 'contacts' | 'quotes' | 'visits' | 'seo';
+type Tab = 'dashboard' | 'settings' | 'services' | 'projects' | 'testimonials' | 'team' | 'contacts' | 'quotes' | 'visits' | 'seo';
 
 const nav: { id: Tab; label: string; icon: typeof LayoutDashboard }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -19,6 +19,7 @@ const nav: { id: Tab; label: string; icon: typeof LayoutDashboard }[] = [
   { id: 'services', label: 'Serviços', icon: BriefcaseBusiness },
   { id: 'projects', label: 'Projetos', icon: FileText },
   { id: 'testimonials', label: 'Depoimentos', icon: Star },
+  { id: 'team', label: 'Equipe', icon: Users },
   { id: 'contacts', label: 'Contatos', icon: MessageSquare },
   { id: 'quotes', label: 'Orçamentos', icon: FileText },
   { id: 'visits', label: 'Visitas', icon: CalendarDays },
@@ -86,6 +87,7 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
   const servicesQuery = useQuery({ queryKey: ['services'], queryFn: getServices, staleTime: 5 * 60 * 1000 });
   const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects, staleTime: 5 * 60 * 1000 });
   const testimonialsQuery = useQuery({ queryKey: ['testimonials'], queryFn: getTestimonials, staleTime: 5 * 60 * 1000 });
+  const teamQuery = useQuery({ queryKey: ['team'], queryFn: getTeamMembers, staleTime: 0, refetchOnWindowFocus: true });
   const contactsQuery = useQuery({ queryKey: ['contacts'], queryFn: getContacts, staleTime: 0, refetchOnWindowFocus: true });
   const quotesQuery = useQuery({ queryKey: ['quotes'], queryFn: getQuotes, staleTime: 0, refetchOnWindowFocus: true });
   const visitsQuery = useQuery({ queryKey: ['visits'], queryFn: getVisits, staleTime: 0, refetchOnWindowFocus: true });
@@ -100,6 +102,7 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
   const services = servicesQuery.data ?? [];
   const projects = projectsQuery.data ?? [];
   const testimonials = testimonialsQuery.data ?? [];
+  const team = teamQuery.data ?? [];
   const contacts = contactsQuery.data ?? [];
   const quotes = quotesQuery.data ?? [];
   const visits = visitsQuery.data ?? [];
@@ -145,11 +148,11 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
           </a>
         </div>
 
-        {tab === 'dashboard' && <Dashboard services={services.length} projects={projects.length} testimonials={testimonials.length} contacts={contacts.length} quotes={quotes.length} visits={visits.length} />}
+        {tab === 'dashboard' && <Dashboard services={services.length} projects={projects.length} testimonials={testimonials.length} team={team.length} contacts={contacts.length} quotes={quotes.length} visits={visits.length} />}
         {tab === 'settings' && <SettingsEditor settings={settings} onSaved={invalidate} />}
         {tab === 'services' && <ServicesEditor services={services} onSaved={invalidate} />}
         {tab === 'projects' && <ProjectsEditor projects={projects} onSaved={invalidate} />}
-        {tab === 'testimonials' && <TestimonialsEditor testimonials={testimonials} onSaved={invalidate} />}
+        {tab === 'testimonials' && <TestimonialsEditor testimonials={testimonials} onSaved={invalidate} />}\n        {tab === 'team' && <TeamEditor members={team} onSaved={invalidate} />}
         {tab === 'contacts' && <ContactsView contacts={contacts} />}
         {tab === 'quotes' && <QuotesView quotes={quotes} onRefresh={() => void queryClient.invalidateQueries({ queryKey: ['quotes'] })} />}
         {tab === 'visits' && <VisitsView visits={visits} onRefresh={() => void queryClient.invalidateQueries({ queryKey: ['visits'] })} settingsWhatsapp={settings.whatsapp} />}
@@ -159,11 +162,12 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
   );
 }
 
-function Dashboard({ services, projects, testimonials, contacts, quotes, visits }: { services: number; projects: number; testimonials: number; contacts: number; quotes: number; visits: number }) {
+function Dashboard({ services, projects, testimonials, team, contacts, quotes, visits }: { services: number; projects: number; testimonials: number; team: number; contacts: number; quotes: number; visits: number }) {
   const items = [
     ['Serviços', services, BriefcaseBusiness],
     ['Projetos', projects, FileText],
     ['Depoimentos', testimonials, Star],
+    ['Equipe', team, Users],
     ['Contatos', contacts, MessageSquare],
     ['Orçamentos', quotes, FileText],
     ['Visitas', visits, CalendarDays],
@@ -339,6 +343,36 @@ function TestimonialsEditor({ testimonials, onSaved }: { testimonials: Testimoni
             <Text label="Nota" type="number" value={String(testimonial.rating)} onChange={(rating) => setItems(update(items, index, { ...testimonial, rating: Number(rating) }))} />
           </div>
           <Area label="Comentário" value={testimonial.comment} onChange={(comment) => setItems(update(items, index, { ...testimonial, comment }))} />
+        </EditorCard>
+      ))}
+    </PanelForm>
+  );
+}
+
+function TeamEditor({ members, onSaved }: { members: TeamMember[]; onSaved: () => void }) {
+  const [items, setItems] = useState(members);
+  const mutation = useMutation({ mutationFn: saveTeamMembers, onSuccess: onSaved });
+
+  function emptyMember(): TeamMember {
+    return { id: crypto.randomUUID(), name: '', phone: '', role: '', photoUrl: '', description: '', sortOrder: items.length };
+  }
+
+  return (
+    <PanelForm onSubmit={() => mutation.mutate(items)} pending={mutation.isPending}>
+      <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200">
+        <h2 className="text-xl font-semibold">Equipe PintarBH</h2>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">Cadastre as pessoas que fazem parte da equipe. Elas serão apresentadas como equipe no site, sem o rótulo de funcionários.</p>
+      </div>
+      <button type="button" className="button-secondary w-fit" onClick={() => setItems([...items, emptyMember()])}><Plus className="h-5 w-5" /> Adicionar pessoa à equipe</button>
+      {items.map((member, index) => (
+        <EditorCard key={member.id} onDelete={() => setItems(items.filter((item) => item.id !== member.id))}>
+          <div className="grid gap-5 md:grid-cols-2">
+            <Text label="Nome" value={member.name} onChange={(name) => setItems(update(items, index, { ...member, name }))} />
+            <Text label="Número / WhatsApp" value={member.phone} onChange={(phone) => setItems(update(items, index, { ...member, phone }))} />
+            <Text label="Função na equipe (opcional)" value={member.role} onChange={(role) => setItems(update(items, index, { ...member, role }))} />
+          </div>
+          <ImageUpload label="Foto" value={member.photoUrl} onChange={(photoUrl) => setItems(update(items, index, { ...member, photoUrl }))} cropAspect={1} cropHint="Use uma foto vertical ou quadrada. O enquadramento será padronizado no site." />
+          <Area label="Apresentação curta (opcional)" value={member.description} onChange={(description) => setItems(update(items, index, { ...member, description }))} />
         </EditorCard>
       ))}
     </PanelForm>
