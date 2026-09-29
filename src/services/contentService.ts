@@ -1,7 +1,7 @@
 import { defaultProjects, defaultServices, defaultSettings, defaultTestimonials } from '../data/seed';
 import { sanitizeText, slugify } from '../lib/utils';
 import { supabase } from '../lib/supabase';
-import type { ContactMessage, Project, Service, SiteSettings, Testimonial, VisitRequest, VisitStatus } from '../types';
+import type { ContactMessage, Project, Service, SiteSettings, TeamMember, Testimonial, VisitRequest, VisitStatus } from '../types';
 
 type DbProject = {
   id: string; slug: string; title: string; category: string; location: string; date: string;
@@ -153,6 +153,55 @@ export async function saveProjects(projects: Project[]) {
   }
 
   return writeLocal(keys.projects, normalized);
+}
+
+export async function getTeamMembers(): Promise<TeamMember[]> {
+  if (supabase) {
+    const { data, error } = await supabase.from('team_members').select('*').order('sort_order').order('created_at');
+    if (error) throw new Error(error.message);
+    return (data ?? []).map((item) => ({
+      id: item.id,
+      name: item.name,
+      phone: item.phone ?? '',
+      role: item.role ?? '',
+      photoUrl: item.photo_url ?? '',
+      description: item.description ?? '',
+      sortOrder: item.sort_order ?? 0,
+    }));
+  }
+  return [];
+}
+
+export async function saveTeamMembers(members: TeamMember[]) {
+  const normalized = members.map((member, index) => ({
+    id: ensureUuid(member.id),
+    name: sanitizeText(member.name).slice(0, 120),
+    phone: sanitizeText(member.phone).slice(0, 40),
+    role: sanitizeText(member.role).slice(0, 100),
+    photo_url: member.photoUrl,
+    description: sanitizeText(member.description).slice(0, 500),
+    sort_order: index,
+    updated_at: new Date().toISOString(),
+  }));
+
+  if (supabase) {
+    if (normalized.length) {
+      await assertSupabase(await supabase.from('team_members').upsert(normalized, { onConflict: 'id' }));
+      await assertSupabase(await supabase.from('team_members').delete().not('id', 'in', toInFilter(normalized.map((member) => member.id))));
+    } else {
+      await assertSupabase(await supabase.from('team_members').delete().not('id', 'is', null));
+    }
+    return normalized.map((member) => ({
+      id: member.id,
+      name: member.name,
+      phone: member.phone,
+      role: member.role,
+      photoUrl: member.photo_url,
+      description: member.description,
+      sortOrder: member.sort_order,
+    }));
+  }
+  return members;
 }
 
 export async function getTestimonials(): Promise<Testimonial[]> {
