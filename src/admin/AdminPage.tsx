@@ -772,11 +772,11 @@ function EditorCard({ children, onDelete }: { children: React.ReactNode; onDelet
   );
 }
 
-function Text({ label, value, onChange, type = 'text' }: { label: string; value: string; onChange: (value: string) => void; type?: string }) {
+function Text({ label, value, onChange, type = 'text', placeholder }: { label: string; value: string; onChange: (value: string) => void; type?: string; placeholder?: string }) {
   return (
     <label className="block">
       <span className="mb-2 block text-sm font-medium text-zinc-700">{label}</span>
-      <input className="field" type={type} value={value} onChange={(event) => onChange(event.target.value)} />
+      <input className="field" type={type} placeholder={placeholder} value={value} onChange={(event) => onChange(event.target.value)} />
     </label>
   );
 }
