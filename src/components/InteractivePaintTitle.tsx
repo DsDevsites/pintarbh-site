@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 
 const paintColors = ['#f685b3', '#fc9f97', '#ca9fdb', '#82d1eb', '#33d6c8', '#f6f386', '#78ba3d'];
 
@@ -10,46 +9,51 @@ type InteractivePaintTitleProps = {
 
 export function InteractivePaintTitle({ text, className = '' }: InteractivePaintTitleProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [point, setPoint] = useState({ x: 50, y: 50 });
-  const [active, setActive] = useState(false);
-  const [colorIndex, setColorIndex] = useState(0);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const timer = window.setInterval(() => {
-      if (active) return;
-      setColorIndex((current) => (current + 1) % paintColors.length);
-    }, 1800);
+    let frame = 0;
 
-    return () => window.clearInterval(timer);
-  }, [active]);
+    const update = () => {
+      frame = 0;
+      const element = containerRef.current;
+      if (!element) return;
 
-  const updatePoint = (clientX: number, clientY: number) => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return;
+      const rect = element.getBoundingClientRect();
+      const viewport = window.innerHeight || 1;
+      const total = Math.max(viewport + rect.height, 1);
+      const travelled = viewport - rect.top;
+      const next = Math.max(0, Math.min(1, travelled / total));
+      setProgress(next);
+    };
 
-    setPoint({
-      x: ((clientX - rect.left) / rect.width) * 100,
-      y: ((clientY - rect.top) / rect.height) * 100,
-    });
-    setActive(true);
-  };
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
 
-  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    updatePoint(event.clientX, event.clientY);
-  };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', update);
 
-  const activeColor = paintColors[colorIndex];
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', update);
+    };
+  }, []);
+
+  const colorIndex = Math.min(paintColors.length - 1, Math.floor(progress * paintColors.length));
+  const paintColor = paintColors[colorIndex];
+  const x = 6 + progress * 88;
+  const y = 14 + Math.sin(progress * Math.PI) * 18;
+  const rotation = -10 + progress * 20;
+  const cylinderRotation = progress * 760;
 
   return (
     <div
       ref={containerRef}
-      className="interactive-paint-title relative select-none touch-none"
-      onPointerMove={handlePointerMove}
-      onPointerEnter={(event) => updatePoint(event.clientX, event.clientY)}
-      onPointerLeave={() => setActive(false)}
-      onPointerDown={(event) => updatePoint(event.clientX, event.clientY)}
-      style={{ '--paint-color': activeColor } as CSSProperties}
-      aria-label={text}
+      className="interactive-paint-title relative select-none"
+      style={{ '--paint-color': paintColor } as CSSProperties}
     >
       <h1
         className={`hero-title relative z-10 mx-auto max-w-3xl text-4xl font-light leading-tight tracking-normal text-zinc-950 md:text-6xl md:leading-tight lg:mx-0 lg:text-7xl ${className}`}
@@ -59,118 +63,123 @@ export function InteractivePaintTitle({ text, className = '' }: InteractivePaint
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-20 overflow-hidden"
-        style={{
-          maskImage: `radial-gradient(circle 95px at ${point.x}% ${point.y}%, black 0%, black 58%, transparent 100%)`,
-          WebkitMaskImage: `radial-gradient(circle 95px at ${point.x}% ${point.y}%, black 0%, black 58%, transparent 100%)`,
-        }}
-      >
-        <h2
-          className="hero-title mx-auto max-w-3xl text-4xl font-light leading-tight tracking-normal md:text-6xl md:leading-tight lg:mx-0 lg:text-7xl"
-          style={{
-            backgroundImage: `linear-gradient(90deg, ${paintColors.join(', ')})`,
-            backgroundSize: '220% 100%',
-            backgroundPosition: `${point.x}% 50%`,
-            WebkitBackgroundClip: 'text',
-            backgroundClip: 'text',
-            color: 'transparent',
-          }}
-        >
-          {text}
-        </h2>
-
-        <motion.div
-          className="absolute h-3 rounded-full blur-[1px]"
-          style={{
-            width: '190px',
-            left: `calc(${point.x}% - 95px)`,
-            top: `calc(${point.y}% + 22px)`,
-            background: `linear-gradient(90deg, transparent, ${activeColor}, transparent)`,
-          }}
-          animate={{ opacity: active ? 0.78 : 0 }}
-          transition={{ duration: 0.18 }}
-        />
-      </div>
-
-      <motion.div
-        aria-hidden="true"
-        className="pointer-events-none absolute z-30 block"
-        style={{
-          left: `calc(${point.x}% - 18px)`,
-          top: `calc(${point.y}% - 34px)`,
-        }}
-        animate={{
-          rotate: active ? -7 : 0,
-          scale: active ? 1 : 0.9,
-          opacity: active ? 1 : 0,
-        }}
-        transition={{ type: 'spring', stiffness: 420, damping: 26, mass: 0.45 }}
+        className="pointer-events-none absolute inset-x-0 -top-8 z-20 h-36 overflow-visible"
       >
         <svg
-          width="92"
-          height="126"
-          viewBox="0 0 92 126"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="drop-shadow-lg"
+          viewBox="0 0 1000 180"
+          preserveAspectRatio="none"
+          className="absolute inset-0 h-full w-full overflow-visible"
         >
           <defs>
-            <linearGradient id="rollerNap" x1="8" y1="10" x2="62" y2="82" gradientUnits="userSpaceOnUse">
-              <stop stopColor={activeColor} />
-              <stop offset="0.55" stopColor={activeColor} stopOpacity="0.9" />
-              <stop offset="1" stopColor="#5B5B5B" />
+            <filter id="rollerShadow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="5" />
+            </filter>
+
+            <filter id="rollerTexture" x="-30%" y="-30%" width="160%" height="160%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="3" seed="8" result="noise" />
+              <feColorMatrix in="noise" type="saturate" values="0" result="grayNoise" />
+              <feComponentTransfer in="grayNoise" result="softNoise">
+                <feFuncA type="table" tableValues="0 0.18" />
+              </feComponentTransfer>
+              <feBlend in="SourceGraphic" in2="softNoise" mode="multiply" />
+            </filter>
+
+            <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stopColor="#f4f4f5" />
+              <stop offset="0.35" stopColor="#8d8d91" />
+              <stop offset="0.58" stopColor="#f7f7f8" />
+              <stop offset="1" stopColor="#4b4b50" />
             </linearGradient>
-            <linearGradient id="rollerHandle" x1="63" y1="67" x2="85" y2="111" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#B8B8B8" />
-              <stop offset="0.45" stopColor="#777777" />
-              <stop offset="1" stopColor="#333333" />
+
+            <linearGradient id="handle" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stopColor="#252525" />
+              <stop offset="0.5" stopColor="#5a5a5a" />
+              <stop offset="1" stopColor="#171717" />
+            </linearGradient>
+
+            <linearGradient id="rollerSurface" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stopColor={paintColor} stopOpacity="0.82" />
+              <stop offset="0.12" stopColor={paintColor} />
+              <stop offset="0.5" stopColor={paintColor} />
+              <stop offset="0.88" stopColor={paintColor} stopOpacity="0.92" />
+              <stop offset="1" stopColor="#666" stopOpacity="0.8" />
             </linearGradient>
           </defs>
 
-          <rect
-            x="8"
-            y="7"
-            width="55"
-            height="72"
-            rx="24"
-            transform="rotate(-28 8 7)"
-            fill="url(#rollerNap)"
-          />
-          <path
-            d="M12 17C22 10 35 8 45 13"
-            stroke="white"
-            strokeOpacity="0.22"
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-          <path
-            d="M53 57C64 65 70 69 74 78C77 85 75 91 70 98"
-            stroke="url(#rollerHandle)"
-            strokeWidth="6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M70 98L84 104"
-            stroke="#333333"
-            strokeWidth="6"
-            strokeLinecap="round"
-          />
-          <path
-            d="M70 98L84 104"
-            stroke="#AFAFAF"
-            strokeOpacity="0.35"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </svg>
-      </motion.div>
+          <g transform={`translate(${x * 10} ${y}) rotate(${rotation} ${x * 10} 65)`}>
+            <ellipse
+              cx={x * 10 + 10}
+              cy="130"
+              rx="75"
+              ry="10"
+              fill="#111"
+              opacity="0.16"
+              filter="url(#rollerShadow)"
+            />
 
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-5 left-1/2 z-0 h-8 w-44 -translate-x-1/2 rounded-full blur-xl transition-opacity duration-300"
-        style={{ background: activeColor, opacity: active ? 0.22 : 0 }}
-      />
+            <g transform={`translate(-55 -48) rotate(${cylinderRotation} 55 48)`}>
+              <rect
+                x={x * 10 - 8}
+                y="22"
+                width="122"
+                height="64"
+                rx="30"
+                fill="url(#rollerSurface)"
+                filter="url(#rollerTexture)"
+              />
+              <ellipse
+                cx={x * 10 - 8}
+                cy="54"
+                rx="10"
+                ry="31"
+                fill={paintColor}
+                opacity="0.88"
+              />
+              <ellipse
+                cx={x * 10 + 114}
+                cy="54"
+                rx="10"
+                ry="31"
+                fill="#555"
+                opacity="0.75"
+              />
+              <path
+                d={`M${x * 10 - 1} 27 Q ${x * 10 + 52} 12 ${x * 10 + 105} 27`}
+                fill="none"
+                stroke="#fff"
+                strokeOpacity="0.22"
+                strokeWidth="4"
+                strokeLinecap="round"
+              />
+            </g>
+
+            <path
+              d={`M${x * 10 + 108} 73 C ${x * 10 + 136} 82, ${x * 10 + 153} 101, ${x * 10 + 147} 119 L ${x * 10 + 138} 139`}
+              fill="none"
+              stroke="url(#metal)"
+              strokeWidth="7"
+              strokeLinecap="round"
+            />
+
+            <path
+              d={`M${x * 10 + 138} 139 L ${x * 10 + 170} 151`}
+              fill="none"
+              stroke="url(#handle)"
+              strokeWidth="13"
+              strokeLinecap="round"
+            />
+
+            <path
+              d={`M${x * 10 + 139} 135 L ${x * 10 + 169} 147`}
+              fill="none"
+              stroke="#fff"
+              strokeOpacity="0.12"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+          </g>
+        </svg>
+      </div>
     </div>
   );
 }
