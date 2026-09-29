@@ -381,7 +381,7 @@ export function HomePage() {
               <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 {team.map((member) => (
                   <motion.article {...fadeUp} key={member.id} className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-zinc-100">
-                    <div className="paint-image-frame paint-image-frame--team aspect-square"><img src={member.photoUrl || '/images/placeholder.svg'} alt={member.name} loading="lazy" decoding="async" className="h-full w-full rounded-[16px] object-cover" /></div>
+                    <div className="paint-image-frame paint-image-frame--team aspect-square">{member.photoUrl ? <img src={member.photoUrl} alt={member.name} loading="lazy" decoding="async" className="h-full w-full rounded-[16px] object-cover" /> : <div className="grid h-full w-full place-items-center rounded-[16px] bg-zinc-100 text-4xl font-semibold text-zinc-400">{member.name.slice(0, 1).toUpperCase() || "P"}</div>}</div>
                     <div className="p-5">
                       <h3 className="text-xl font-semibold">{member.name}</h3>
                       {member.role && <p className="mt-1 text-sm font-medium text-zinc-500">{member.role}</p>}
