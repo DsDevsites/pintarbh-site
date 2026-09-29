@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react';
 import { motion } from 'framer-motion';
 
 const paintColors = ['#f685b3', '#fc9f97', '#ca9fdb', '#82d1eb', '#33d6c8', '#f6f386', '#78ba3d'];
@@ -33,7 +33,7 @@ export function InteractivePaintTitle({ text, className = '' }: InteractivePaint
     setActive(true);
   };
 
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
     updatePoint(event.clientX, event.clientY);
   };
 
@@ -49,7 +49,7 @@ export function InteractivePaintTitle({ text, className = '' }: InteractivePaint
       onPointerEnter={(event) => updatePoint(event.clientX, event.clientY)}
       onPointerLeave={handlePointerLeave}
       onPointerDown={(event) => updatePoint(event.clientX, event.clientY)}
-      style={{ '--paint-color': activeColor } as React.CSSProperties}
+      style={{ '--paint-color': activeColor } as CSSProperties}
       aria-label={text}
     >
       <h1 className={\`hero-title relative z-10 mx-auto max-w-3xl text-4xl font-light leading-tight tracking-normal text-zinc-950 md:text-6xl md:leading-tight lg:mx-0 lg:text-7xl \${className}\`}>
@@ -94,7 +94,7 @@ export function InteractivePaintTitle({ text, className = '' }: InteractivePaint
 
       <motion.div
         aria-hidden="true"
-        className="pointer-events-none absolute z-30 hidden md:block"
+        className="pointer-events-none absolute z-30 block scale-75 md:scale-100"
         style={{
           left: \`calc(\${point.x}% - 10px)\`,
           top: \`calc(\${point.y}% - 9px)\`,
