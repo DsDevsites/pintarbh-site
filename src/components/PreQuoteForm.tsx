@@ -35,8 +35,8 @@ export function PreQuoteForm({ services }: Props) {
   const serviceOptions = services.length ? services.map((service) => service.title) : fallbackServices;
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-3xl bg-white p-6 shadow-soft ring-1 ring-zinc-200 md:p-8">
-      <div className="grid gap-4 md:grid-cols-2">
+    <form onSubmit={handleSubmit} className="rounded-3xl bg-white p-5 shadow-soft ring-1 ring-zinc-200 md:p-6">
+      <div className="grid gap-3 md:grid-cols-2">
         <div className="md:col-span-2">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Pré-orçamento</p>
           <h3 className="mt-2 text-2xl font-semibold md:text-3xl">Comece com algumas informações.</h3>
