@@ -260,6 +260,15 @@ export async function getContacts(): Promise<ContactMessage[]> {
   return readLocal(keys.contacts, []);
 }
 
+export async function deleteContact(id: string) {
+  if (supabase) {
+    const { error } = await supabase.from('contacts').delete().eq('id', id);
+    if (error) throw new Error(error.message);
+    return;
+  }
+  const current = readLocal<ContactMessage[]>(keys.contacts, []);
+  writeLocal(keys.contacts, current.filter((contact) => contact.id !== id));
+}
 
 function mapVisit(row: {
   id: string;
