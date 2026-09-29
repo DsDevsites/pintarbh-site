@@ -33,7 +33,17 @@ export type SiteSettings = {
   adviceVideoUrl: string;
 };
 
-export type TeamMember = {\n  id: string;\n  name: string;\n  phone: string;\n  role: string;\n  photoUrl: string;\n  description: string;\n  sortOrder: number;\n};\n\nexport type Service = {
+export type TeamMember = {
+  id: string;
+  name: string;
+  phone: string;
+  role: string;
+  photoUrl: string;
+  description: string;
+  sortOrder: number;
+};
+
+export type Service = {
   id: string;
   title: string;
   description: string;
