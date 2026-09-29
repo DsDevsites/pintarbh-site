@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { Facebook, Instagram, LogIn, Mail, MapPin, Menu, Phone, ShieldCheck, UserCircle, X } from 'lucide-react';
+import { Facebook, Instagram, LogIn, Mail, MapPin, MoreVertical, Phone, ShieldCheck, UserCircle, X } from 'lucide-react';
 import { useState } from 'react';
 import { Logo } from './Logo';
 import type { SiteSettings } from '../types';
@@ -23,7 +23,7 @@ export function PublicHeader({ settings }: { settings: SiteSettings }) {
           {links.map(([label, href]) => <a key={href} href={href} className="transition hover:text-zinc-950">{label}</a>)}
         </div>
         
-        <button type="button" className="ml-auto grid h-11 w-11 shrink-0 place-items-center rounded-full border border-zinc-200 md:hidden" onClick={() => setOpen(!open)} aria-label={open ? 'Fechar menu' : 'Abrir menu'} aria-expanded={open} aria-controls="mobile-navigation">{open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}</button>
+        <button type="button" className="ml-auto grid h-11 w-11 shrink-0 place-items-center rounded-full border border-zinc-200 md:hidden" onClick={() => setOpen(!open)} aria-label={open ? 'Fechar menu' : 'Abrir menu'} aria-expanded={open} aria-controls="mobile-navigation">{open ? <X className="h-5 w-5" /> : <MoreVertical className="h-5 w-5" />}</button>
       </nav>
       {open && <div id="mobile-navigation" className="border-t border-zinc-100 bg-white px-4 py-3 md:hidden">
         <div className="flex flex-col gap-2">
