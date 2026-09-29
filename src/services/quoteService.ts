@@ -170,3 +170,19 @@ export async function getCustomerQuotes(): Promise<Quote[]> {
   if (error) throw new Error(error.message);
   return (data as DbQuote[]).map(mapQuote);
 }
+
+export async function deleteQuote(quote: Quote) {
+  if (!supabase) throw new Error('Supabase não configurado.');
+  const storagePaths = [
+    ...(quote.images ?? []).map((image) => image.imagePath),
+    quote.requestPdfPath,
+    quote.finalPdfPath,
+  ].filter((path): path is string => Boolean(path));
+
+  if (storagePaths.length) {
+    await supabase.storage.from('pintarbh-quotes').remove(storagePaths);
+  }
+
+  const { error } = await supabase.from('quotes').delete().eq('id', quote.id);
+  if (error) throw new Error(error.message);
+}
