@@ -354,7 +354,7 @@ function TeamEditor({ members, onSaved }: { members: TeamMember[]; onSaved: () =
   const mutation = useMutation({ mutationFn: saveTeamMembers, onSuccess: onSaved });
 
   function emptyMember(): TeamMember {
-    return { id: crypto.randomUUID(), name: '', phone: '', role: '', photoUrl: '', description: '', sortOrder: items.length };
+    return { id: crypto.randomUUID(), name: '', phone: '', instagramUrl: '', role: '', photoUrl: '', description: '', sortOrder: items.length };
   }
 
   return (
@@ -369,6 +369,7 @@ function TeamEditor({ members, onSaved }: { members: TeamMember[]; onSaved: () =
           <div className="grid gap-5 md:grid-cols-2">
             <Text label="Nome" value={member.name} onChange={(name) => setItems(update(items, index, { ...member, name }))} />
             <Text label="Número / WhatsApp" value={member.phone} onChange={(phone) => setItems(update(items, index, { ...member, phone }))} />
+            <Text label="Instagram" value={member.instagramUrl} onChange={(instagramUrl) => setItems(update(items, index, { ...member, instagramUrl }))} placeholder="https://instagram.com/seuusuario" />
             <Text label="Função na equipe (opcional)" value={member.role} onChange={(role) => setItems(update(items, index, { ...member, role }))} />
           </div>
           <ImageUpload label="Foto" value={member.photoUrl} onChange={(photoUrl) => setItems(update(items, index, { ...member, photoUrl }))} cropAspect={1} cropHint="Use uma foto vertical ou quadrada. O enquadramento será padronizado no site." />
