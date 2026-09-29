@@ -182,23 +182,6 @@ export function HomePage() {
           </div>
         </section>
 
-        <section id="sobre" className="relative overflow-hidden border-y border-zinc-100 py-14 md:py-20 scroll-mt-24">
-          <PaintDecorations can className="paint-decor-top-right" />
-          <div className="mx-auto grid max-w-7xl gap-6 px-5 md:gap-8 md:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-12">
-            <motion.div {...fadeUp} className="paint-image-frame paint-image-frame--soft h-full min-h-[320px] rounded-3xl md:min-h-[420px]"><img src={settings.aboutImage} alt={settings.aboutTitle} loading="lazy" decoding="async" className="h-full min-h-[318px] w-full max-w-full rounded-[23px] object-cover md:min-h-[418px]" /></motion.div>
-            <motion.div {...fadeUp}>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">{settings.aboutEyebrow}</p>
-              <h2 className="mt-4 text-3xl font-light leading-tight md:text-5xl">{settings.aboutTitle}</h2>
-              <p className="mt-6 text-base leading-8 text-zinc-600">{settings.story}</p>
-              <div className="mt-8 grid gap-4 sm:grid-cols-3">
-                {[['Missão', settings.mission], ['Visão', settings.vision], ['Valores', settings.values]].map(([title, text]) => (
-                  <div key={title} className="rounded-2xl border border-zinc-200 p-5"><h3 className="text-sm font-semibold">{title}</h3><p className="mt-3 text-sm leading-6 text-zinc-600">{text}</p></div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
         <section id="servicos" className="relative overflow-hidden py-14 md:py-20 scroll-mt-24">
           <PaintDecorations roller className="paint-decor-bottom-left" />
           <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
