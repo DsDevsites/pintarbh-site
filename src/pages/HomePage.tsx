@@ -386,7 +386,10 @@ export function HomePage() {
                       <h3 className="text-xl font-semibold">{member.name}</h3>
                       {member.role && <p className="mt-1 text-sm font-medium text-zinc-500">{member.role}</p>}
                       {member.description && <p className="mt-3 text-sm leading-6 text-zinc-600">{member.description}</p>}
-                      {member.phone && <a href={whatsappUrl(member.phone)} className="mt-4 inline-flex text-sm font-semibold text-zinc-800 hover:underline">Falar com a equipe</a>}
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {member.phone && <a href={whatsappUrl(member.phone)} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp de ${member.name}`} className="whatsapp-button inline-flex h-10 w-10 items-center justify-center rounded-full border transition hover:-translate-y-0.5" title="WhatsApp"><MessageCircle className="h-5 w-5" /></a>}
+                        {member.instagramUrl && <a href={member.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label={`Instagram de ${member.name}`} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#ca9fdb] bg-[#ca9fdb] text-zinc-950 transition hover:-translate-y-0.5 hover:bg-[#fdbed6] hover:border-[#fdbed6]" title="Instagram"><Instagram className="h-5 w-5" /></a>}
+                      </div>
                     </div>
                   </motion.article>
                 ))}
