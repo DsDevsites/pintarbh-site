@@ -6,8 +6,8 @@ import { ImageUpload } from '../components/ImageUpload';
 import { VideoUpload } from '../components/VideoUpload';
 import { Logo } from '../components/Logo';
 import { isAuthenticated, login, logout } from '../services/authService';
-import { getContacts, getProjects, getServices, getSettings, getTestimonials, getTeamMembers, getVisits, saveProjects, saveServices, saveSettings, saveTeamMembers, saveTestimonials, updateVisitStatus } from '../services/contentService';
-import { generateFinalQuote, getQuoteFileUrl, getQuoteImageUrl, getQuotes, updateQuote } from '../services/quoteService';
+import { deleteContact, getContacts, getProjects, getServices, getSettings, getTestimonials, getTeamMembers, getVisits, saveProjects, saveServices, saveSettings, saveTeamMembers, saveTestimonials, updateVisitStatus } from '../services/contentService';
+import { deleteQuote, generateFinalQuote, getQuoteFileUrl, getQuoteImageUrl, getQuotes, updateQuote } from '../services/quoteService';
 import { slugify, visitWhatsappMessage, whatsappUrl } from '../lib/utils';
 import type { Project, Quote, Service, SiteSettings, TeamMember, Testimonial, VisitStatus } from '../types';
 
@@ -381,6 +381,7 @@ function TeamEditor({ members, onSaved }: { members: TeamMember[]; onSaved: () =
 }
 
 function ContactsView({ contacts }: { contacts: Awaited<ReturnType<typeof getContacts>> }) {
+  const mutation = useMutation({ mutationFn: deleteContact });
   if (!contacts.length) return <div className="rounded-2xl bg-white p-8 text-sm text-zinc-500 ring-1 ring-zinc-200">Nenhum contato recebido ainda.</div>;
   return (
     <div className="grid gap-4">
@@ -391,7 +392,10 @@ function ContactsView({ contacts }: { contacts: Awaited<ReturnType<typeof getCon
               <h2 className="text-lg font-semibold">{contact.name}</h2>
               <p className="text-sm text-zinc-500">{contact.email} · {contact.phone}</p>
             </div>
-            <span className="text-xs text-zinc-500">{new Date(contact.createdAt).toLocaleString('pt-BR')}</span>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-zinc-500">{new Date(contact.createdAt).toLocaleString('pt-BR')}</span>
+              <button type="button" className="grid h-9 w-9 place-items-center rounded-full border border-red-200 text-red-600 hover:bg-red-50" title="Apagar contato" onClick={() => { if (window.confirm('Apagar este contato?')) void mutation.mutateAsync(contact.id); }}><Trash2 className="h-4 w-4" /></button>
+            </div>
           </div>
           <p className="mt-4 text-sm leading-6 text-zinc-600">{contact.message}</p>
         </article>
@@ -513,7 +517,12 @@ function QuotesView({ quotes, onRefresh }: { quotes: Quote[]; onRefresh: () => v
           </button>
         ))}
       </div>
-      <QuoteEditor quote={selected} onSaved={onRefresh} />
+      <div className="grid gap-3">
+        <div className="flex justify-end">
+          <button type="button" className="button-secondary border-red-200 text-red-600 hover:bg-red-50" onClick={async () => { if (!window.confirm('Apagar este orçamento e os arquivos relacionados?')) return; try { await deleteQuote(selected); onRefresh(); } catch { window.alert('Não foi possível apagar o orçamento.'); } }}><Trash2 className="h-4 w-4" /> Apagar orçamento</button>
+        </div>
+        <QuoteEditor quote={selected} onSaved={onRefresh} />
+      </div>
     </div>
   );
 }
