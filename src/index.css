@@ -241,3 +241,6 @@ select,
     opacity: 0.14;
   }
 }
+
+.paint-image-frame--team { padding: 2px; border-radius: 18px; }
+.paint-image-frame--team > img { border-radius: 16px; }
