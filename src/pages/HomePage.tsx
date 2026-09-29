@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle2, MapPin, MessageCircle, Paintbrush, Star } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Instagram, MapPin, MessageCircle, Paintbrush, Star } from 'lucide-react';
 import { getProjects, getServices, getSettings, getTeamMembers, getTestimonials } from '../services/contentService';
 import { Footer, PublicHeader } from '../components/PublicLayout';
 import { Seo } from '../components/Seo';
