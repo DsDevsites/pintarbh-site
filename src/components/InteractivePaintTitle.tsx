@@ -94,28 +94,76 @@ export function InteractivePaintTitle({ text, className = '' }: InteractivePaint
 
       <motion.div
         aria-hidden="true"
-        className="pointer-events-none absolute z-30 block scale-75 md:scale-100"
+        className="pointer-events-none absolute z-30 block"
         style={{
-          left: `calc(${point.x}% - 10px)`,
-          top: `calc(${point.y}% - 9px)`,
+          left: `calc(${point.x}% - 18px)`,
+          top: `calc(${point.y}% - 34px)`,
         }}
         animate={{
           rotate: active ? -7 : 0,
-          scale: active ? 1 : 0.86,
+          scale: active ? 1 : 0.9,
           opacity: active ? 1 : 0,
         }}
         transition={{ type: 'spring', stiffness: 420, damping: 26, mass: 0.45 }}
       >
-        <div className="relative h-20 w-10">
-          <div
-            className="absolute left-0 top-0 h-8 w-10 rounded-[7px] border border-white/70 shadow-lg"
-            style={{
-              background: `linear-gradient(180deg, ${activeColor}, ${activeColor})`,
-            }}
+        <svg
+          width="92"
+          height="126"
+          viewBox="0 0 92 126"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="drop-shadow-lg"
+        >
+          <defs>
+            <linearGradient id="rollerNap" x1="8" y1="10" x2="62" y2="82" gradientUnits="userSpaceOnUse">
+              <stop stopColor={activeColor} />
+              <stop offset="0.55" stopColor={activeColor} stopOpacity="0.9" />
+              <stop offset="1" stopColor="#5B5B5B" />
+            </linearGradient>
+            <linearGradient id="rollerHandle" x1="63" y1="67" x2="85" y2="111" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#B8B8B8" />
+              <stop offset="0.45" stopColor="#777777" />
+              <stop offset="1" stopColor="#333333" />
+            </linearGradient>
+          </defs>
+
+          <rect
+            x="8"
+            y="7"
+            width="55"
+            height="72"
+            rx="24"
+            transform="rotate(-28 8 7)"
+            fill="url(#rollerNap)"
           />
-          <div className="absolute left-[15px] top-7 h-11 w-[5px] rotate-[18deg] rounded-full bg-zinc-800 shadow-md" />
-          <div className="absolute left-[15px] top-[54px] h-[5px] w-8 rotate-[18deg] rounded-full bg-zinc-700" />
-        </div>
+          <path
+            d="M12 17C22 10 35 8 45 13"
+            stroke="white"
+            strokeOpacity="0.22"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+          <path
+            d="M53 57C64 65 70 69 74 78C77 85 75 91 70 98"
+            stroke="url(#rollerHandle)"
+            strokeWidth="6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M70 98L84 104"
+            stroke="#333333"
+            strokeWidth="6"
+            strokeLinecap="round"
+          />
+          <path
+            d="M70 98L84 104"
+            stroke="#AFAFAF"
+            strokeOpacity="0.35"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
       </motion.div>
 
       <div
