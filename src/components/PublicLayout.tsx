@@ -5,7 +5,6 @@ import { Logo } from './Logo';
 import type { SiteSettings } from '../types';
 
 const links = [
-  ['Sobre', '/#sobre'],
   ['Serviços', '/#servicos'],
   ['Portfólio', '/#portfolio'],
   ['Depoimentos', '/#depoimentos'],
