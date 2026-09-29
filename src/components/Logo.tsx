@@ -12,7 +12,7 @@ export function Logo({ logoUrl, companyName = 'PintarBH', dark = true, compactMo
         src={logoUrl}
         alt={companyName}
         decoding="async"
-        className={compactMobile ? 'h-12 w-12 object-contain md:h-10 md:w-auto md:max-w-[180px]' : 'h-10 w-auto max-w-[180px] object-contain'}
+        className={compactMobile ? 'h-12 w-12 object-contain md:h-14 md:w-auto md:max-w-[220px]' : 'h-10 w-auto max-w-[180px] object-contain'}
       />
     );
   }
