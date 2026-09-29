@@ -37,6 +37,7 @@ export type TeamMember = {
   id: string;
   name: string;
   phone: string;
+  instagramUrl: string;
   role: string;
   photoUrl: string;
   description: string;
