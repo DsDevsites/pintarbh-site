@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, MapPin, MessageCircle, Paintbrush, Star } from 'lucide-react';
-import { getProjects, getServices, getSettings, getTestimonials } from '../services/contentService';
+import { getProjects, getServices, getSettings, getTeamMembers, getTestimonials } from '../services/contentService';
 import { Footer, PublicHeader } from '../components/PublicLayout';
 import { Seo } from '../components/Seo';
 import { PaintDecorations } from '../components/PaintDecorations';
@@ -92,6 +92,7 @@ export function HomePage() {
   const servicesQuery = useQuery({ queryKey: ['services'], queryFn: getServices, staleTime: 0, refetchOnWindowFocus: true });
   const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects, staleTime: 0, refetchOnWindowFocus: true });
   const testimonialsQuery = useQuery({ queryKey: ['testimonials'], queryFn: getTestimonials, staleTime: 0, refetchOnWindowFocus: true });
+  const teamQuery = useQuery({ queryKey: ['team'], queryFn: getTeamMembers, staleTime: 0, refetchOnWindowFocus: true });
 
   useEffect(() => {
     const refreshOnReturn = () => {
@@ -99,6 +100,7 @@ export function HomePage() {
       void queryClient.invalidateQueries({ queryKey: ['services'] });
       void queryClient.invalidateQueries({ queryKey: ['projects'] });
       void queryClient.invalidateQueries({ queryKey: ['testimonials'] });
+      void queryClient.invalidateQueries({ queryKey: ['team'] });
     };
 
     const handlePageShow = (event: PageTransitionEvent) => {
@@ -113,6 +115,7 @@ export function HomePage() {
   const services = servicesQuery.data ?? [];
   const projects = projectsQuery.data ?? [];
   const testimonials = testimonialsQuery.data ?? [];
+  const team = teamQuery.data ?? [];
   const beforeAfterProjects = projects.filter((project) => project.beforeAfterEnabled && project.beforeImage && project.afterImage);
   const adviceVideoEmbed = (() => {
     const raw = settings?.adviceVideoUrl?.trim() || '';
@@ -209,7 +212,7 @@ export function HomePage() {
             <div className="mt-8 grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8">
               {services.length ? services.map((service, index) => (
                 <motion.article {...fadeUp} transition={{ duration: 0.55, delay: index * 0.06, ease: 'easeOut' }} key={service.id} className="overflow-hidden rounded-2xl bg-white transition hover:-translate-y-1 hover:shadow-soft">
-                  <div className="paint-image-frame paint-image-frame--card"><img src={service.image} alt={service.title} loading="lazy" decoding="async" className="h-56 w-full rounded-[16px] object-cover" /></div>
+                  <div className="paint-image-frame paint-image-frame--card aspect-[4/3]"><img src={service.image} alt={service.title} loading="lazy" decoding="async" className="h-full w-full rounded-[16px] object-cover" /></div>
                   <div className="p-6"><Paintbrush className="mb-4 h-6 w-6 text-zinc-500" /><h3 className="text-xl font-semibold">{service.title}</h3><p className="mt-3 text-sm leading-6 text-zinc-600">{service.description}</p></div>
                 </motion.article>
               )) : <div className="rounded-2xl border border-dashed border-zinc-300 p-8 text-sm text-zinc-500 sm:col-span-2 lg:col-span-3">Os serviços serão apresentados aqui em breve.</div>}
@@ -286,7 +289,7 @@ export function HomePage() {
             <motion.div {...fadeUp} className="flex flex-col justify-between gap-5 md:flex-row md:items-end"><div><p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Portfólio</p><h2 className="mt-4 text-3xl font-light md:text-5xl">Projetos realizados pela PintarBH.</h2><p className="mt-4 max-w-2xl text-sm leading-7 text-zinc-600">Veja alguns trabalhos e conheça os detalhes de cada projeto.</p></div></motion.div>
             <div className="mt-8 grid gap-4 md:gap-6 lg:grid-cols-3 lg:gap-8">
               {projects.length ? projects.map((project) => (
-                <motion.article {...fadeUp} key={project.id} className="overflow-hidden rounded-2xl bg-white shadow-sm"><div className="paint-image-frame paint-image-frame--card"><img src={project.coverImage} alt={project.title} loading="lazy" decoding="async" className="h-72 w-full rounded-[16px] object-cover" /></div><div className="p-6"><div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.12em] text-zinc-500"><MapPin className="h-4 w-4" /> {project.location}</div><h3 className="mt-3 text-2xl font-semibold">{project.title}</h3><p className="mt-3 text-sm leading-6 text-zinc-600">{project.shortDescription}</p><Link to="/projeto/$slug" params={{ slug: project.slug }} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold">Ver detalhes <ArrowRight className="h-4 w-4" /></Link></div></motion.article>
+                <motion.article {...fadeUp} key={project.id} className="overflow-hidden rounded-2xl bg-white shadow-sm"><div className="paint-image-frame paint-image-frame--card aspect-[4/3]"><img src={project.coverImage} alt={project.title} loading="lazy" decoding="async" className="h-full w-full rounded-[16px] object-cover" /></div><div className="p-6"><div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.12em] text-zinc-500"><MapPin className="h-4 w-4" /> {project.location}</div><h3 className="mt-3 text-2xl font-semibold">{project.title}</h3><p className="mt-3 text-sm leading-6 text-zinc-600">{project.shortDescription}</p><Link to="/projeto/$slug" params={{ slug: project.slug }} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold">Ver detalhes <ArrowRight className="h-4 w-4" /></Link></div></motion.article>
               )) : <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-8 text-sm text-zinc-500 md:col-span-2 lg:col-span-3">Os projetos serão apresentados aqui em breve.</div>}
             </div>
           </div>
@@ -316,16 +319,6 @@ export function HomePage() {
           </section>
         )}
 
-        <section id="depoimentos" className="relative overflow-hidden py-14 md:py-20 scroll-mt-24">
-          <PaintDecorations roller className="paint-decor-top-right" />
-          <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
-            <motion.div {...fadeUp} className="max-w-2xl"><p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Depoimentos</p><h2 className="mt-4 text-3xl font-light md:text-5xl">Clientes que confiaram no processo.</h2></motion.div>
-            <div className="mt-8 grid gap-4 md:grid-cols-3 md:gap-6 lg:gap-8">
-              {testimonials.length ? testimonials.map((testimonial) => <motion.article {...fadeUp} key={testimonial.id} className="rounded-2xl border border-zinc-200 p-6"><div className="flex gap-1 text-amber-400">{Array.from({ length: testimonial.rating }).map((_, index) => <Star key={index} className="h-4 w-4 fill-current" />)}</div><p className="mt-5 text-sm leading-7 text-zinc-600">“{testimonial.comment}”</p><p className="mt-5 font-semibold">{testimonial.name}</p><p className="text-sm text-zinc-500">{testimonial.city}</p></motion.article>) : <div className="rounded-2xl border border-dashed border-zinc-300 p-8 text-sm text-zinc-500 md:col-span-3">Os depoimentos serão apresentados aqui em breve.</div>}
-            </div>
-          </div>
-        </section>
-
         <section id="visita" className="relative overflow-hidden border-y border-zinc-100 bg-zinc-50 py-14 md:py-20 scroll-mt-24">
           <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
             <motion.div {...fadeUp} className="mb-8 max-w-2xl">
@@ -337,6 +330,16 @@ export function HomePage() {
           </div>
         </section>
 
+        <section id="depoimentos" className="relative overflow-hidden py-14 md:py-20 scroll-mt-24">
+          <PaintDecorations roller className="paint-decor-top-right" />
+          <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
+            <motion.div {...fadeUp} className="max-w-2xl"><p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Depoimentos</p><h2 className="mt-4 text-3xl font-light md:text-5xl">Clientes que confiaram no processo.</h2></motion.div>
+            <div className="mt-8 grid gap-4 md:grid-cols-3 md:gap-6 lg:gap-8">
+              {testimonials.length ? testimonials.map((testimonial) => <motion.article {...fadeUp} key={testimonial.id} className="rounded-2xl border border-zinc-200 p-6"><div className="flex gap-1 text-amber-400">{Array.from({ length: testimonial.rating }).map((_, index) => <Star key={index} className="h-4 w-4 fill-current" />)}</div><p className="mt-5 text-sm leading-7 text-zinc-600">“{testimonial.comment}”</p><p className="mt-5 font-semibold">{testimonial.name}</p><p className="text-sm text-zinc-500">{testimonial.city}</p></motion.article>) : <div className="rounded-2xl border border-dashed border-zinc-300 p-8 text-sm text-zinc-500 md:col-span-3">Os depoimentos serão apresentados aqui em breve.</div>}
+            </div>
+          </div>
+        </section>
+
         <section id="contato" className="bg-zinc-950 py-14 text-white md:py-20 scroll-mt-24">
           <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
             <motion.div {...fadeUp}>
@@ -344,22 +347,16 @@ export function HomePage() {
               <h2 className="mt-4 max-w-3xl text-3xl font-light md:text-5xl">Vamos planejar sua próxima pintura.</h2>
               <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-300">Escolha a forma mais prática de falar com a PintarBH ou envie uma solicitação completa do seu projeto.</p>
             </motion.div>
-
             <div className="mt-9 grid gap-5 md:grid-cols-2 md:gap-6">
               <motion.div {...fadeUp} className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 md:p-8">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">Fale conosco</p>
                 <h3 className="mt-3 text-2xl font-semibold">Contatos</h3>
                 <div className="mt-6 grid gap-3 text-sm text-zinc-300">
-                  <a href={whatsappUrl(settings.whatsapp)} className="flex items-center gap-3 rounded-2xl border border-white/10 px-4 py-3 transition hover:border-white/30 hover:text-white">
-                    <MessageCircle className="h-5 w-5 shrink-0" /> <span>WhatsApp: {settings.phone}</span>
-                  </a>
-                  <a href={settings.email ? `mailto:${settings.email}` : '#'} className="rounded-2xl border border-white/10 px-4 py-3 transition hover:border-white/30 hover:text-white">
-                    {settings.email}
-                  </a>
+                  <a href={whatsappUrl(settings.whatsapp)} className="flex items-center gap-3 rounded-2xl border border-white/10 px-4 py-3 transition hover:border-white/30 hover:text-white"><MessageCircle className="h-5 w-5 shrink-0" /> <span>WhatsApp: {settings.phone}</span></a>
+                  <a href={settings.email ? `mailto:${settings.email}` : '#'} className="rounded-2xl border border-white/10 px-4 py-3 transition hover:border-white/30 hover:text-white">{settings.email}</a>
                   <div className="rounded-2xl border border-white/10 px-4 py-3">{settings.address}</div>
                 </div>
               </motion.div>
-
               <motion.div {...fadeUp} className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 md:p-8">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">Orçamento</p>
                 <h3 className="mt-3 text-2xl font-semibold">Solicite uma análise do seu projeto.</h3>
@@ -372,6 +369,31 @@ export function HomePage() {
             </div>
           </div>
         </section>
+
+        {team.length > 0 && (
+          <section id="equipe" className="relative overflow-hidden py-14 md:py-20 scroll-mt-24">
+            <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
+              <motion.div {...fadeUp} className="max-w-2xl">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Nossa equipe</p>
+                <h2 className="mt-4 text-3xl font-light md:text-5xl">Quem está por trás de cada pintura.</h2>
+                <p className="mt-4 text-sm leading-7 text-zinc-600">Conheça as pessoas que fazem parte da equipe PintarBH e cuidam de cada etapa do trabalho.</p>
+              </motion.div>
+              <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                {team.map((member) => (
+                  <motion.article {...fadeUp} key={member.id} className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-zinc-100">
+                    <div className="paint-image-frame paint-image-frame--team aspect-square"><img src={member.photoUrl || '/images/placeholder.svg'} alt={member.name} loading="lazy" decoding="async" className="h-full w-full rounded-[16px] object-cover" /></div>
+                    <div className="p-5">
+                      <h3 className="text-xl font-semibold">{member.name}</h3>
+                      {member.role && <p className="mt-1 text-sm font-medium text-zinc-500">{member.role}</p>}
+                      {member.description && <p className="mt-3 text-sm leading-6 text-zinc-600">{member.description}</p>}
+                      {member.phone && <a href={whatsappUrl(member.phone)} className="mt-4 inline-flex text-sm font-semibold text-zinc-800 hover:underline">Falar com a equipe</a>}
+                    </div>
+                  </motion.article>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
       </main>
       <Footer settings={settings} />
     </div>
