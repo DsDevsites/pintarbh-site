@@ -26,6 +26,7 @@ export function InteractivePaintTitle({ text, className = '' }: InteractivePaint
   const updatePoint = (clientX: number, clientY: number) => {
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
+
     setPoint({
       x: ((clientX - rect.left) / rect.width) * 100,
       y: ((clientY - rect.top) / rect.height) * 100,
@@ -37,8 +38,6 @@ export function InteractivePaintTitle({ text, className = '' }: InteractivePaint
     updatePoint(event.clientX, event.clientY);
   };
 
-  const handlePointerLeave = () => setActive(false);
-
   const activeColor = paintColors[colorIndex];
 
   return (
@@ -47,12 +46,14 @@ export function InteractivePaintTitle({ text, className = '' }: InteractivePaint
       className="interactive-paint-title relative select-none touch-none"
       onPointerMove={handlePointerMove}
       onPointerEnter={(event) => updatePoint(event.clientX, event.clientY)}
-      onPointerLeave={handlePointerLeave}
+      onPointerLeave={() => setActive(false)}
       onPointerDown={(event) => updatePoint(event.clientX, event.clientY)}
       style={{ '--paint-color': activeColor } as CSSProperties}
       aria-label={text}
     >
-      <h1 className={\`hero-title relative z-10 mx-auto max-w-3xl text-4xl font-light leading-tight tracking-normal text-zinc-950 md:text-6xl md:leading-tight lg:mx-0 lg:text-7xl \${className}\`}>
+      <h1
+        className={`hero-title relative z-10 mx-auto max-w-3xl text-4xl font-light leading-tight tracking-normal text-zinc-950 md:text-6xl md:leading-tight lg:mx-0 lg:text-7xl ${className}`}
+      >
         {text}
       </h1>
 
@@ -60,32 +61,31 @@ export function InteractivePaintTitle({ text, className = '' }: InteractivePaint
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-20 overflow-hidden"
         style={{
-          maskImage: \`radial-gradient(circle 95px at \${point.x}% \${point.y}%, black 0%, black 58%, transparent 100%)\`,
-          WebkitMaskImage: \`radial-gradient(circle 95px at \${point.x}% \${point.y}%, black 0%, black 58%, transparent 100%)\`,
+          maskImage: `radial-gradient(circle 95px at ${point.x}% ${point.y}%, black 0%, black 58%, transparent 100%)`,
+          WebkitMaskImage: `radial-gradient(circle 95px at ${point.x}% ${point.y}%, black 0%, black 58%, transparent 100%)`,
         }}
       >
-        <h1
+        <h2
           className="hero-title mx-auto max-w-3xl text-4xl font-light leading-tight tracking-normal md:text-6xl md:leading-tight lg:mx-0 lg:text-7xl"
           style={{
-            backgroundImage: \`linear-gradient(90deg, \${paintColors.join(', ')})\`,
+            backgroundImage: `linear-gradient(90deg, ${paintColors.join(', ')})`,
             backgroundSize: '220% 100%',
-            backgroundPosition: active ? \`\${point.x}% 50%\` : '50% 50%',
+            backgroundPosition: `${point.x}% 50%`,
             WebkitBackgroundClip: 'text',
             backgroundClip: 'text',
             color: 'transparent',
           }}
         >
           {text}
-        </h1>
+        </h2>
 
         <motion.div
-          className="absolute h-3 rounded-full opacity-70 blur-[1px]"
+          className="absolute h-3 rounded-full blur-[1px]"
           style={{
             width: '190px',
-            left: \`calc(\${point.x}% - 95px)\`,
-            top: \`calc(\${point.y}% + 22px)\`,
-            background: \`linear-gradient(90deg, transparent, \${activeColor}, transparent)\`,
-            transform: 'rotate(-4deg)',
+            left: `calc(${point.x}% - 95px)`,
+            top: `calc(${point.y}% + 22px)`,
+            background: `linear-gradient(90deg, transparent, ${activeColor}, transparent)`,
           }}
           animate={{ opacity: active ? 0.78 : 0 }}
           transition={{ duration: 0.18 }}
@@ -96,16 +96,22 @@ export function InteractivePaintTitle({ text, className = '' }: InteractivePaint
         aria-hidden="true"
         className="pointer-events-none absolute z-30 block scale-75 md:scale-100"
         style={{
-          left: \`calc(\${point.x}% - 10px)\`,
-          top: \`calc(\${point.y}% - 9px)\`,
+          left: `calc(${point.x}% - 10px)`,
+          top: `calc(${point.y}% - 9px)`,
         }}
-        animate={{ rotate: active ? -7 : 0, scale: active ? 1 : 0.86, opacity: active ? 1 : 0 }}
+        animate={{
+          rotate: active ? -7 : 0,
+          scale: active ? 1 : 0.86,
+          opacity: active ? 1 : 0,
+        }}
         transition={{ type: 'spring', stiffness: 420, damping: 26, mass: 0.45 }}
       >
         <div className="relative h-20 w-10">
           <div
             className="absolute left-0 top-0 h-8 w-10 rounded-[7px] border border-white/70 shadow-lg"
-            style={{ background: \`linear-gradient(180deg, \${activeColor}, color-mix(in srgb, \${activeColor} 72%, #111 28%))\` }}
+            style={{
+              background: `linear-gradient(180deg, ${activeColor}, ${activeColor})`,
+            }}
           />
           <div className="absolute left-[15px] top-7 h-11 w-[5px] rotate-[18deg] rounded-full bg-zinc-800 shadow-md" />
           <div className="absolute left-[15px] top-[54px] h-[5px] w-8 rotate-[18deg] rounded-full bg-zinc-700" />
