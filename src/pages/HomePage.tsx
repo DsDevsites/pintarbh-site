@@ -175,7 +175,7 @@ export function HomePage() {
               <div className="paint-image-frame paint-image-frame--hero rounded-[28px]"><img src={settings.heroImage} alt="Ambiente pintado pela PintarBH" width="1200" height="900" fetchPriority="high" decoding="async" className="aspect-[4/3] w-full max-w-full rounded-[27px] object-cover md:aspect-[5/4]" /></div>
               <div className="absolute -bottom-4 left-4 right-4 rounded-2xl bg-white/92 p-4 shadow-soft backdrop-blur md:-bottom-6 md:left-6 md:right-6 md:p-5">
                 <div className="grid grid-cols-3 gap-2 text-center md:gap-4">
-                  {['Orçamento claro', 'Obra limpa', 'Entrega técnica'].map((item) => <div key={item} className="text-[10px] font-semibold leading-tight text-zinc-700 md:text-xs"><CheckCircle2 className="mx-auto mb-1.5 h-4 w-4 text-emerald-500 md:mb-2 md:h-5 md:w-5" /> {item}</div>)}
+                  {['Orçamento claro', 'Obra limpa', 'Entrega técnica'].map((item) => <div key={item} className="text-[10px] font-semibold leading-tight text-zinc-700 md:text-xs">{item}</div>)}
                 </div>
               </div>
             </motion.div>
