@@ -116,6 +116,7 @@ export function HomePage() {
   const projects = projectsQuery.data ?? [];
   const testimonials = testimonialsQuery.data ?? [];
   const team = teamQuery.data ?? [];
+  const galleryItems = [...(settings?.galleryItems ?? [])].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
   const beforeAfterProjects = projects.filter((project) => project.beforeAfterEnabled && project.beforeImage && project.afterImage);
   const adviceVideoEmbed = (() => {
     const raw = settings?.adviceVideoUrl?.trim() || '';
@@ -172,6 +173,69 @@ export function HomePage() {
             </motion.div>
           </div>
         </section>
+
+        {settings?.galleryEnabled && galleryItems.length > 0 && (
+          <section id="galeria" className="relative overflow-hidden border-y border-zinc-100 bg-zinc-50/60 py-14 md:py-20 scroll-mt-24">
+            <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
+              <motion.div {...fadeUp} className="max-w-3xl">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">{settings.galleryEyebrow}</p>
+                <h2 className="mt-4 text-3xl font-light md:text-5xl">{settings.galleryTitle}</h2>
+                {settings.gallerySubtitle && <p className="mt-4 text-base leading-7 text-zinc-600">{settings.gallerySubtitle}</p>}
+              </motion.div>
+
+              <div className="mt-9 grid gap-6 md:grid-cols-2 lg:gap-8">
+                {galleryItems.map((item, index) => (
+                  <motion.article
+                    {...fadeUp}
+                    key={item.id}
+                    className={`overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-zinc-100 ${galleryItems.length === 1 || index === 0 ? 'md:col-span-2' : ''}`}
+                  >
+                    <div className={`paint-image-frame paint-image-frame--card ${galleryItems.length === 1 || index === 0 ? 'aspect-[16/8]' : 'aspect-[4/3]'}`}>
+                      {item.mediaUrl ? (
+                        item.mediaType === 'video' ? (
+                          <video
+                            src={item.mediaUrl}
+                            controls
+                            playsInline
+                            preload="metadata"
+                            className="h-full w-full rounded-[16px] bg-zinc-950 object-cover"
+                            aria-label={item.altText || item.title}
+                          />
+                        ) : (
+                          <img
+                            src={item.mediaUrl}
+                            alt={item.altText || item.title}
+                            loading="lazy"
+                            decoding="async"
+                            className="h-full w-full rounded-[16px] object-cover"
+                          />
+                        )
+                      ) : (
+                        <div className="grid h-full place-items-center rounded-[16px] bg-zinc-100 text-sm text-zinc-400">Mídia ainda não configurada</div>
+                      )}
+                    </div>
+
+                    <div className="p-6 md:p-8">
+                      {item.subtitle && <p className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">{item.subtitle}</p>}
+                      <h3 className="mt-2 text-2xl font-semibold">{item.title}</h3>
+                      {item.description && <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-600">{item.description}</p>}
+                      {item.buttonText && item.buttonLink && (
+                        <a
+                          href={item.buttonLink}
+                          target={item.buttonLink.startsWith('http') ? '_blank' : undefined}
+                          rel={item.buttonLink.startsWith('http') ? 'noopener noreferrer' : undefined}
+                          className="button-secondary mt-5 inline-flex"
+                        >
+                          <ArrowRight className="h-4 w-4" /> {item.buttonText}
+                        </a>
+                      )}
+                    </div>
+                  </motion.article>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         <section id="servicos" className="relative overflow-hidden py-14 md:py-20 scroll-mt-24">
           <PaintDecorations roller className="paint-decor-bottom-left" />
