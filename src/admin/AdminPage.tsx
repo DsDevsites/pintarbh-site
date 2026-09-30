@@ -9,7 +9,7 @@ import { isAuthenticated, login, logout } from '../services/authService';
 import { deleteContact, getContacts, getProjects, getServices, getSettings, getTestimonials, getTeamMembers, getVisits, saveProjects, saveServices, saveSettings, saveTeamMembers, saveTestimonials, updateVisitStatus } from '../services/contentService';
 import { deleteQuote, generateFinalQuote, getQuoteFileUrl, getQuoteImageUrl, getQuotes, updateQuote } from '../services/quoteService';
 import { slugify, visitWhatsappMessage, whatsappUrl } from '../lib/utils';
-import type { GalleryItem, Project, Quote, Service, SiteSettings, TeamMember, Testimonial, VisitStatus } from '../types';
+import type { GalleryItem, Partner, Project, Quote, Service, SiteSettings, TeamMember, Testimonial, VisitStatus } from '../types';
 
 type Tab = 'dashboard' | 'settings' | 'services' | 'projects' | 'testimonials' | 'team' | 'contacts' | 'quotes' | 'visits' | 'seo';
 
@@ -321,6 +321,65 @@ function SettingsEditor({ settings, onSaved }: { settings: SiteSettings; onSaved
           ))}
           {!draft.galleryItems.length && <div className="rounded-2xl border border-dashed border-zinc-300 p-6 text-sm text-zinc-500">Nenhum item ainda. Clique em “Adicionar item” para montar a galeria.</div>}
         </div>
+      </section>
+
+      <section className="grid gap-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200">
+        <div>
+          <h2 className="text-xl font-semibold">Parceiros PintarBH</h2>
+          <p className="mt-2 text-sm leading-6 text-zinc-500">Cadastre parceiros, marcas e fornecedores que você quer apresentar no site. Cada parceiro pode ter foto, produtos e redes sociais.</p>
+        </div>
+        <label className="flex items-center gap-3 text-sm font-medium">
+          <input type="checkbox" checked={draft.partnersEnabled} onChange={(event) => setDraft({ ...draft, partnersEnabled: event.target.checked })} />
+          Exibir parceiros na página inicial
+        </label>
+        <div className="grid gap-5 md:grid-cols-2">
+          <Text label="Chamada pequena" value={draft.partnersEyebrow} onChange={(partnersEyebrow) => setDraft({ ...draft, partnersEyebrow })} />
+          <Text label="Título da seção" value={draft.partnersTitle} onChange={(partnersTitle) => setDraft({ ...draft, partnersTitle })} />
+        </div>
+        <Area label="Texto de apresentação" value={draft.partnersSubtitle} onChange={(partnersSubtitle) => setDraft({ ...draft, partnersSubtitle })} />
+        <div className="flex justify-between gap-3">
+          <p className="font-semibold">Parceiros cadastrados</p>
+          <button type="button" className="button-secondary" onClick={() => {
+            const partner: Partner = { id: crypto.randomUUID(), name: 'Novo parceiro', category: '', description: '', photoUrl: '', productPhotos: [], productsText: '', phone: '', instagramUrl: '', websiteUrl: '', sortOrder: draft.partners.length };
+            setDraft({ ...draft, partners: [...draft.partners, partner] });
+          }}><Plus className="h-4 w-4" /> Adicionar parceiro</button>
+        </div>
+        <div className="grid gap-5">
+          {draft.partners.map((partner, index) => (
+            <div key={partner.id} className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5">
+              <div className="mb-4 flex items-start justify-between gap-3">
+                <div><p className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">Parceiro {index + 1}</p><p className="mt-1 font-semibold">{partner.name || 'Sem nome'}</p></div>
+                <button type="button" className="grid h-9 w-9 place-items-center rounded-full border border-red-200 text-red-600 hover:bg-red-50" title="Apagar parceiro" onClick={() => setDraft({ ...draft, partners: draft.partners.filter((item) => item.id !== partner.id) })}><Trash2 className="h-4 w-4" /></button>
+              </div>
+              <div className="grid gap-5 md:grid-cols-2">
+                <Text label="Nome" value={partner.name} onChange={(name) => setDraft({ ...draft, partners: update(draft.partners, index, { ...partner, name }) })} />
+                <Text label="Categoria / segmento" value={partner.category} onChange={(category) => setDraft({ ...draft, partners: update(draft.partners, index, { ...partner, category }) })} />
+                <Text label="WhatsApp / telefone" value={partner.phone} onChange={(phone) => setDraft({ ...draft, partners: update(draft.partners, index, { ...partner, phone }) })} />
+                <Text label="Instagram" value={partner.instagramUrl} onChange={(instagramUrl) => setDraft({ ...draft, partners: update(draft.partners, index, { ...partner, instagramUrl })})} placeholder="https://instagram.com/..." />
+                <Text label="Site / catálogo" value={partner.websiteUrl} onChange={(websiteUrl) => setDraft({ ...draft, partners: update(draft.partners, index, { ...partner, websiteUrl })})} placeholder="https://..." />
+                <Text label="Posição" type="number" value={String(partner.sortOrder)} onChange={(sortOrder) => setDraft({ ...draft, partners: update(draft.partners, index, { ...partner, sortOrder: Number(sortOrder) || 0 }) })} />
+              </div>
+              <ImageUpload label="Foto / logo do parceiro" value={partner.photoUrl} onChange={(photoUrl) => setDraft({ ...draft, partners: update(draft.partners, index, { ...partner, photoUrl }) })} cropAspect={4 / 3} />
+              <Area label="Sobre o parceiro" value={partner.description} onChange={(description) => setDraft({ ...draft, partners: update(draft.partners, index, { ...partner, description }) })} />
+              <Area label="Produtos / serviços que oferece" value={partner.productsText} onChange={(productsText) => setDraft({ ...draft, partners: update(draft.partners, index, { ...partner, productsText }) })} />
+              <ImageUpload label="Fotos dos produtos" multiple values={partner.productPhotos} onChangeMany={(productPhotos) => setDraft({ ...draft, partners: update(draft.partners, index, { ...partner, productPhotos }) })} cropHint="Você pode adicionar várias fotos dos produtos ou serviços do parceiro." />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="grid gap-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200">
+        <div>
+          <h2 className="text-xl font-semibold">Encerramento da página</h2>
+          <p className="mt-2 text-sm leading-6 text-zinc-500">Crie um encerramento descontraído no final do site. Você pode usar o meme “Já acabou, Jéssica?” ou outra imagem.</p>
+        </div>
+        <label className="flex items-center gap-3 text-sm font-medium">
+          <input type="checkbox" checked={draft.endingEnabled} onChange={(event) => setDraft({ ...draft, endingEnabled: event.target.checked })} />
+          Exibir encerramento no final do site
+        </label>
+        <Text label="Título" value={draft.endingTitle} onChange={(endingTitle) => setDraft({ ...draft, endingTitle })} />
+        <Area label="Texto" value={draft.endingText} onChange={(endingText) => setDraft({ ...draft, endingText })} />
+        <ImageUpload label="Imagem / meme" value={draft.endingImage} onChange={(endingImage) => setDraft({ ...draft, endingImage })} cropHint="Você pode colocar uma imagem do meme “Já acabou, Jéssica?” ou outra imagem de encerramento." />
       </section>
 
       <section className="grid gap-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200">
