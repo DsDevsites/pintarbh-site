@@ -9,7 +9,7 @@ import { isAuthenticated, login, logout } from '../services/authService';
 import { deleteContact, getContacts, getProjects, getServices, getSettings, getTestimonials, getTeamMembers, getVisits, saveProjects, saveServices, saveSettings, saveTeamMembers, saveTestimonials, updateVisitStatus } from '../services/contentService';
 import { deleteQuote, generateFinalQuote, getQuoteFileUrl, getQuoteImageUrl, getQuotes, updateQuote } from '../services/quoteService';
 import { slugify, visitWhatsappMessage, whatsappUrl } from '../lib/utils';
-import type { Project, Quote, Service, SiteSettings, TeamMember, Testimonial, VisitStatus } from '../types';
+import type { GalleryItem, Project, Quote, Service, SiteSettings, TeamMember, Testimonial, VisitStatus } from '../types';
 
 type Tab = 'dashboard' | 'settings' | 'services' | 'projects' | 'testimonials' | 'team' | 'contacts' | 'quotes' | 'visits' | 'seo';
 
@@ -228,6 +228,99 @@ function SettingsEditor({ settings, onSaved }: { settings: SiteSettings; onSaved
         </div>
         <VideoUpload label="Vídeo para os clientes" value={draft.adviceVideoUrl} onChange={(adviceVideoUrl) => setDraft({ ...draft, adviceVideoUrl })} />
         <p className="text-xs leading-5 text-zinc-500">Escolha o vídeo diretamente do celular ou computador. Aceita MP4, WebM e MOV. O vídeo será armazenado no Supabase e exibido automaticamente na página inicial quando esta seção estiver ativada.</p>
+      </section>
+
+      <section className="grid gap-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200">
+        <div>
+          <h2 className="text-xl font-semibold">Galeria da página inicial</h2>
+          <p className="mt-2 text-sm leading-6 text-zinc-500">Monte uma apresentação completa de um trabalho. Você pode criar quantos itens quiser e misturar fotos e vídeos. Tudo aqui é editável.</p>
+        </div>
+        <label className="flex items-center gap-3 text-sm font-medium">
+          <input type="checkbox" checked={draft.galleryEnabled} onChange={(event) => setDraft({ ...draft, galleryEnabled: event.target.checked })} />
+          Exibir galeria na página inicial
+        </label>
+        <div className="grid gap-5 md:grid-cols-2">
+          <Text label="Chamada pequena" value={draft.galleryEyebrow} onChange={(galleryEyebrow) => setDraft({ ...draft, galleryEyebrow })} />
+          <Text label="Título da galeria" value={draft.galleryTitle} onChange={(galleryTitle) => setDraft({ ...draft, galleryTitle })} />
+        </div>
+        <Area label="Texto de apresentação" value={draft.gallerySubtitle} onChange={(gallerySubtitle) => setDraft({ ...draft, gallerySubtitle })} />
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 className="font-semibold">Itens da galeria</h3>
+            <p className="text-xs text-zinc-500">Adicione, edite, reordene pelo campo de posição ou apague itens.</p>
+          </div>
+          <button
+            type="button"
+            className="button-secondary"
+            onClick={() => {
+              const item: GalleryItem = {
+                id: crypto.randomUUID(),
+                title: 'Novo momento',
+                subtitle: '',
+                description: '',
+                mediaType: 'image',
+                mediaUrl: '',
+                buttonText: '',
+                buttonLink: '',
+                altText: '',
+                sortOrder: draft.galleryItems.length,
+              };
+              setDraft({ ...draft, galleryItems: [...draft.galleryItems, item] });
+            }}
+          >
+            <Plus className="h-4 w-4" /> Adicionar item
+          </button>
+        </div>
+        <div className="grid gap-5">
+          {draft.galleryItems.map((item, index) => (
+            <div key={item.id} className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5">
+              <div className="mb-4 flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">Item {index + 1}</p>
+                  <p className="mt-1 font-semibold">{item.title || 'Sem título'}</p>
+                </div>
+                <button
+                  type="button"
+                  className="grid h-9 w-9 place-items-center rounded-full border border-red-200 text-red-600 hover:bg-red-50"
+                  title="Apagar item"
+                  onClick={() => setDraft({ ...draft, galleryItems: draft.galleryItems.filter((galleryItem) => galleryItem.id !== item.id) })}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <Text label="Título do item" value={item.title} onChange={(title) => setDraft({ ...draft, galleryItems: update(draft.galleryItems, index, { ...item, title }) })} />
+                <Text label="Título menor / etiqueta" value={item.subtitle} onChange={(subtitle) => setDraft({ ...draft, galleryItems: update(draft.galleryItems, index, { ...item, subtitle }) })} />
+              </div>
+              <Area label="Descrição" value={item.description} onChange={(description) => setDraft({ ...draft, galleryItems: update(draft.galleryItems, index, { ...item, description }) })} />
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <label className="block">
+                  <span className="mb-2 block text-sm font-medium text-zinc-700">Tipo de mídia</span>
+                  <select className="field" value={item.mediaType} onChange={(event) => setDraft({ ...draft, galleryItems: update(draft.galleryItems, index, { ...item, mediaType: event.target.value as GalleryItem['mediaType'], mediaUrl: '' }) })}>
+                    <option value="image">Foto</option>
+                    <option value="video">Vídeo</option>
+                  </select>
+                </label>
+                <Text label="Texto alternativo da mídia" value={item.altText} onChange={(altText) => setDraft({ ...draft, galleryItems: update(draft.galleryItems, index, { ...item, altText }) })} />
+              </div>
+
+              {item.mediaType === 'image' ? (
+                <ImageUpload label="Foto do item" value={item.mediaUrl} onChange={(mediaUrl) => setDraft({ ...draft, galleryItems: update(draft.galleryItems, index, { ...item, mediaUrl }) })} cropAspect={4 / 3} cropHint="Use uma foto do trabalho. O corte 4:3 mantém o padrão visual da galeria." />
+              ) : (
+                <VideoUpload label="Vídeo do item" value={item.mediaUrl} onChange={(mediaUrl) => setDraft({ ...draft, galleryItems: update(draft.galleryItems, index, { ...item, mediaUrl }) })} />
+              )}
+
+              <div className="mt-5 grid gap-5 md:grid-cols-3">
+                <Text label="Texto do botão (opcional)" value={item.buttonText} onChange={(buttonText) => setDraft({ ...draft, galleryItems: update(draft.galleryItems, index, { ...item, buttonText }) })} />
+                <Text label="Link do botão (opcional)" value={item.buttonLink} onChange={(buttonLink) => setDraft({ ...draft, galleryItems: update(draft.galleryItems, index, { ...item, buttonLink }) })} />
+                <Text label="Posição" type="number" value={String(item.sortOrder)} onChange={(sortOrder) => setDraft({ ...draft, galleryItems: update(draft.galleryItems, index, { ...item, sortOrder: Number(sortOrder) || 0 }) })} />
+              </div>
+            </div>
+          ))}
+          {!draft.galleryItems.length && <div className="rounded-2xl border border-dashed border-zinc-300 p-6 text-sm text-zinc-500">Nenhum item ainda. Clique em “Adicionar item” para montar a galeria.</div>}
+        </div>
       </section>
 
       <section className="grid gap-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200">
