@@ -435,6 +435,50 @@ export function HomePage() {
             </div>
           </section>
         )}
+        {settings?.partnersEnabled && settings.partners.length > 0 && (
+          <section id="parceiros" className="relative overflow-hidden bg-zinc-50/60 py-14 md:py-20 scroll-mt-24">
+            <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
+              <motion.div {...fadeUp} className="max-w-3xl">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">{settings.partnersEyebrow}</p>
+                <h2 className="mt-4 text-3xl font-light md:text-5xl">{settings.partnersTitle}</h2>
+                {settings.partnersSubtitle && <p className="mt-4 text-sm leading-7 text-zinc-600">{settings.partnersSubtitle}</p>}
+              </motion.div>
+              <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {[...settings.partners].sort((a, b) => a.sortOrder - b.sortOrder).map((partner) => (
+                  <motion.article {...fadeUp} key={partner.id} className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-zinc-100">
+                    <div className="paint-image-frame paint-image-frame--card aspect-[4/3]">
+                      {partner.photoUrl ? <img src={partner.photoUrl} alt={partner.name} loading="lazy" decoding="async" className="h-full w-full rounded-[16px] object-cover" /> : <div className="grid h-full place-items-center rounded-[16px] bg-zinc-100 text-4xl font-semibold text-zinc-400">{partner.name.slice(0, 1).toUpperCase() || 'P'}</div>}
+                    </div>
+                    <div className="p-6">
+                      {partner.category && <p className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">{partner.category}</p>}
+                      <h3 className="mt-2 text-2xl font-semibold">{partner.name}</h3>
+                      {partner.description && <p className="mt-3 text-sm leading-6 text-zinc-600">{partner.description}</p>}
+                      {partner.productsText && <div className="mt-4 rounded-2xl bg-zinc-50 p-4"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">Produtos e serviços</p><p className="mt-2 whitespace-pre-line text-sm leading-6 text-zinc-700">{partner.productsText}</p></div>}
+                      {partner.productPhotos.length > 0 && <div className="mt-4 grid grid-cols-3 gap-2">{partner.productPhotos.map((photo) => <img key={photo} src={photo} alt="" loading="lazy" className="aspect-square w-full rounded-xl object-cover" />)}</div>}
+                      <div className="mt-5 flex flex-wrap gap-2">
+                        {partner.phone && <a href={whatsappUrl(partner.phone)} target="_blank" rel="noopener noreferrer" className="whatsapp-button inline-flex h-10 w-10 items-center justify-center rounded-full border" aria-label={`WhatsApp de ${partner.name}`} title="WhatsApp"><MessageCircle className="h-5 w-5" /></a>}
+                        {partner.instagramUrl && <a href={partner.instagramUrl} target="_blank" rel="noopener noreferrer" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#ca9fdb] bg-[#ca9fdb] text-zinc-950 transition hover:-translate-y-0.5 hover:bg-[#fdbed6]" aria-label={`Instagram de ${partner.name}`} title="Instagram"><Instagram className="h-5 w-5" /></a>}
+                        {partner.websiteUrl && <a href={partner.websiteUrl} target="_blank" rel="noopener noreferrer" className="button-secondary h-10 px-4">Visitar site</a>}
+                      </div>
+                    </div>
+                  </motion.article>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {settings?.endingEnabled && (
+          <section className="relative overflow-hidden py-14 md:py-20">
+            <div className="mx-auto max-w-4xl px-5 text-center md:px-8">
+              {settings.endingImage && <div className="mx-auto max-w-2xl overflow-hidden rounded-3xl bg-zinc-100 shadow-sm ring-1 ring-zinc-100"><img src={settings.endingImage} alt={settings.endingTitle} loading="lazy" decoding="async" className="max-h-[520px] w-full object-cover" /></div>}
+              <p className="mt-8 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">Fim da obra</p>
+              <h2 className="mt-3 text-4xl font-semibold md:text-6xl">{settings.endingTitle}</h2>
+              {settings.endingText && <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-zinc-600">{settings.endingText}</p>}
+            </div>
+          </section>
+        )}
+
       </main>
       <Footer settings={settings} />
     </div>
