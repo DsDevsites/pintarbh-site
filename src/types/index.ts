@@ -11,6 +11,20 @@ export type GalleryItem = {
   sortOrder: number;
 };
 
+export type Partner = {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  photoUrl: string;
+  productPhotos: string[];
+  productsText: string;
+  phone: string;
+  instagramUrl: string;
+  websiteUrl: string;
+  sortOrder: number;
+};
+
 export type SiteSettings = {
   companyName: string;
   logoUrl: string;
@@ -49,6 +63,15 @@ export type SiteSettings = {
   galleryTitle: string;
   gallerySubtitle: string;
   galleryItems: GalleryItem[];
+  partnersEnabled: boolean;
+  partnersEyebrow: string;
+  partnersTitle: string;
+  partnersSubtitle: string;
+  partners: Partner[];
+  endingEnabled: boolean;
+  endingTitle: string;
+  endingText: string;
+  endingImage: string;
 };
 
 export type TeamMember = {
