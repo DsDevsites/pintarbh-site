@@ -1,3 +1,16 @@
+export type GalleryItem = {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  mediaType: 'image' | 'video';
+  mediaUrl: string;
+  buttonText: string;
+  buttonLink: string;
+  altText: string;
+  sortOrder: number;
+};
+
 export type SiteSettings = {
   companyName: string;
   logoUrl: string;
@@ -31,6 +44,11 @@ export type SiteSettings = {
   adviceVideoTitle: string;
   adviceVideoSubtitle: string;
   adviceVideoUrl: string;
+  galleryEnabled: boolean;
+  galleryEyebrow: string;
+  galleryTitle: string;
+  gallerySubtitle: string;
+  galleryItems: GalleryItem[];
 };
 
 export type TeamMember = {
