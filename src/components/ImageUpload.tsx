@@ -5,8 +5,8 @@ import { cn } from '../lib/utils';
 
 type ImageUploadProps = {
   label: string;
-  value: string;
-  onChange: (value: string) => void;
+  value?: string;
+  onChange?: (value: string) => void;
   multiple?: boolean;
   values?: string[];
   onChangeMany?: (values: string[]) => void;
@@ -195,8 +195,8 @@ export function ImageUpload({ label, value, onChange, multiple, values = [], onC
 
   async function uploadSelected(file: File) {
     const uploaded = await uploadImage(file);
-    const previous = value;
-    onChange(uploaded);
+    const previous = value ?? '';
+    onChange?.(uploaded);
     if (previous) await removeImage(previous);
   }
 
@@ -263,7 +263,7 @@ export function ImageUpload({ label, value, onChange, multiple, values = [], onC
     try {
       await removeImage(item);
       if (multiple) onChangeMany?.(values.filter((_, itemIndex) => itemIndex !== index));
-      else onChange('');
+      else onChange?.('');
     } finally {
       setUploading(false);
     }
