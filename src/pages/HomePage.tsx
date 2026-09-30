@@ -166,18 +166,9 @@ export function HomePage() {
               <span className="mx-auto inline-flex max-w-full rounded-full border border-zinc-200 px-4 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-600 lg:mx-0">Pintura e acabamentos em BH</span>
               <h1 className="hero-title mx-auto mt-5 max-w-3xl text-4xl font-light leading-tight tracking-normal text-zinc-950 md:text-6xl md:leading-tight lg:mx-0 lg:text-7xl">{settings.heroTitle}</h1>
               <p className="mx-auto mt-5 max-w-2xl text-lg font-light leading-7 text-zinc-600 md:leading-8 lg:mx-0">{settings.heroSubtitle}</p>
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row lg:mt-8">
-                <a className="button-primary whatsapp-button h-11 w-full sm:w-auto" href={whatsappUrl(settings.whatsapp)}><MessageCircle className="h-5 w-5" /> WhatsApp</a>
-                <a href="#pre-orcamento" className="button-secondary h-11 w-full sm:w-auto"><ArrowRight className="h-5 w-5" /> Solicitar orçamento</a>
-              </div>
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.1 }} className="relative">
               <div className="paint-image-frame paint-image-frame--hero rounded-[28px]"><img src={settings.heroImage} alt="Ambiente pintado pela PintarBH" width="1200" height="900" fetchPriority="high" decoding="async" className="aspect-[4/3] w-full max-w-full rounded-[27px] object-cover md:aspect-[5/4]" /></div>
-              <div className="absolute -bottom-4 left-4 right-4 rounded-2xl bg-white/92 p-4 shadow-soft backdrop-blur md:-bottom-6 md:left-6 md:right-6 md:p-5">
-                <div className="grid grid-cols-3 gap-2 text-center md:gap-4">
-                  {['Orçamento claro', 'Obra limpa', 'Entrega técnica'].map((item) => <div key={item} className="text-[10px] font-semibold leading-tight text-zinc-700 md:text-xs">{item}</div>)}
-                </div>
-              </div>
             </motion.div>
           </div>
         </section>
