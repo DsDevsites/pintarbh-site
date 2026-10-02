@@ -21,6 +21,23 @@ export function PublicHeader({ settings }: { settings: SiteSettings }) {
         <div className="hidden items-center gap-3 text-xs font-medium text-zinc-700 md:flex lg:gap-8 lg:text-sm">
           {links.map(([label, href]) => <a key={href} href={href} className="transition hover:text-zinc-950">{label}</a>)}
         </div>
+
+        <div className="hidden items-center gap-2 md:flex">
+          <Link
+            to="/login"
+            className="inline-flex h-10 items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 text-xs font-bold text-zinc-800 shadow-sm transition hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md lg:text-sm"
+          >
+            <LogIn className="h-4 w-4" />
+            Login
+          </Link>
+          <Link
+            to="/admin"
+            className="inline-flex h-10 items-center gap-2 rounded-full bg-zinc-950 px-4 text-xs font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-zinc-800 hover:shadow-md lg:text-sm"
+          >
+            <ShieldCheck className="h-4 w-4" />
+            Área administrativa
+          </Link>
+        </div>
         
         <button type="button" className="ml-auto grid h-11 w-11 shrink-0 place-items-center rounded-full border border-zinc-200 md:hidden" onClick={() => setOpen(!open)} aria-label={open ? 'Fechar menu' : 'Abrir menu'} aria-expanded={open} aria-controls="mobile-navigation">{open ? <X className="h-5 w-5" /> : <MoreVertical className="h-5 w-5" />}</button>
       </nav>
