@@ -190,9 +190,18 @@ select,
   --tw-ring-color: #fdbed6;
 }
 
-/* Keep native date controls inside their grid column on narrow screens (especially iOS Safari). */
+/* Keep the native date control aligned with the other fields on iOS Safari. */
+.visit-date-field,
+.visit-date-field * {
+  min-width: 0;
+  max-width: 100%;
+}
+
 input.field[type='date'],
-input.field.visit-date-input {
+input.field.visit-date-input,
+.visit-date-field input[type='date'] {
+  appearance: none;
+  -webkit-appearance: none;
   display: block;
   width: 100% !important;
   min-width: 0 !important;
@@ -200,18 +209,7 @@ input.field.visit-date-input {
   inline-size: 100%;
   min-inline-size: 0;
   box-sizing: border-box;
-}
-
-.visit-date-field {
-  min-width: 0;
-  width: 100%;
-}
-
-.visit-date-field input[type='date'] {
-  width: 100% !important;
-  min-width: 0 !important;
-  max-width: 100% !important;
-  box-sizing: border-box;
+  overflow: hidden;
   font-size: 16px;
 }
 
