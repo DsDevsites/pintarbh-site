@@ -65,7 +65,7 @@ export async function saveSettings(settings: SiteSettings) {
 export async function getServices(): Promise<Service[]> {
   if (supabase) {
     const { data } = await supabase.from('services').select('*').order('created_at');
-    if (data?.length) return data as Service[];
+    return (data ?? []) as Service[];
   }
   return readLocal(keys.services, defaultServices);
 }
@@ -107,6 +107,7 @@ export async function getProjects(): Promise<Project[]> {
           .map((image) => image.image_url) ?? [],
       }));
     }
+    return [];
   }
   return readLocal(keys.projects, defaultProjects);
 }
@@ -210,7 +211,7 @@ export async function saveTeamMembers(members: TeamMember[]) {
 export async function getTestimonials(): Promise<Testimonial[]> {
   if (supabase) {
     const { data } = await supabase.from('testimonials').select('*').order('created_at');
-    if (data?.length) return data as Testimonial[];
+    return (data ?? []) as Testimonial[];
   }
   return readLocal(keys.testimonials, defaultTestimonials);
 }

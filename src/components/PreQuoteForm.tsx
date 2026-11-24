@@ -47,7 +47,7 @@ export function PreQuoteForm({ services }: Props) {
 
         <input className="field" name="name" placeholder="Seu nome" autoComplete="name" minLength={2} required />
         <input className="field" name="phone" type="tel" inputMode="tel" placeholder="WhatsApp / telefone" autoComplete="tel" required />
-        <input className="field" name="city" placeholder="Cidade" defaultValue="Belo Horizonte" required />
+        <input className="field" name="city" placeholder="Cidade" required />
         <input className="field" name="neighborhood" placeholder="Bairro" />
         <select className="field" name="propertyType" defaultValue="" required>
           <option value="" disabled>Tipo de imóvel</option>

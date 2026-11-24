@@ -13,17 +13,17 @@ import type { GalleryItem, Partner, Project, Quote, Service, SiteSettings, TeamM
 
 type Tab = 'dashboard' | 'settings' | 'services' | 'projects' | 'testimonials' | 'team' | 'contacts' | 'quotes' | 'visits' | 'seo';
 
-const nav: { id: Tab; label: string; icon: typeof LayoutDashboard }[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'settings', label: 'Configurações', icon: Settings },
-  { id: 'services', label: 'Serviços', icon: BriefcaseBusiness },
-  { id: 'projects', label: 'Projetos', icon: FileText },
-  { id: 'testimonials', label: 'Depoimentos', icon: Star },
-  { id: 'team', label: 'Equipe', icon: Users },
-  { id: 'contacts', label: 'Contatos', icon: MessageSquare },
-  { id: 'quotes', label: 'Orçamentos', icon: FileText },
-  { id: 'visits', label: 'Visitas', icon: CalendarDays },
-  { id: 'seo', label: 'SEO', icon: Search },
+const nav: { id: Tab; label: string; icon: typeof LayoutDashboard; group: string }[] = [
+  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, group: 'Visão geral' },
+  { id: 'settings', label: 'Configurações gerais', icon: Settings, group: 'Institucional' },
+  { id: 'seo', label: 'SEO', icon: Search, group: 'Institucional' },
+  { id: 'services', label: 'Serviços', icon: BriefcaseBusiness, group: 'Conteúdo do site' },
+  { id: 'projects', label: 'Projetos', icon: FileText, group: 'Conteúdo do site' },
+  { id: 'testimonials', label: 'Depoimentos', icon: Star, group: 'Conteúdo do site' },
+  { id: 'team', label: 'Equipe', icon: Users, group: 'Conteúdo do site' },
+  { id: 'quotes', label: 'Orçamentos', icon: FileText, group: 'Atendimento' },
+  { id: 'visits', label: 'Visitas', icon: CalendarDays, group: 'Atendimento' },
+  { id: 'contacts', label: 'Contatos', icon: MessageSquare, group: 'Atendimento' },
 ];
 
 export function AdminPage() {
@@ -118,12 +118,16 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
       <aside className="border-r border-zinc-200 bg-white p-5">
         <Logo logoUrl={settings.logoUrl} companyName={settings.companyName} />
         <nav className="mt-8 grid gap-2">
-          {nav.map((item) => {
+          {nav.map((item, index) => {
             const Icon = item.icon;
+            const showGroup = index === 0 || nav[index - 1].group !== item.group;
             return (
-              <button key={item.id} onClick={() => setTab(item.id)} className={`flex items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium transition ${tab === item.id ? 'bg-zinc-950 text-white' : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950'}`}>
-                <Icon className="h-5 w-5" /> {item.label}
-              </button>
+              <div key={item.id}>
+                {showGroup && <p className={`${index === 0 ? '' : 'mt-5'} mb-2 px-4 text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-400`}>{item.group}</p>}
+                <button onClick={() => setTab(item.id)} className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium transition ${tab === item.id ? 'bg-zinc-950 text-white' : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950'}`}>
+                  <Icon className="h-5 w-5" /> {item.label}
+                </button>
+              </div>
             );
           })}
         </nav>

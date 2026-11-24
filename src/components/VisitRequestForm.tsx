@@ -7,6 +7,14 @@ import type { Service } from '../types';
 
 type Props = { services: Service[]; whatsapp: string };
 
+function getLocalDateValue() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export function VisitRequestForm({ services, whatsapp }: Props) {
   const mutation = useMutation({ mutationFn: createVisitRequest });
   const [submitted, setSubmitted] = useState<{
@@ -91,7 +99,7 @@ export function VisitRequestForm({ services, whatsapp }: Props) {
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="grid gap-2 text-sm font-medium text-zinc-700">Tipo de serviço<select className="field" name="serviceType" defaultValue="" required><option value="" disabled>Selecione</option>{serviceOptions.map((service) => <option key={service}>{service}</option>)}</select></label>
-            <label className="grid gap-2 text-sm font-medium text-zinc-700">Data preferencial<input className="field" name="preferredDate" type="date" min={new Date().toISOString().slice(0, 10)} required /></label>
+            <label className="grid gap-2 text-sm font-medium text-zinc-700">Data preferencial<input className="field" name="preferredDate" type="date" min={getLocalDateValue()} required /></label>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="grid gap-2 text-sm font-medium text-zinc-700">Período<select className="field" name="preferredPeriod" defaultValue="" required><option value="" disabled>Selecione</option><option>Manhã</option><option>Tarde</option><option>Horário comercial</option></select></label>

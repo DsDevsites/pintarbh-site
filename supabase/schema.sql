@@ -164,8 +164,8 @@ values (
   'pintarbh-images',
   'pintarbh-images',
   true,
-  10485760,
-  array['image/jpeg','image/png','image/webp','image/gif','image/svg+xml']
+  104857600,
+  array['image/jpeg','image/png','image/webp','image/gif','image/svg+xml','video/mp4','video/webm','video/quicktime']
 )
 on conflict (id) do update set
   public = excluded.public,
