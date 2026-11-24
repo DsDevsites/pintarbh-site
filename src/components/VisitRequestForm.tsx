@@ -99,7 +99,7 @@ export function VisitRequestForm({ services, whatsapp }: Props) {
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="grid gap-2 text-sm font-medium text-zinc-700">Tipo de serviço<select className="field" name="serviceType" defaultValue="" required><option value="" disabled>Selecione</option>{serviceOptions.map((service) => <option key={service}>{service}</option>)}</select></label>
-            <label className="grid gap-2 text-sm font-medium text-zinc-700">Data preferencial<input className="field" name="preferredDate" type="date" min={getLocalDateValue()} required /></label>
+            <label className="visit-date-field grid min-w-0 gap-2 text-sm font-medium text-zinc-700">Data preferencial<input className="field visit-date-input" name="preferredDate" type="date" min={getLocalDateValue()} required /></label>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="grid gap-2 text-sm font-medium text-zinc-700">Período<select className="field" name="preferredPeriod" defaultValue="" required><option value="" disabled>Selecione</option><option>Manhã</option><option>Tarde</option><option>Horário comercial</option></select></label>
