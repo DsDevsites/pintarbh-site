@@ -191,7 +191,7 @@ export function HomePage() {
                   <div className="paint-image-frame paint-image-frame--card aspect-[4/3]"><img src={service.image} alt={service.title} loading="lazy" decoding="async" className="h-full w-full rounded-[16px] object-cover" /></div>
                   <div className="p-6"><Paintbrush className="mb-4 h-6 w-6 text-zinc-500" /><h3 className="text-xl font-semibold">{service.title}</h3><p className="mt-3 text-sm leading-6 text-zinc-600">{service.description}</p></div>
                 </motion.article>
-              )}
+              ))}
             </div>
           </div>
         </section>
@@ -268,7 +268,7 @@ export function HomePage() {
             <div className="mt-8 grid gap-4 md:gap-6 lg:grid-cols-3 lg:gap-8">
               {projects.map((project) => (
                 <motion.article {...fadeUp} key={project.id} className="overflow-hidden rounded-2xl bg-white shadow-sm"><div className="paint-image-frame paint-image-frame--card aspect-[4/3]"><img src={project.coverImage} alt={project.title} loading="lazy" decoding="async" className="h-full w-full rounded-[16px] object-cover" /></div><div className="p-6"><div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.12em] text-zinc-500"><MapPin className="h-4 w-4" /> {project.location}</div><h3 className="mt-3 text-2xl font-semibold">{project.title}</h3><p className="mt-3 text-sm leading-6 text-zinc-600">{project.shortDescription}</p><Link to="/projeto/$slug" params={{ slug: project.slug }} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold">Ver detalhes <ArrowRight className="h-4 w-4" /></Link></div></motion.article>
-              )}
+              ))}
             </div>
           </div>
         </section>
