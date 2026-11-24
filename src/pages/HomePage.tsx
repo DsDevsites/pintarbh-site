@@ -111,7 +111,7 @@ export function HomePage() {
     return () => window.removeEventListener('pageshow', handlePageShow);
   }, [queryClient]);
   const settings = settingsQuery.data;
-  const playlistLink = settings?.playlistButtonLink || 'https://open.spotify.com/playlist/1rAlWRRPcJfU2bUuESTlUQ';
+  const playlistLink = settings?.playlistButtonLink?.trim() || '';
   const services = servicesQuery.data ?? [];
   const projects = projectsQuery.data ?? [];
   const testimonials = testimonialsQuery.data ?? [];
@@ -237,6 +237,7 @@ export function HomePage() {
           </section>
         )}
 
+        {services.length > 0 && (
         <section id="servicos" className="relative overflow-hidden py-14 md:py-20 scroll-mt-24">
           <PaintDecorations roller className="paint-decor-bottom-left" />
           <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
@@ -253,7 +254,7 @@ export function HomePage() {
                   <div className="paint-image-frame paint-image-frame--card aspect-[4/3]"><img src={service.image} alt={service.title} loading="lazy" decoding="async" className="h-full w-full rounded-[16px] object-cover" /></div>
                   <div className="p-6"><Paintbrush className="mb-4 h-6 w-6 text-zinc-500" /><h3 className="text-xl font-semibold">{service.title}</h3><p className="mt-3 text-sm leading-6 text-zinc-600">{service.description}</p></div>
                 </motion.article>
-              )) : <div className="rounded-2xl border border-dashed border-zinc-300 p-8 text-sm text-zinc-500 sm:col-span-2 lg:col-span-3">Os serviços serão apresentados aqui em breve.</div>}
+              ))}
             </div>
           </div>
         </section>
@@ -284,7 +285,7 @@ export function HomePage() {
           </div>
         </section>
 
-        {settings.playlistEnabled && (
+        {settings.playlistEnabled && playlistLink && (
           <section className="relative overflow-hidden bg-gradient-to-b from-white to-zinc-50 py-20">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
               <div className="mb-12 text-center">
@@ -320,6 +321,7 @@ export function HomePage() {
           </section>
         )}
 
+        {projects.length > 0 && (
         <section id="portfolio" className="rainbow-arc relative overflow-hidden bg-zinc-50 py-14 md:py-20 scroll-mt-24">
           <PaintDecorations can canClassName="paint-decor-mid-right" />
           <PaintDecorations roller rollerClassName="paint-decor-mid-left" />
@@ -328,7 +330,7 @@ export function HomePage() {
             <div className="mt-8 grid gap-4 md:gap-6 lg:grid-cols-3 lg:gap-8">
               {projects.length ? projects.map((project) => (
                 <motion.article {...fadeUp} key={project.id} className="overflow-hidden rounded-2xl bg-white shadow-sm"><div className="paint-image-frame paint-image-frame--card aspect-[4/3]"><img src={project.coverImage} alt={project.title} loading="lazy" decoding="async" className="h-full w-full rounded-[16px] object-cover" /></div><div className="p-6"><div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.12em] text-zinc-500"><MapPin className="h-4 w-4" /> {project.location}</div><h3 className="mt-3 text-2xl font-semibold">{project.title}</h3><p className="mt-3 text-sm leading-6 text-zinc-600">{project.shortDescription}</p><Link to="/projeto/$slug" params={{ slug: project.slug }} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold">Ver detalhes <ArrowRight className="h-4 w-4" /></Link></div></motion.article>
-              )) : <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-8 text-sm text-zinc-500 md:col-span-2 lg:col-span-3">Os projetos serão apresentados aqui em breve.</div>}
+              ))}
             </div>
           </div>
         </section>
@@ -368,12 +370,13 @@ export function HomePage() {
           </div>
         </section>
 
+        {testimonials.length > 0 && (
         <section id="depoimentos" className="relative overflow-hidden py-14 md:py-20 scroll-mt-24">
           <PaintDecorations roller className="paint-decor-top-right" />
           <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
             <motion.div {...fadeUp} className="max-w-2xl"><p className="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500">Depoimentos</p><h2 className="mt-4 text-3xl font-light md:text-5xl">Clientes que confiaram no processo.</h2></motion.div>
             <div className="mt-8 grid gap-4 md:grid-cols-3 md:gap-6 lg:gap-8">
-              {testimonials.length ? testimonials.map((testimonial) => <motion.article {...fadeUp} key={testimonial.id} className="rounded-2xl border border-zinc-200 p-6"><div className="flex gap-1 text-amber-400">{Array.from({ length: testimonial.rating }).map((_, index) => <Star key={index} className="h-4 w-4 fill-current" />)}</div><p className="mt-5 text-sm leading-7 text-zinc-600">“{testimonial.comment}”</p><p className="mt-5 font-semibold">{testimonial.name}</p><p className="text-sm text-zinc-500">{testimonial.city}</p></motion.article>) : <div className="rounded-2xl border border-dashed border-zinc-300 p-8 text-sm text-zinc-500 md:col-span-3">Os depoimentos serão apresentados aqui em breve.</div>}
+              {testimonials.map((testimonial) => <motion.article {...fadeUp} key={testimonial.id} className="rounded-2xl border border-zinc-200 p-6"><div className="flex gap-1 text-amber-400">{Array.from({ length: testimonial.rating }).map((_, index) => <Star key={index} className="h-4 w-4 fill-current" />)}</div><p className="mt-5 text-sm leading-7 text-zinc-600">“{testimonial.comment}”</p><p className="mt-5 font-semibold">{testimonial.name}</p><p className="text-sm text-zinc-500">{testimonial.city}</p></motion.article>)}
             </div>
           </div>
         </section>
