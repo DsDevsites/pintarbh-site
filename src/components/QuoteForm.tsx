@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useRef, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Camera, CheckCircle2, FileText, ImagePlus, MessageCircle, Send, X } from 'lucide-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { createQuote } from '../services/quoteService';
@@ -57,6 +57,8 @@ export function QuoteForm({ services, profile, initialPreQuote }: Props & { prof
   const inputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState(initialPreQuote ? 2 : 1);
   const [files, setFiles] = useState<File[]>([]);
+  const previewUrls = useMemo(() => files.map((file) => URL.createObjectURL(file)), [files]);
+  useEffect(() => () => previewUrls.forEach((url) => URL.revokeObjectURL(url)), [previewUrls]);
   const [sentNumber, setSentNumber] = useState('');
   const [submittedDetails, setSubmittedDetails] = useState<{ serviceTypes: string[]; propertyType: string; neighborhood: string; address: string; area: number | null; city: string } | null>(null);
   const settingsQuery = useQuery({ queryKey: ['settings'], queryFn: getSettings, staleTime: 5 * 60 * 1000 });
@@ -159,7 +161,7 @@ export function QuoteForm({ services, profile, initialPreQuote }: Props & { prof
         <input className="field" name="name" placeholder="Nome" autoComplete="name" minLength={2} required defaultValue={initialPreQuote?.name || profile.name} />
         <input className="field" name="phone" type="tel" inputMode="tel" placeholder="Telefone / WhatsApp" autoComplete="tel" required defaultValue={initialPreQuote?.phone || profile.phone} />
         <input className="field sm:col-span-2" name="email" type="email" inputMode="email" autoComplete="email" placeholder="E-mail para contato" required defaultValue={profile.email} />
-        <input className="field sm:col-span-2" name="city" placeholder="Cidade" defaultValue={initialPreQuote?.city || "Belo Horizonte"} required />
+        <input className="field sm:col-span-2" name="city" placeholder="Cidade" defaultValue={initialPreQuote?.city || ""} required />
       </div>
 
       <div className={step === 2 ? 'block' : 'hidden'} aria-hidden={step !== 2}>
@@ -193,7 +195,7 @@ export function QuoteForm({ services, profile, initialPreQuote }: Props & { prof
         <div className="mt-6 rounded-2xl border border-dashed border-zinc-300 p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-semibold">Fotos e referências</p><p className="mt-1 text-xs leading-5 text-zinc-500">Envie até 5 fotos do local ou referências do resultado desejado.</p></div><button type="button" className="button-secondary" onClick={() => inputRef.current?.click()}><ImagePlus className="h-5 w-5" /> Adicionar fotos</button></div>
           <input ref={inputRef} className="hidden" type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={addFiles} />
-          {files.length ? <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5">{files.map((file, index) => <div key={`${file.name}-${index}`} className="relative overflow-hidden rounded-xl border border-zinc-200"><img src={URL.createObjectURL(file)} alt={file.name} className="aspect-square w-full object-cover" /><button type="button" onClick={() => removeFile(index)} className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-white/95 text-zinc-800 shadow" aria-label={`Remover ${file.name}`}><X className="h-4 w-4" /></button></div>)}</div> : <div className="mt-4 flex items-center gap-3 rounded-xl bg-zinc-50 p-4 text-sm text-zinc-500"><Camera className="h-5 w-5" /> Nenhuma foto selecionada.</div>}
+          {files.length ? <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5">{files.map((file, index) => <div key={`${file.name}-${index}`} className="relative overflow-hidden rounded-xl border border-zinc-200"><img src={previewUrls[index]} alt={file.name} className="aspect-square w-full object-cover" /><button type="button" onClick={() => removeFile(index)} className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-white/95 text-zinc-800 shadow" aria-label={`Remover ${file.name}`}><X className="h-4 w-4" /></button></div>)}</div> : <div className="mt-4 flex items-center gap-3 rounded-xl bg-zinc-50 p-4 text-sm text-zinc-500"><Camera className="h-5 w-5" /> Nenhuma foto selecionada.</div>}
         </div>
       </div>
 
