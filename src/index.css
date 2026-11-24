@@ -191,12 +191,28 @@ select,
 }
 
 /* Keep native date controls inside their grid column on narrow screens (especially iOS Safari). */
-input.field[type='date'] {
+input.field[type='date'],
+input.field.visit-date-input {
   display: block;
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  inline-size: 100%;
+  min-inline-size: 0;
   box-sizing: border-box;
+}
+
+.visit-date-field {
+  min-width: 0;
+  width: 100%;
+}
+
+.visit-date-field input[type='date'] {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+  font-size: 16px;
 }
 
 .button-primary {
