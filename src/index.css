@@ -185,9 +185,20 @@ select,
 }
 
 .field {
-  @apply w-full rounded-lg border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4;
+  @apply w-full min-w-0 max-w-full box-border rounded-lg border bg-white px-4 py-3 text-sm outline-none transition focus:ring-4;
   border-color: #ca9fdb;
   --tw-ring-color: #fdbed6;
+}
+
+/* Keep native date controls inside their grid column on narrow screens (especially iOS Safari). */
+input.field[type='date'] {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .button-primary {
