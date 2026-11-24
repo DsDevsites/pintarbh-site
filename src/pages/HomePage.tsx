@@ -258,6 +258,7 @@ export function HomePage() {
             </div>
           </div>
         </section>
+        )}
 
         {settings.adviceVideoEnabled && adviceVideoEmbed && (
           <section id="orientacoes" className="relative overflow-hidden border-y border-zinc-100 bg-zinc-50 py-14 md:py-20 scroll-mt-24">
@@ -334,6 +335,7 @@ export function HomePage() {
             </div>
           </div>
         </section>
+        )}
 
         {beforeAfterProjects.length > 0 && (
           <section id="antes-depois" className="relative overflow-hidden py-14 md:py-20 scroll-mt-24">
@@ -380,6 +382,7 @@ export function HomePage() {
             </div>
           </div>
         </section>
+        )}
 
         <section id="contato" className="bg-zinc-950 py-14 text-white md:py-20 scroll-mt-24">
           <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
@@ -393,9 +396,9 @@ export function HomePage() {
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">Fale conosco</p>
                 <h3 className="mt-3 text-2xl font-semibold">Contatos</h3>
                 <div className="mt-6 grid gap-3 text-sm text-zinc-300">
-                  <a href={whatsappUrl(settings.whatsapp)} className="flex items-center gap-3 rounded-2xl border border-white/10 px-4 py-3 transition hover:border-white/30 hover:text-white"><MessageCircle className="h-5 w-5 shrink-0" /> <span>WhatsApp: {settings.phone}</span></a>
-                  <a href={settings.email ? `mailto:${settings.email}` : '#'} className="rounded-2xl border border-white/10 px-4 py-3 transition hover:border-white/30 hover:text-white">{settings.email}</a>
-                  <div className="rounded-2xl border border-white/10 px-4 py-3">{settings.address}</div>
+                  {settings.whatsapp?.replace(/\D/g, '') && <a href={whatsappUrl(settings.whatsapp)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-2xl border border-white/10 px-4 py-3 transition hover:border-white/30 hover:text-white"><MessageCircle className="h-5 w-5 shrink-0" /> <span>WhatsApp{settings.phone ? `: ${settings.phone}` : ''}</span></a>}
+                  {settings.email && <a href={`mailto:${settings.email}`} className="rounded-2xl border border-white/10 px-4 py-3 transition hover:border-white/30 hover:text-white">{settings.email}</a>}
+                  {settings.address && <div className="rounded-2xl border border-white/10 px-4 py-3">{settings.address}</div>}
                 </div>
               </motion.div>
               <motion.div {...fadeUp} className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 md:p-8">
